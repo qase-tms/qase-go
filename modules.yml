@@ -35,3 +35,15 @@
   packages:
     - go.qase.io/reporter/ginkgo
   tags: [ qase, go, reporter, ginkgo ]
+
+- prefix: go.qase.io/reporter/native
+  import:
+    - url: https://github.com/qase-tms/qase-go
+      vcs: git
+      source:
+        url:  https://github.com/qase-tms/qase-go
+        dir:  https://github.com/qase-tms/qase-go/tree/master/reporters/native{/dir}
+        file: https://github.com/qase-tms/qase-go/tree/master/reporters/native{/dir}/{file}#L{line}
+  packages:
+    - go.qase.io/reporter/native
+  tags: [ qase, go, reporter, native ]
