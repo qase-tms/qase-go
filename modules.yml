@@ -1,0 +1,13 @@
+---
+
+- prefix: go.qase.io
+  import:
+    - url: https://github.com/qase-tms/qase-go
+      vcs: git
+      source:
+        url:  https://github.com/qase-tms/qase-go
+        dir:  https://github.com/qase-tms/qase-go/tree/master{/dir}
+        file: https://github.com/qase-tms/qase-go/tree/master{/dir}/{file}#L{line}
+  packages:
+    - go.qase.io
+  tags: [ qase, go ]
