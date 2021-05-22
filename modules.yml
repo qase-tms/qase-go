@@ -23,3 +23,15 @@
   packages:
     - go.qase.io/client
   tags: [ qase, go, http, client ]
+
+- prefix: go.qase.io/reporter/ginkgo
+  import:
+    - url: https://github.com/qase-tms/qase-go
+      vcs: git
+      source:
+        url:  https://github.com/qase-tms/qase-go
+        dir:  https://github.com/qase-tms/qase-go/tree/master/reporters/ginkgo{/dir}
+        file: https://github.com/qase-tms/qase-go/tree/master/reporters/ginkgo{/dir}/{file}#L{line}
+  packages:
+    - go.qase.io/reporter/ginkgo
+  tags: [ qase, go, reporter, ginkgo ]
