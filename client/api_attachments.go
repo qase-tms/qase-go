@@ -32,15 +32,15 @@ AttachmentsApiService Remove attachment by Hash.
 This method allows to retrieve attachment by Hash.
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param codeOrHash Code or Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return HashResponse
 */
-func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash CodeOrHash) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash CodeOrHash) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Delete")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -98,7 +98,7 @@ func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

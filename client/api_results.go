@@ -34,15 +34,15 @@ This method allows to create test run result by Run Id.
  * @param body
  * @param code Code of project, where to search entities.
  * @param idOrHash Id or Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return InlineResponse200
 */
-func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate, code string, idOrHash IdOrHash) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate, code string, idOrHash IdOrHash) (InlineResponse200, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue InlineResponse200
 	)
 
 	// create path and map variables
@@ -109,7 +109,7 @@ func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate,
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v InlineResponse200
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -228,15 +228,15 @@ This method allows to delete test run result.
  * @param code Code of project, where to search entities.
  * @param id Identifier.
  * @param hash Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return HashResponse
 */
-func (a *ResultsApiService) DeleteResult(ctx context.Context, code string, id int32, hash string) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *ResultsApiService) DeleteResult(ctx context.Context, code string, id int32, hash string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Delete")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -302,7 +302,7 @@ func (a *ResultsApiService) DeleteResult(ctx context.Context, code string, id in
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -561,15 +561,15 @@ This method allows to update test run result.
  * @param code Code of project, where to search entities.
  * @param id Identifier.
  * @param hash Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return HashResponse
 */
-func (a *ResultsApiService) UpdateResult(ctx context.Context, body ResultUpdate, code string, id int32, hash string) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *ResultsApiService) UpdateResult(ctx context.Context, body ResultUpdate, code string, id int32, hash string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Patch")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -637,7 +637,7 @@ func (a *ResultsApiService) UpdateResult(ctx context.Context, body ResultUpdate,
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

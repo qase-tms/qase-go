@@ -33,15 +33,15 @@ This method allows to create a shared step in selected project.
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param body
  * @param code Code of project, where to search entities.
-@return InlineResponse200
+@return HashResponse
 */
-func (a *SharedStepsApiService) CreateSharedStep(ctx context.Context, body SharedStepCreate, code string) (InlineResponse200, *http.Response, error) {
+func (a *SharedStepsApiService) CreateSharedStep(ctx context.Context, body SharedStepCreate, code string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue InlineResponse200
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -107,7 +107,7 @@ func (a *SharedStepsApiService) CreateSharedStep(ctx context.Context, body Share
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v InlineResponse200
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -128,15 +128,15 @@ This method completely deletes a shared step from repository.
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param code Code of project, where to search entities.
  * @param hash Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return HashResponse
 */
-func (a *SharedStepsApiService) DeleteSharedStep(ctx context.Context, code string, hash string) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *SharedStepsApiService) DeleteSharedStep(ctx context.Context, code string, hash string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Delete")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -201,7 +201,7 @@ func (a *SharedStepsApiService) DeleteSharedStep(ctx context.Context, code strin
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -429,15 +429,15 @@ This method updates a shared step.
  * @param body
  * @param code Code of project, where to search entities.
  * @param hash Hash.
-@return Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+@return HashResponse
 */
-func (a *SharedStepsApiService) UpdateSharedStep(ctx context.Context, body SharedStepUpdate, code string, hash string) (Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema, *http.Response, error) {
+func (a *SharedStepsApiService) UpdateSharedStep(ctx context.Context, body SharedStepUpdate, code string, hash string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Patch")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+		localVarReturnValue HashResponse
 	)
 
 	// create path and map variables
@@ -504,7 +504,7 @@ func (a *SharedStepsApiService) UpdateSharedStep(ctx context.Context, body Share
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v Paths1sharedStep17Bcode7Dpostresponses200contentapplication1jsonschema
+			var v HashResponse
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
