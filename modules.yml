@@ -7,7 +7,7 @@
       source:
         url:  https://github.com/qase-tms/qase-go
         dir:  https://github.com/qase-tms/qase-go/tree/master{/dir}
-        file: https://github.com/qase-tms/qase-go/tree/master{/dir}/{file}#L{line}
+        file: https://github.com/qase-tms/qase-go/blob/master{/dir}/{file}#L{line}
   packages:
     - go.qase.io
   tags: [ qase, go ]
@@ -19,7 +19,7 @@
       source:
         url:  https://github.com/qase-tms/qase-go
         dir:  https://github.com/qase-tms/qase-go/tree/master/client{/dir}
-        file: https://github.com/qase-tms/qase-go/tree/master/client{/dir}/{file}#L{line}
+        file: https://github.com/qase-tms/qase-go/blob/master/client{/dir}/{file}#L{line}
   packages:
     - go.qase.io/client
   tags: [ qase, go, http, client ]
@@ -31,7 +31,7 @@
       source:
         url:  https://github.com/qase-tms/qase-go
         dir:  https://github.com/qase-tms/qase-go/tree/master/reporters/ginkgo{/dir}
-        file: https://github.com/qase-tms/qase-go/tree/master/reporters/ginkgo{/dir}/{file}#L{line}
+        file: https://github.com/qase-tms/qase-go/blob/master/reporters/ginkgo{/dir}/{file}#L{line}
   packages:
     - go.qase.io/reporter/ginkgo
   tags: [ qase, go, reporter, ginkgo ]
@@ -43,7 +43,7 @@
       source:
         url:  https://github.com/qase-tms/qase-go
         dir:  https://github.com/qase-tms/qase-go/tree/master/reporters/native{/dir}
-        file: https://github.com/qase-tms/qase-go/tree/master/reporters/native{/dir}/{file}#L{line}
+        file: https://github.com/qase-tms/qase-go/blob/master/reporters/native{/dir}/{file}#L{line}
   packages:
     - go.qase.io/reporter/native
   tags: [ qase, go, reporter, native ]
