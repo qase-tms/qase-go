@@ -8,5 +8,5 @@ type SuiteCreate struct {
 	// Test suite preconditions
 	Preconditions string `json:"preconditions,omitempty"`
 	// Parent suite ID
-	ParentId int32 `json:"parent_id,omitempty"`
+	ParentId int64 `json:"parent_id,omitempty"`
 }

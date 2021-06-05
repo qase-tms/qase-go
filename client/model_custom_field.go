@@ -5,7 +5,7 @@ import (
 )
 
 type CustomField struct {
-	Id            int32     `json:"id,omitempty"`
+	Id            int64     `json:"id,omitempty"`
 	Title         string    `json:"title,omitempty"`
 	Entity        string    `json:"entity,omitempty"`
 	Type_         string    `json:"type,omitempty"`

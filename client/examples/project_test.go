@@ -10,15 +10,17 @@ import (
 )
 
 func Example_projects() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	cfg := client.NewConfiguration()
 	cl := client.NewAPIClient(cfg)
+
+	auth := client.APIKey{Key: os.Getenv("API_TOKEN")}
+	ctx, cancel := context.WithTimeout(
+		context.WithValue(context.Background(), client.ContextAPIKey, auth),
+		2*time.Second, // TODO:performance regress
+	)
+	defer cancel()
+
 	opt := new(client.ProjectsApiGetProjectsOpts)
-
-	cfg.AddDefaultHeader("Token", os.Getenv("API_TOKEN"))
-
 	list, resp, err := cl.ProjectsApi.GetProjects(ctx, opt)
 	if err != nil || resp == nil || !list.Status {
 		return

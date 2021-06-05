@@ -1,5 +1,5 @@
 package client
 
 type IdResponseResult struct {
-	Id int32 `json:"id,omitempty"`
+	Id int64 `json:"id,omitempty"`
 }

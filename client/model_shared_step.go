@@ -11,7 +11,7 @@ type SharedStep struct {
 	ExpectedResult string            `json:"expected_result,omitempty"`
 	Steps          []SharedStepSteps `json:"steps,omitempty"`
 	Data           string            `json:"data,omitempty"`
-	Cases          []int32           `json:"cases,omitempty"`
+	Cases          []int64           `json:"cases,omitempty"`
 	CasesCount     int32             `json:"cases_count,omitempty"`
 	Created        time.Time         `json:"created,omitempty"`
 	Updated        time.Time         `json:"updated,omitempty"`

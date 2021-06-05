@@ -11,8 +11,8 @@ type TestCaseCreate struct {
 	Type_          int32                 `json:"type,omitempty"`
 	Layer          int32                 `json:"layer,omitempty"`
 	IsFlaky        int32                 `json:"is_flaky,omitempty"`
-	SuiteId        int32                 `json:"suite_id,omitempty"`
-	MilestoneId    int32                 `json:"milestone_id,omitempty"`
+	SuiteId        int64                 `json:"suite_id,omitempty"`
+	MilestoneId    int64                 `json:"milestone_id,omitempty"`
 	Automation     int32                 `json:"automation,omitempty"`
 	Status         int32                 `json:"status,omitempty"`
 	Steps          []TestCaseCreateSteps `json:"steps,omitempty"`
