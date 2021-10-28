@@ -1,3 +1,3 @@
-module go.qase.io/reporter/ginkgo
+module go.qase.io/reporters/ginkgo
 
 go 1.11

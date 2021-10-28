@@ -1,3 +1,3 @@
-module go.qase.io/reporter/native
+module go.qase.io/reporters/native
 
 go 1.11
