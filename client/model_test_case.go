@@ -5,7 +5,7 @@ import (
 )
 
 type TestCase struct {
-	Id             int32                `json:"id,omitempty"`
+	Id             int64                `json:"id,omitempty"`
 	Position       int32                `json:"position,omitempty"`
 	Title          string               `json:"title,omitempty"`
 	Description    string               `json:"description,omitempty"`
@@ -19,8 +19,8 @@ type TestCase struct {
 	Behavior       int32                `json:"behavior,omitempty"`
 	Automation     int32                `json:"automation,omitempty"`
 	Status         int32                `json:"status,omitempty"`
-	MilestoneId    int32                `json:"milestone_id,omitempty"`
-	SuiteId        int32                `json:"suite_id,omitempty"`
+	MilestoneId    int64                `json:"milestone_id,omitempty"`
+	SuiteId        int64                `json:"suite_id,omitempty"`
 	CustomFields   []CustomFieldValue   `json:"custom_fields,omitempty"`
 	Attachments    []Attachment         `json:"attachments,omitempty"`
 	Steps          []TestStep           `json:"steps,omitempty"`
@@ -29,6 +29,6 @@ type TestCase struct {
 	Updated        time.Time            `json:"updated,omitempty"`
 	Tags           []TagValue           `json:"tags,omitempty"`
 	Deleted        time.Time            `json:"deleted,omitempty"`
-	MemberId       int32                `json:"member_id,omitempty"`
-	ProjectId      int32                `json:"project_id,omitempty"`
+	MemberId       int64                `json:"member_id,omitempty"`
+	ProjectId      int64                `json:"project_id,omitempty"`
 }

@@ -5,9 +5,9 @@ import (
 )
 
 type Requirement struct {
-	Id          int32     `json:"id,omitempty"`
-	ParentId    int32     `json:"parent_id,omitempty"`
-	MemberId    int32     `json:"member_id,omitempty"`
+	Id          int64     `json:"id,omitempty"`
+	ParentId    int64     `json:"parent_id,omitempty"`
+	MemberId    int64     `json:"member_id,omitempty"`
 	Title       string    `json:"title,omitempty"`
 	Description string    `json:"description,omitempty"`
 	Status      string    `json:"status,omitempty"`

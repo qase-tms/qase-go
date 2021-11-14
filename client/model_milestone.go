@@ -5,7 +5,7 @@ import (
 )
 
 type Milestone struct {
-	Id          int32     `json:"id,omitempty"`
+	Id          int64     `json:"id,omitempty"`
 	Title       string    `json:"title,omitempty"`
 	Description string    `json:"description,omitempty"`
 	Status      string    `json:"status,omitempty"`

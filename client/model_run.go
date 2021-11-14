@@ -5,7 +5,7 @@ import (
 )
 
 type Run struct {
-	Id          int32     `json:"id,omitempty"`
+	Id          int64     `json:"id,omitempty"`
 	Title       string    `json:"title,omitempty"`
 	Description string    `json:"description,omitempty"`
 	Status      int32     `json:"status,omitempty"`
@@ -15,10 +15,10 @@ type Run struct {
 	Public      bool      `json:"public,omitempty"`
 	Stats       *RunStats `json:"stats,omitempty"`
 	// Time in ms.
-	TimeSpent    int32              `json:"time_spent,omitempty"`
+	TimeSpent    int64              `json:"time_spent,omitempty"`
 	Environment  *RunEnvironment    `json:"environment,omitempty"`
 	Milestone    *RunMilestone      `json:"milestone,omitempty"`
 	CustomFields []CustomFieldValue `json:"custom_fields,omitempty"`
 	Tags         []TagValue         `json:"tags,omitempty"`
-	Cases        []int32            `json:"cases,omitempty"`
+	Cases        []int64            `json:"cases,omitempty"`
 }

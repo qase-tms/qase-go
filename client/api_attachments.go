@@ -25,7 +25,7 @@ This method allows to retrieve attachment by Hash.
  * @param codeOrHash Code or Hash.
 @return HashResponse
 */
-func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash CodeOrHash) (HashResponse, *http.Response, error) {
+func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash string) (HashResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Delete")
 		localVarPostBody    interface{}
@@ -58,6 +58,19 @@ func (a *AttachmentsApiService) DeleteAttachment(ctx context.Context, codeOrHash
 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	if ctx != nil {
+		// API Key Authentication
+		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
+			var key string
+			if auth.Prefix != "" {
+				key = auth.Prefix + " " + auth.Key
+			} else {
+				key = auth.Key
+			}
+			localVarHeaderParams["Token"] = key
+
+		}
 	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -111,7 +124,7 @@ This method allows to retrieve attachment by Hash.
  * @param codeOrHash Code or Hash.
 @return AttachmentResponse
 */
-func (a *AttachmentsApiService) GetAttachment(ctx context.Context, codeOrHash CodeOrHash) (AttachmentResponse, *http.Response, error) {
+func (a *AttachmentsApiService) GetAttachment(ctx context.Context, codeOrHash string) (AttachmentResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -144,6 +157,19 @@ func (a *AttachmentsApiService) GetAttachment(ctx context.Context, codeOrHash Co
 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	if ctx != nil {
+		// API Key Authentication
+		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
+			var key string
+			if auth.Prefix != "" {
+				key = auth.Prefix + " " + auth.Key
+			} else {
+				key = auth.Key
+			}
+			localVarHeaderParams["Token"] = key
+
+		}
 	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -244,6 +270,19 @@ func (a *AttachmentsApiService) GetAttachments(ctx context.Context, localVarOpti
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	if ctx != nil {
+		// API Key Authentication
+		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
+			var key string
+			if auth.Prefix != "" {
+				key = auth.Prefix + " " + auth.Key
+			} else {
+				key = auth.Key
+			}
+			localVarHeaderParams["Token"] = key
+
+		}
+	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -303,7 +342,7 @@ type AttachmentsApiUploadAttachmentOpts struct {
 	File optional.Interface
 }
 
-func (a *AttachmentsApiService) UploadAttachment(ctx context.Context, codeOrHash CodeOrHash, localVarOptionals *AttachmentsApiUploadAttachmentOpts) (AttachmentUploadsResponse, *http.Response, error) {
+func (a *AttachmentsApiService) UploadAttachment(ctx context.Context, codeOrHash string, localVarOptionals *AttachmentsApiUploadAttachmentOpts) (AttachmentUploadsResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
@@ -339,6 +378,19 @@ func (a *AttachmentsApiService) UploadAttachment(ctx context.Context, codeOrHash
 	}
 	if localVarOptionals != nil && localVarOptionals.File.IsSet() {
 		localVarFormParams.Add("file", parameterToString(localVarOptionals.File.Value(), "multi"))
+	}
+	if ctx != nil {
+		// API Key Authentication
+		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
+			var key string
+			if auth.Prefix != "" {
+				key = auth.Prefix + " " + auth.Key
+			} else {
+				key = auth.Key
+			}
+			localVarHeaderParams["Token"] = key
+
+		}
 	}
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
