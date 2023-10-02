@@ -10,4 +10,6 @@ type RunCreate struct {
 	MilestoneId     int64    `json:"milestone_id,omitempty"`
 	PlanId          int64    `json:"plan_id,omitempty"`
 	Tags            []string `json:"tags,omitempty"`
+	// A map of custom fields values (id => value)
+	CustomField map[string]string `json:"custom_field,omitempty"`
 }
