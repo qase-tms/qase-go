@@ -1,0 +1,45 @@
+name: Go build
+
+on: [ push ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        go-version: [ '1.18', '1.19', '1.20', '1.21', '1.22' ]
+        changed-dir: [ "qase-api-client" ]
+    name: Project ${{ matrix.changed-dir }} - Go ${{ matrix.go-version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          list-files: 'shell'
+          filters: |
+            changes:
+              - '${{ matrix.changed-dir }}/**'
+
+      - name: Set up Go ${{ matrix.go-version }}
+        if: steps.filter.outputs.changes == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install dependencies
+        if: steps.filter.outputs.changes == 'true'
+        run: go mod tidy
+        working-directory: ./${{ matrix.changed-dir }}
+
+      - name: Build
+        if: steps.filter.outputs.changes == 'true'
+        working-directory: ./${{ matrix.changed-dir }}
+        run: go build -v
+
+      - name: Test
+        if: steps.filter.outputs.changes == 'true'
+        working-directory: ./${{ matrix.changed-dir }}
+        run: go test -v ./test
