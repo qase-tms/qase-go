@@ -10,7 +10,7 @@ jobs:
       max-parallel: 5
       matrix:
         go-version: [ '1.18', '1.19', '1.20', '1.21', '1.22' ]
-        changed-dir: [ "qase-api-client" ]
+        changed-dir: [ "qase-api-client", "qase-api-v2-client"  ]
     name: Project ${{ matrix.changed-dir }} - Go ${{ matrix.go-version }}
     steps:
       - uses: actions/checkout@v4
