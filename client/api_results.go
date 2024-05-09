@@ -21,13 +21,14 @@ type ResultsApiService service
 /*
 ResultsApiService Create test run result.
 This method allows to create test run result by Run Id.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param code Code of project, where to search entities.
- * @param idOrHash Id or Hash.
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param body
+  - @param code Code of project, where to search entities.
+  - @param idOrHash Id or Hash.
+
 @return InlineResponse200
 */
-func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate, code string, idOrHash IdOrHash) (InlineResponse200, *http.Response, error) {
+func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate, code string, idOrHash int64) (InlineResponse200, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
@@ -131,10 +132,11 @@ func (a *ResultsApiService) CreateResult(ctx context.Context, body ResultCreate,
 /*
 ResultsApiService Bulk create test run result.
 This method allows to create a lot of test run result at once.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param code Code of project, where to search entities.
- * @param id Identifier.
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param body
+  - @param code Code of project, where to search entities.
+  - @param id Identifier.
+
 @return Response
 */
 func (a *ResultsApiService) CreateResultBulk(ctx context.Context, body ResultCreateBulk, code string, id int32) (Response, *http.Response, error) {
@@ -241,10 +243,11 @@ func (a *ResultsApiService) CreateResultBulk(ctx context.Context, body ResultCre
 /*
 ResultsApiService Delete test run result.
 This method allows to delete test run result.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param code Code of project, where to search entities.
- * @param id Identifier.
- * @param hash Hash.
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param code Code of project, where to search entities.
+  - @param id Identifier.
+  - @param hash Hash.
+
 @return HashResponse
 */
 func (a *ResultsApiService) DeleteResult(ctx context.Context, code string, id int32, hash string) (HashResponse, *http.Response, error) {
@@ -350,9 +353,10 @@ func (a *ResultsApiService) DeleteResult(ctx context.Context, code string, id in
 /*
 ResultsApiService Get test run result by code.
 This method allows to retrieve a specific test run result by Hash.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param code Code of project, where to search entities.
- * @param idOrHash Id or Hash.
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param code Code of project, where to search entities.
+  - @param idOrHash Id or Hash.
+
 @return ResultResponse
 */
 func (a *ResultsApiService) GetResult(ctx context.Context, code string, idOrHash IdOrHash) (ResultResponse, *http.Response, error) {
@@ -612,11 +616,12 @@ func (a *ResultsApiService) GetResults(ctx context.Context, code string, localVa
 /*
 ResultsApiService Update test run result.
 This method allows to update test run result.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param code Code of project, where to search entities.
- * @param id Identifier.
- * @param hash Hash.
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param body
+  - @param code Code of project, where to search entities.
+  - @param id Identifier.
+  - @param hash Hash.
+
 @return HashResponse
 */
 func (a *ResultsApiService) UpdateResult(ctx context.Context, body ResultUpdate, code string, id int32, hash string) (HashResponse, *http.Response, error) {
