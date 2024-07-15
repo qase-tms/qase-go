@@ -16,6 +16,8 @@ Name | Type | Description | Notes
 **MemberId** | Pointer to **int64** | Deprecated, use &#x60;author_id&#x60; instead. | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
 **ExternalData** | Pointer to **string** |  | [optional] 
+**Runs** | Pointer to **[]int64** |  | [optional] 
+**Results** | Pointer to **[]string** |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **UpdatedAt** | Pointer to **time.Time** |  | [optional] 
@@ -360,6 +362,56 @@ SetExternalData sets ExternalData field to given value.
 `func (o *Defect) HasExternalData() bool`
 
 HasExternalData returns a boolean if a field has been set.
+
+### GetRuns
+
+`func (o *Defect) GetRuns() []int64`
+
+GetRuns returns the Runs field if non-nil, zero value otherwise.
+
+### GetRunsOk
+
+`func (o *Defect) GetRunsOk() (*[]int64, bool)`
+
+GetRunsOk returns a tuple with the Runs field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRuns
+
+`func (o *Defect) SetRuns(v []int64)`
+
+SetRuns sets Runs field to given value.
+
+### HasRuns
+
+`func (o *Defect) HasRuns() bool`
+
+HasRuns returns a boolean if a field has been set.
+
+### GetResults
+
+`func (o *Defect) GetResults() []string`
+
+GetResults returns the Results field if non-nil, zero value otherwise.
+
+### GetResultsOk
+
+`func (o *Defect) GetResultsOk() (*[]string, bool)`
+
+GetResultsOk returns a tuple with the Results field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetResults
+
+`func (o *Defect) SetResults(v []string)`
+
+SetResults sets Results field to given value.
+
+### HasResults
+
+`func (o *Defect) HasResults() bool`
+
+HasResults returns a boolean if a field has been set.
 
 ### GetTags
 
