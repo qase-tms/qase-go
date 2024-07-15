@@ -19,6 +19,7 @@ Name | Type | Description | Notes
 **CustomFields** | Pointer to [**[]CustomFieldValue**](CustomFieldValue.md) |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **Cases** | Pointer to **[]int64** |  | [optional] 
+**PlanId** | Pointer to **NullableInt64** |  | [optional] 
 
 ## Methods
 
@@ -464,6 +465,41 @@ SetCases sets Cases field to given value.
 
 HasCases returns a boolean if a field has been set.
 
+### GetPlanId
+
+`func (o *Run) GetPlanId() int64`
+
+GetPlanId returns the PlanId field if non-nil, zero value otherwise.
+
+### GetPlanIdOk
+
+`func (o *Run) GetPlanIdOk() (*int64, bool)`
+
+GetPlanIdOk returns a tuple with the PlanId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetPlanId
+
+`func (o *Run) SetPlanId(v int64)`
+
+SetPlanId sets PlanId field to given value.
+
+### HasPlanId
+
+`func (o *Run) HasPlanId() bool`
+
+HasPlanId returns a boolean if a field has been set.
+
+### SetPlanIdNil
+
+`func (o *Run) SetPlanIdNil(b bool)`
+
+ SetPlanIdNil sets the value for PlanId to be an explicit nil
+
+### UnsetPlanId
+`func (o *Run) UnsetPlanId()`
+
+UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

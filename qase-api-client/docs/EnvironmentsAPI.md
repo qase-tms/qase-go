@@ -232,7 +232,7 @@ Name | Type | Description  | Notes
 
 ## GetEnvironments
 
-> EnvironmentListResponse GetEnvironments(ctx, code).Limit(limit).Offset(offset).Execute()
+> EnvironmentListResponse GetEnvironments(ctx, code).Search(search).Slug(slug).Limit(limit).Offset(offset).Execute()
 
 Get all environments
 
@@ -252,12 +252,14 @@ import (
 
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
+	search := "search_example" // string | A search string. Will return all environments with titles containing provided string.  (optional)
+	slug := "slug_example" // string | A search string.  Will return all environments with slugs equal to provided string.  (optional)
 	limit := int32(56) // int32 | A number of entities in result set. (optional) (default to 10)
 	offset := int32(56) // int32 | How many entities should be skipped. (optional) (default to 0)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.EnvironmentsAPI.GetEnvironments(context.Background(), code).Limit(limit).Offset(offset).Execute()
+	resp, r, err := apiClient.EnvironmentsAPI.GetEnvironments(context.Background(), code).Search(search).Slug(slug).Limit(limit).Offset(offset).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `EnvironmentsAPI.GetEnvironments``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -283,6 +285,8 @@ Other parameters are passed through a pointer to a apiGetEnvironmentsRequest str
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **search** | **string** | A search string. Will return all environments with titles containing provided string.  | 
+ **slug** | **string** | A search string.  Will return all environments with slugs equal to provided string.  | 
  **limit** | **int32** | A number of entities in result set. | [default to 10]
  **offset** | **int32** | How many entities should be skipped. | [default to 0]
 

@@ -37,6 +37,7 @@ type Run struct {
 	CustomFields []CustomFieldValue     `json:"custom_fields,omitempty"`
 	Tags         []TagValue             `json:"tags,omitempty"`
 	Cases        []int64                `json:"cases,omitempty"`
+	PlanId       NullableInt64          `json:"plan_id,omitempty"`
 }
 
 // NewRun instantiates a new Run object
@@ -591,6 +592,49 @@ func (o *Run) SetCases(v []int64) {
 	o.Cases = v
 }
 
+// GetPlanId returns the PlanId field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Run) GetPlanId() int64 {
+	if o == nil || IsNil(o.PlanId.Get()) {
+		var ret int64
+		return ret
+	}
+	return *o.PlanId.Get()
+}
+
+// GetPlanIdOk returns a tuple with the PlanId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Run) GetPlanIdOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.PlanId.Get(), o.PlanId.IsSet()
+}
+
+// HasPlanId returns a boolean if a field has been set.
+func (o *Run) HasPlanId() bool {
+	if o != nil && o.PlanId.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetPlanId gets a reference to the given NullableInt64 and assigns it to the PlanId field.
+func (o *Run) SetPlanId(v int64) {
+	o.PlanId.Set(&v)
+}
+
+// SetPlanIdNil sets the value for PlanId to be an explicit nil
+func (o *Run) SetPlanIdNil() {
+	o.PlanId.Set(nil)
+}
+
+// UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
+func (o *Run) UnsetPlanId() {
+	o.PlanId.Unset()
+}
+
 func (o Run) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -645,6 +689,9 @@ func (o Run) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Cases) {
 		toSerialize["cases"] = o.Cases
+	}
+	if o.PlanId.IsSet() {
+		toSerialize["plan_id"] = o.PlanId.Get()
 	}
 	return toSerialize, nil
 }

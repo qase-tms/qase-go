@@ -418,8 +418,22 @@ type ApiGetEnvironmentsRequest struct {
 	ctx        context.Context
 	ApiService *EnvironmentsAPIService
 	code       string
+	search     *string
+	slug       *string
 	limit      *int32
 	offset     *int32
+}
+
+// A search string. Will return all environments with titles containing provided string.
+func (r ApiGetEnvironmentsRequest) Search(search string) ApiGetEnvironmentsRequest {
+	r.search = &search
+	return r
+}
+
+// A search string.  Will return all environments with slugs equal to provided string.
+func (r ApiGetEnvironmentsRequest) Slug(slug string) ApiGetEnvironmentsRequest {
+	r.slug = &slug
+	return r
 }
 
 // A number of entities in result set.
@@ -484,6 +498,12 @@ func (a *EnvironmentsAPIService) GetEnvironmentsExecute(r ApiGetEnvironmentsRequ
 		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
 	}
 
+	if r.search != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "")
+	}
+	if r.slug != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "slug", r.slug, "")
+	}
 	if r.limit != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
 	} else {

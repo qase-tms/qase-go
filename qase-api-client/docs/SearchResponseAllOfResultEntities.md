@@ -19,6 +19,7 @@ Name | Type | Description | Notes
 **CustomFields** | Pointer to [**[]CustomFieldValue**](CustomFieldValue.md) |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **Cases** | Pointer to **[]int64** |  | [optional] 
+**PlanId** | Pointer to **NullableInt64** |  | [optional] 
 **Hash** | Pointer to **string** |  | [optional] 
 **Comment** | Pointer to **NullableString** |  | [optional] 
 **Stacktrace** | Pointer to **NullableString** |  | [optional] 
@@ -496,6 +497,41 @@ SetCases sets Cases field to given value.
 
 HasCases returns a boolean if a field has been set.
 
+### GetPlanId
+
+`func (o *SearchResponseAllOfResultEntities) GetPlanId() int64`
+
+GetPlanId returns the PlanId field if non-nil, zero value otherwise.
+
+### GetPlanIdOk
+
+`func (o *SearchResponseAllOfResultEntities) GetPlanIdOk() (*int64, bool)`
+
+GetPlanIdOk returns a tuple with the PlanId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetPlanId
+
+`func (o *SearchResponseAllOfResultEntities) SetPlanId(v int64)`
+
+SetPlanId sets PlanId field to given value.
+
+### HasPlanId
+
+`func (o *SearchResponseAllOfResultEntities) HasPlanId() bool`
+
+HasPlanId returns a boolean if a field has been set.
+
+### SetPlanIdNil
+
+`func (o *SearchResponseAllOfResultEntities) SetPlanIdNil(b bool)`
+
+ SetPlanIdNil sets the value for PlanId to be an explicit nil
+
+### UnsetPlanId
+`func (o *SearchResponseAllOfResultEntities) UnsetPlanId()`
+
+UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
 ### GetHash
 
 `func (o *SearchResponseAllOfResultEntities) GetHash() string`

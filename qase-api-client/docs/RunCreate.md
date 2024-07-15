@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Cases** | Pointer to **[]int64** |  | [optional] 
 **IsAutotest** | Pointer to **bool** |  | [optional] 
 **EnvironmentId** | Pointer to **int64** |  | [optional] 
+**EnvironmentSlug** | Pointer to **string** |  | [optional] 
 **MilestoneId** | Pointer to **int64** |  | [optional] 
 **PlanId** | Pointer to **int64** |  | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
@@ -182,6 +183,31 @@ SetEnvironmentId sets EnvironmentId field to given value.
 `func (o *RunCreate) HasEnvironmentId() bool`
 
 HasEnvironmentId returns a boolean if a field has been set.
+
+### GetEnvironmentSlug
+
+`func (o *RunCreate) GetEnvironmentSlug() string`
+
+GetEnvironmentSlug returns the EnvironmentSlug field if non-nil, zero value otherwise.
+
+### GetEnvironmentSlugOk
+
+`func (o *RunCreate) GetEnvironmentSlugOk() (*string, bool)`
+
+GetEnvironmentSlugOk returns a tuple with the EnvironmentSlug field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEnvironmentSlug
+
+`func (o *RunCreate) SetEnvironmentSlug(v string)`
+
+SetEnvironmentSlug sets EnvironmentSlug field to given value.
+
+### HasEnvironmentSlug
+
+`func (o *RunCreate) HasEnvironmentSlug() bool`
+
+HasEnvironmentSlug returns a boolean if a field has been set.
 
 ### GetMilestoneId
 

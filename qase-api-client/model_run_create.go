@@ -28,6 +28,7 @@ type RunCreate struct {
 	Cases           []int64  `json:"cases,omitempty"`
 	IsAutotest      *bool    `json:"is_autotest,omitempty"`
 	EnvironmentId   *int64   `json:"environment_id,omitempty"`
+	EnvironmentSlug *string  `json:"environment_slug,omitempty"`
 	MilestoneId     *int64   `json:"milestone_id,omitempty"`
 	PlanId          *int64   `json:"plan_id,omitempty"`
 	AuthorId        *int64   `json:"author_id,omitempty"`
@@ -241,6 +242,38 @@ func (o *RunCreate) HasEnvironmentId() bool {
 // SetEnvironmentId gets a reference to the given int64 and assigns it to the EnvironmentId field.
 func (o *RunCreate) SetEnvironmentId(v int64) {
 	o.EnvironmentId = &v
+}
+
+// GetEnvironmentSlug returns the EnvironmentSlug field value if set, zero value otherwise.
+func (o *RunCreate) GetEnvironmentSlug() string {
+	if o == nil || IsNil(o.EnvironmentSlug) {
+		var ret string
+		return ret
+	}
+	return *o.EnvironmentSlug
+}
+
+// GetEnvironmentSlugOk returns a tuple with the EnvironmentSlug field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RunCreate) GetEnvironmentSlugOk() (*string, bool) {
+	if o == nil || IsNil(o.EnvironmentSlug) {
+		return nil, false
+	}
+	return o.EnvironmentSlug, true
+}
+
+// HasEnvironmentSlug returns a boolean if a field has been set.
+func (o *RunCreate) HasEnvironmentSlug() bool {
+	if o != nil && !IsNil(o.EnvironmentSlug) {
+		return true
+	}
+
+	return false
+}
+
+// SetEnvironmentSlug gets a reference to the given string and assigns it to the EnvironmentSlug field.
+func (o *RunCreate) SetEnvironmentSlug(v string) {
+	o.EnvironmentSlug = &v
 }
 
 // GetMilestoneId returns the MilestoneId field value if set, zero value otherwise.
@@ -524,6 +557,9 @@ func (o RunCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EnvironmentId) {
 		toSerialize["environment_id"] = o.EnvironmentId
+	}
+	if !IsNil(o.EnvironmentSlug) {
+		toSerialize["environment_slug"] = o.EnvironmentSlug
 	}
 	if !IsNil(o.MilestoneId) {
 		toSerialize["milestone_id"] = o.MilestoneId
