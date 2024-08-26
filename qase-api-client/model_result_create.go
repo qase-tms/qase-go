@@ -34,9 +34,11 @@ type ResultCreate struct {
 	Stacktrace  NullableString `json:"stacktrace,omitempty"`
 	Comment     NullableString `json:"comment,omitempty"`
 	// A map of parameters (name => value)
-	Param    map[string]string      `json:"param,omitempty"`
-	Steps    []TestStepResultCreate `json:"steps,omitempty"`
-	AuthorId NullableInt64          `json:"author_id,omitempty"`
+	Param map[string]string `json:"param,omitempty"`
+	// A list of parameter groups
+	ParamGroups [][]string             `json:"param_groups,omitempty"`
+	Steps       []TestStepResultCreate `json:"steps,omitempty"`
+	AuthorId    NullableInt64          `json:"author_id,omitempty"`
 }
 
 type _ResultCreate ResultCreate
@@ -471,6 +473,39 @@ func (o *ResultCreate) SetParam(v map[string]string) {
 	o.Param = v
 }
 
+// GetParamGroups returns the ParamGroups field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResultCreate) GetParamGroups() [][]string {
+	if o == nil {
+		var ret [][]string
+		return ret
+	}
+	return o.ParamGroups
+}
+
+// GetParamGroupsOk returns a tuple with the ParamGroups field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResultCreate) GetParamGroupsOk() ([][]string, bool) {
+	if o == nil || IsNil(o.ParamGroups) {
+		return nil, false
+	}
+	return o.ParamGroups, true
+}
+
+// HasParamGroups returns a boolean if a field has been set.
+func (o *ResultCreate) HasParamGroups() bool {
+	if o != nil && !IsNil(o.ParamGroups) {
+		return true
+	}
+
+	return false
+}
+
+// SetParamGroups gets a reference to the given [][]string and assigns it to the ParamGroups field.
+func (o *ResultCreate) SetParamGroups(v [][]string) {
+	o.ParamGroups = v
+}
+
 // GetSteps returns the Steps field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ResultCreate) GetSteps() []TestStepResultCreate {
 	if o == nil {
@@ -587,6 +622,9 @@ func (o ResultCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if o.Param != nil {
 		toSerialize["param"] = o.Param
+	}
+	if o.ParamGroups != nil {
+		toSerialize["param_groups"] = o.ParamGroups
 	}
 	if o.Steps != nil {
 		toSerialize["steps"] = o.Steps

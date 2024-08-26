@@ -2,21 +2,22 @@
 
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**CaseId** | Pointer to **int64** |  | [optional] 
-**Case** | Pointer to [**ResultCreateCase**](ResultCreateCase.md) |  | [optional] 
-**Status** | **string** | Can have the following values &#x60;passed&#x60;, &#x60;failed&#x60;, &#x60;blocked&#x60;, &#x60;skipped&#x60;, &#x60;invalid&#x60; + custom statuses | 
-**StartTime** | Pointer to **NullableInt32** |  | [optional] 
-**Time** | Pointer to **NullableInt64** |  | [optional] 
-**TimeMs** | Pointer to **NullableInt64** |  | [optional] 
-**Defect** | Pointer to **NullableBool** |  | [optional] 
-**Attachments** | Pointer to **[]string** |  | [optional] 
-**Stacktrace** | Pointer to **NullableString** |  | [optional] 
-**Comment** | Pointer to **NullableString** |  | [optional] 
-**Param** | Pointer to **map[string]string** | A map of parameters (name &#x3D;&gt; value) | [optional] 
-**Steps** | Pointer to [**[]TestStepResultCreate**](TestStepResultCreate.md) |  | [optional] 
-**AuthorId** | Pointer to **NullableInt64** |  | [optional] 
+ Name            | Type                                                             | Description                                                                                                                                           | Notes      
+-----------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|------------
+ **CaseId**      | Pointer to **int64**                                             |                                                                                                                                                       | [optional] 
+ **Case**        | Pointer to [**ResultCreateCase**](ResultCreateCase.md)           |                                                                                                                                                       | [optional] 
+ **Status**      | **string**                                                       | Can have the following values &#x60;passed&#x60;, &#x60;failed&#x60;, &#x60;blocked&#x60;, &#x60;skipped&#x60;, &#x60;invalid&#x60; + custom statuses |
+ **StartTime**   | Pointer to **NullableInt32**                                     |                                                                                                                                                       | [optional] 
+ **Time**        | Pointer to **NullableInt64**                                     |                                                                                                                                                       | [optional] 
+ **TimeMs**      | Pointer to **NullableInt64**                                     |                                                                                                                                                       | [optional] 
+ **Defect**      | Pointer to **NullableBool**                                      |                                                                                                                                                       | [optional] 
+ **Attachments** | Pointer to **[]string**                                          |                                                                                                                                                       | [optional] 
+ **Stacktrace**  | Pointer to **NullableString**                                    |                                                                                                                                                       | [optional] 
+ **Comment**     | Pointer to **NullableString**                                    |                                                                                                                                                       | [optional] 
+ **Param**       | Pointer to **map[string]string**                                 | A map of parameters (name &#x3D;&gt; value)                                                                                                           | [optional] 
+ **ParamGroups** | Pointer to **[][]string**                                        | A list of parameter groups                                                                                                                            | [optional] 
+ **Steps**       | Pointer to [**[]TestStepResultCreate**](TestStepResultCreate.md) |                                                                                                                                                       | [optional] 
+ **AuthorId**    | Pointer to **NullableInt64**                                     |                                                                                                                                                       | [optional] 
 
 ## Methods
 
@@ -106,7 +107,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-
 ### GetStartTime
 
 `func (o *ResultCreate) GetStartTime() int32`
@@ -136,12 +136,14 @@ HasStartTime returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetStartTimeNil(b bool)`
 
- SetStartTimeNil sets the value for StartTime to be an explicit nil
+SetStartTimeNil sets the value for StartTime to be an explicit nil
 
 ### UnsetStartTime
+
 `func (o *ResultCreate) UnsetStartTime()`
 
 UnsetStartTime ensures that no value is present for StartTime, not even an explicit nil
+
 ### GetTime
 
 `func (o *ResultCreate) GetTime() int64`
@@ -171,12 +173,14 @@ HasTime returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetTimeNil(b bool)`
 
- SetTimeNil sets the value for Time to be an explicit nil
+SetTimeNil sets the value for Time to be an explicit nil
 
 ### UnsetTime
+
 `func (o *ResultCreate) UnsetTime()`
 
 UnsetTime ensures that no value is present for Time, not even an explicit nil
+
 ### GetTimeMs
 
 `func (o *ResultCreate) GetTimeMs() int64`
@@ -206,12 +210,14 @@ HasTimeMs returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetTimeMsNil(b bool)`
 
- SetTimeMsNil sets the value for TimeMs to be an explicit nil
+SetTimeMsNil sets the value for TimeMs to be an explicit nil
 
 ### UnsetTimeMs
+
 `func (o *ResultCreate) UnsetTimeMs()`
 
 UnsetTimeMs ensures that no value is present for TimeMs, not even an explicit nil
+
 ### GetDefect
 
 `func (o *ResultCreate) GetDefect() bool`
@@ -241,12 +247,14 @@ HasDefect returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetDefectNil(b bool)`
 
- SetDefectNil sets the value for Defect to be an explicit nil
+SetDefectNil sets the value for Defect to be an explicit nil
 
 ### UnsetDefect
+
 `func (o *ResultCreate) UnsetDefect()`
 
 UnsetDefect ensures that no value is present for Defect, not even an explicit nil
+
 ### GetAttachments
 
 `func (o *ResultCreate) GetAttachments() []string`
@@ -276,12 +284,14 @@ HasAttachments returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetAttachmentsNil(b bool)`
 
- SetAttachmentsNil sets the value for Attachments to be an explicit nil
+SetAttachmentsNil sets the value for Attachments to be an explicit nil
 
 ### UnsetAttachments
+
 `func (o *ResultCreate) UnsetAttachments()`
 
 UnsetAttachments ensures that no value is present for Attachments, not even an explicit nil
+
 ### GetStacktrace
 
 `func (o *ResultCreate) GetStacktrace() string`
@@ -311,12 +321,14 @@ HasStacktrace returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetStacktraceNil(b bool)`
 
- SetStacktraceNil sets the value for Stacktrace to be an explicit nil
+SetStacktraceNil sets the value for Stacktrace to be an explicit nil
 
 ### UnsetStacktrace
+
 `func (o *ResultCreate) UnsetStacktrace()`
 
 UnsetStacktrace ensures that no value is present for Stacktrace, not even an explicit nil
+
 ### GetComment
 
 `func (o *ResultCreate) GetComment() string`
@@ -346,12 +358,14 @@ HasComment returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetCommentNil(b bool)`
 
- SetCommentNil sets the value for Comment to be an explicit nil
+SetCommentNil sets the value for Comment to be an explicit nil
 
 ### UnsetComment
+
 `func (o *ResultCreate) UnsetComment()`
 
 UnsetComment ensures that no value is present for Comment, not even an explicit nil
+
 ### GetParam
 
 `func (o *ResultCreate) GetParam() map[string]string`
@@ -381,12 +395,51 @@ HasParam returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetParamNil(b bool)`
 
- SetParamNil sets the value for Param to be an explicit nil
+SetParamNil sets the value for Param to be an explicit nil
 
 ### UnsetParam
+
 `func (o *ResultCreate) UnsetParam()`
 
 UnsetParam ensures that no value is present for Param, not even an explicit nil
+
+### GetParamGroups
+
+`func (o *ResultCreate) GetParamGroups() [][]string`
+
+GetParamGroups returns the ParamGroups field if non-nil, zero value otherwise.
+
+### GetParamGroupsOk
+
+`func (o *ResultCreate) GetParamGroupsOk() (*[][]string, bool)`
+
+GetParamGroupsOk returns a tuple with the ParamGroups field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetParamGroups
+
+`func (o *ResultCreate) SetParamGroups(v [][]string)`
+
+SetParamGroups sets ParamGroups field to given value.
+
+### HasParamGroups
+
+`func (o *ResultCreate) HasParamGroups() bool`
+
+HasParamGroups returns a boolean if a field has been set.
+
+### SetParamGroupsNil
+
+`func (o *ResultCreate) SetParamGroupsNil(b bool)`
+
+SetParamGroupsNil sets the value for ParamGroups to be an explicit nil
+
+### UnsetParamGroups
+
+`func (o *ResultCreate) UnsetParamGroups()`
+
+UnsetParamGroups ensures that no value is present for ParamGroups, not even an explicit nil
+
 ### GetSteps
 
 `func (o *ResultCreate) GetSteps() []TestStepResultCreate`
@@ -416,12 +469,14 @@ HasSteps returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetStepsNil(b bool)`
 
- SetStepsNil sets the value for Steps to be an explicit nil
+SetStepsNil sets the value for Steps to be an explicit nil
 
 ### UnsetSteps
+
 `func (o *ResultCreate) UnsetSteps()`
 
 UnsetSteps ensures that no value is present for Steps, not even an explicit nil
+
 ### GetAuthorId
 
 `func (o *ResultCreate) GetAuthorId() int64`
@@ -451,9 +506,10 @@ HasAuthorId returns a boolean if a field has been set.
 
 `func (o *ResultCreate) SetAuthorIdNil(b bool)`
 
- SetAuthorIdNil sets the value for AuthorId to be an explicit nil
+SetAuthorIdNil sets the value for AuthorId to be an explicit nil
 
 ### UnsetAuthorId
+
 `func (o *ResultCreate) UnsetAuthorId()`
 
 UnsetAuthorId ensures that no value is present for AuthorId, not even an explicit nil
