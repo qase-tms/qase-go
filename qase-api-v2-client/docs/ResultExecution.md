@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**StartTime** | Pointer to **NullableFloat64** |  | [optional] 
-**EndTime** | Pointer to **NullableFloat64** |  | [optional] 
+**StartTime** | Pointer to **NullableFloat64** | Unix epoch time in seconds (whole part) and milliseconds (fractional part). | [optional] 
+**EndTime** | Pointer to **NullableFloat64** | Unix epoch time in seconds (whole part) and milliseconds (fractional part). | [optional] 
 **Status** | **string** | Can have the following values passed, failed, blocked, skipped, invalid + custom statuses | 
-**Duration** | Pointer to **NullableInt64** |  | [optional] 
+**Duration** | Pointer to **NullableInt64** | Duration of the test execution in milliseconds. | [optional] 
 **Stacktrace** | Pointer to **NullableString** |  | [optional] 
 **Thread** | Pointer to **NullableString** |  | [optional] 
 

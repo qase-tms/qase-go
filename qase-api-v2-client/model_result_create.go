@@ -28,16 +28,17 @@ type ResultCreate struct {
 	Signature   *string                 `json:"signature,omitempty"`
 	TestopsId   NullableInt64           `json:"testops_id,omitempty"`
 	Execution   ResultExecution         `json:"execution"`
-	Fields      *map[string]string      `json:"fields,omitempty"`
+	Fields      *ResultCreateFields     `json:"fields,omitempty"`
 	Attachments []string                `json:"attachments,omitempty"`
 	Steps       []ResultStep            `json:"steps,omitempty"`
 	StepsType   NullableResultStepsType `json:"steps_type,omitempty"`
 	Params      *map[string]string      `json:"params,omitempty"`
-	Author      *string                 `json:"author,omitempty"`
+	// List parameter groups by name only. Add their values in the 'params' field
+	ParamGroups [][]string              `json:"param_groups,omitempty"`
 	Relations   NullableResultRelations `json:"relations,omitempty"`
-	Muted       *bool                   `json:"muted,omitempty"`
 	Message     NullableString          `json:"message,omitempty"`
-	CreatedAt   NullableFloat64         `json:"created_at,omitempty"`
+	// If true and the result is failed, the defect associated with the result will be created
+	Defect *bool `json:"defect,omitempty"`
 }
 
 type _ResultCreate ResultCreate
@@ -217,9 +218,9 @@ func (o *ResultCreate) SetExecution(v ResultExecution) {
 }
 
 // GetFields returns the Fields field value if set, zero value otherwise.
-func (o *ResultCreate) GetFields() map[string]string {
+func (o *ResultCreate) GetFields() ResultCreateFields {
 	if o == nil || IsNil(o.Fields) {
-		var ret map[string]string
+		var ret ResultCreateFields
 		return ret
 	}
 	return *o.Fields
@@ -227,7 +228,7 @@ func (o *ResultCreate) GetFields() map[string]string {
 
 // GetFieldsOk returns a tuple with the Fields field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ResultCreate) GetFieldsOk() (*map[string]string, bool) {
+func (o *ResultCreate) GetFieldsOk() (*ResultCreateFields, bool) {
 	if o == nil || IsNil(o.Fields) {
 		return nil, false
 	}
@@ -243,8 +244,8 @@ func (o *ResultCreate) HasFields() bool {
 	return false
 }
 
-// SetFields gets a reference to the given map[string]string and assigns it to the Fields field.
-func (o *ResultCreate) SetFields(v map[string]string) {
+// SetFields gets a reference to the given ResultCreateFields and assigns it to the Fields field.
+func (o *ResultCreate) SetFields(v ResultCreateFields) {
 	o.Fields = &v
 }
 
@@ -387,36 +388,37 @@ func (o *ResultCreate) SetParams(v map[string]string) {
 	o.Params = &v
 }
 
-// GetAuthor returns the Author field value if set, zero value otherwise.
-func (o *ResultCreate) GetAuthor() string {
-	if o == nil || IsNil(o.Author) {
-		var ret string
+// GetParamGroups returns the ParamGroups field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResultCreate) GetParamGroups() [][]string {
+	if o == nil {
+		var ret [][]string
 		return ret
 	}
-	return *o.Author
+	return o.ParamGroups
 }
 
-// GetAuthorOk returns a tuple with the Author field value if set, nil otherwise
+// GetParamGroupsOk returns a tuple with the ParamGroups field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ResultCreate) GetAuthorOk() (*string, bool) {
-	if o == nil || IsNil(o.Author) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResultCreate) GetParamGroupsOk() ([][]string, bool) {
+	if o == nil || IsNil(o.ParamGroups) {
 		return nil, false
 	}
-	return o.Author, true
+	return o.ParamGroups, true
 }
 
-// HasAuthor returns a boolean if a field has been set.
-func (o *ResultCreate) HasAuthor() bool {
-	if o != nil && !IsNil(o.Author) {
+// HasParamGroups returns a boolean if a field has been set.
+func (o *ResultCreate) HasParamGroups() bool {
+	if o != nil && !IsNil(o.ParamGroups) {
 		return true
 	}
 
 	return false
 }
 
-// SetAuthor gets a reference to the given string and assigns it to the Author field.
-func (o *ResultCreate) SetAuthor(v string) {
-	o.Author = &v
+// SetParamGroups gets a reference to the given [][]string and assigns it to the ParamGroups field.
+func (o *ResultCreate) SetParamGroups(v [][]string) {
+	o.ParamGroups = v
 }
 
 // GetRelations returns the Relations field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -462,38 +464,6 @@ func (o *ResultCreate) UnsetRelations() {
 	o.Relations.Unset()
 }
 
-// GetMuted returns the Muted field value if set, zero value otherwise.
-func (o *ResultCreate) GetMuted() bool {
-	if o == nil || IsNil(o.Muted) {
-		var ret bool
-		return ret
-	}
-	return *o.Muted
-}
-
-// GetMutedOk returns a tuple with the Muted field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ResultCreate) GetMutedOk() (*bool, bool) {
-	if o == nil || IsNil(o.Muted) {
-		return nil, false
-	}
-	return o.Muted, true
-}
-
-// HasMuted returns a boolean if a field has been set.
-func (o *ResultCreate) HasMuted() bool {
-	if o != nil && !IsNil(o.Muted) {
-		return true
-	}
-
-	return false
-}
-
-// SetMuted gets a reference to the given bool and assigns it to the Muted field.
-func (o *ResultCreate) SetMuted(v bool) {
-	o.Muted = &v
-}
-
 // GetMessage returns the Message field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ResultCreate) GetMessage() string {
 	if o == nil || IsNil(o.Message.Get()) {
@@ -537,47 +507,36 @@ func (o *ResultCreate) UnsetMessage() {
 	o.Message.Unset()
 }
 
-// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ResultCreate) GetCreatedAt() float64 {
-	if o == nil || IsNil(o.CreatedAt.Get()) {
-		var ret float64
+// GetDefect returns the Defect field value if set, zero value otherwise.
+func (o *ResultCreate) GetDefect() bool {
+	if o == nil || IsNil(o.Defect) {
+		var ret bool
 		return ret
 	}
-	return *o.CreatedAt.Get()
+	return *o.Defect
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// GetDefectOk returns a tuple with the Defect field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResultCreate) GetCreatedAtOk() (*float64, bool) {
-	if o == nil {
+func (o *ResultCreate) GetDefectOk() (*bool, bool) {
+	if o == nil || IsNil(o.Defect) {
 		return nil, false
 	}
-	return o.CreatedAt.Get(), o.CreatedAt.IsSet()
+	return o.Defect, true
 }
 
-// HasCreatedAt returns a boolean if a field has been set.
-func (o *ResultCreate) HasCreatedAt() bool {
-	if o != nil && o.CreatedAt.IsSet() {
+// HasDefect returns a boolean if a field has been set.
+func (o *ResultCreate) HasDefect() bool {
+	if o != nil && !IsNil(o.Defect) {
 		return true
 	}
 
 	return false
 }
 
-// SetCreatedAt gets a reference to the given NullableFloat64 and assigns it to the CreatedAt field.
-func (o *ResultCreate) SetCreatedAt(v float64) {
-	o.CreatedAt.Set(&v)
-}
-
-// SetCreatedAtNil sets the value for CreatedAt to be an explicit nil
-func (o *ResultCreate) SetCreatedAtNil() {
-	o.CreatedAt.Set(nil)
-}
-
-// UnsetCreatedAt ensures that no value is present for CreatedAt, not even an explicit nil
-func (o *ResultCreate) UnsetCreatedAt() {
-	o.CreatedAt.Unset()
+// SetDefect gets a reference to the given bool and assigns it to the Defect field.
+func (o *ResultCreate) SetDefect(v bool) {
+	o.Defect = &v
 }
 
 func (o ResultCreate) MarshalJSON() ([]byte, error) {
@@ -616,20 +575,17 @@ func (o ResultCreate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Params) {
 		toSerialize["params"] = o.Params
 	}
-	if !IsNil(o.Author) {
-		toSerialize["author"] = o.Author
+	if o.ParamGroups != nil {
+		toSerialize["param_groups"] = o.ParamGroups
 	}
 	if o.Relations.IsSet() {
 		toSerialize["relations"] = o.Relations.Get()
 	}
-	if !IsNil(o.Muted) {
-		toSerialize["muted"] = o.Muted
-	}
 	if o.Message.IsSet() {
 		toSerialize["message"] = o.Message.Get()
 	}
-	if o.CreatedAt.IsSet() {
-		toSerialize["created_at"] = o.CreatedAt.Get()
+	if !IsNil(o.Defect) {
+		toSerialize["defect"] = o.Defect
 	}
 	return toSerialize, nil
 }

@@ -22,12 +22,15 @@ var _ MappedNullable = &ResultStepExecution{}
 
 // ResultStepExecution struct for ResultStepExecution
 type ResultStepExecution struct {
-	StartTime   NullableFloat64  `json:"start_time,omitempty"`
-	EndTime     NullableFloat64  `json:"end_time,omitempty"`
-	Status      ResultStepStatus `json:"status"`
-	Duration    NullableInt64    `json:"duration,omitempty"`
-	Comment     *string          `json:"comment,omitempty"`
-	Attachments []string         `json:"attachments,omitempty"`
+	// Unix epoch time in seconds (whole part) and milliseconds (fractional part).
+	StartTime NullableFloat64 `json:"start_time,omitempty"`
+	// Unix epoch time in seconds (whole part) and milliseconds (fractional part).
+	EndTime NullableFloat64  `json:"end_time,omitempty"`
+	Status  ResultStepStatus `json:"status"`
+	// Duration of the test step execution in milliseconds.
+	Duration    NullableInt64 `json:"duration,omitempty"`
+	Comment     *string       `json:"comment,omitempty"`
+	Attachments []string      `json:"attachments,omitempty"`
 }
 
 type _ResultStepExecution ResultStepExecution

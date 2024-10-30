@@ -76,6 +76,7 @@ ctx = context.WithValue(context.Background(), api_v2_client.ContextOperationServ
 "port": "8443",
 },
 })
+
 ```
 
 ## Example
@@ -106,11 +107,12 @@ func main() {
 		return
 	}
 }
+
 ```
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *<https://api.qase.io/v2>*
+All URIs are relative to *https://api.qase.io/v2*
 
  Class        | Method                                                    | HTTP request                                  | Description                        
 --------------|-----------------------------------------------------------|-----------------------------------------------|------------------------------------
@@ -127,6 +129,7 @@ All URIs are relative to *<https://api.qase.io/v2>*
 - [RelationSuite](docs/RelationSuite.md)
 - [RelationSuiteItem](docs/RelationSuiteItem.md)
 - [ResultCreate](docs/ResultCreate.md)
+- [ResultCreateFields](docs/ResultCreateFields.md)
 - [ResultExecution](docs/ResultExecution.md)
 - [ResultRelations](docs/ResultRelations.md)
 - [ResultStep](docs/ResultStep.md)
