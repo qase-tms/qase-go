@@ -22,10 +22,13 @@ var _ MappedNullable = &ResultExecution{}
 
 // ResultExecution struct for ResultExecution
 type ResultExecution struct {
+	// Unix epoch time in seconds (whole part) and milliseconds (fractional part).
 	StartTime NullableFloat64 `json:"start_time,omitempty"`
-	EndTime   NullableFloat64 `json:"end_time,omitempty"`
+	// Unix epoch time in seconds (whole part) and milliseconds (fractional part).
+	EndTime NullableFloat64 `json:"end_time,omitempty"`
 	// Can have the following values passed, failed, blocked, skipped, invalid + custom statuses
-	Status     string         `json:"status"`
+	Status string `json:"status"`
+	// Duration of the test execution in milliseconds.
 	Duration   NullableInt64  `json:"duration,omitempty"`
 	Stacktrace NullableString `json:"stacktrace,omitempty"`
 	Thread     NullableString `json:"thread,omitempty"`

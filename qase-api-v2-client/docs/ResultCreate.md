@@ -9,16 +9,15 @@ Name | Type | Description | Notes
 **Signature** | Pointer to **string** |  | [optional] 
 **TestopsId** | Pointer to **NullableInt64** |  | [optional] 
 **Execution** | [**ResultExecution**](ResultExecution.md) |  | 
-**Fields** | Pointer to **map[string]string** |  | [optional] 
+**Fields** | Pointer to [**ResultCreateFields**](ResultCreateFields.md) |  | [optional] 
 **Attachments** | Pointer to **[]string** |  | [optional] 
 **Steps** | Pointer to [**[]ResultStep**](ResultStep.md) |  | [optional] 
 **StepsType** | Pointer to [**NullableResultStepsType**](ResultStepsType.md) |  | [optional] 
 **Params** | Pointer to **map[string]string** |  | [optional] 
-**Author** | Pointer to **string** |  | [optional] 
+**ParamGroups** | Pointer to **[][]string** | List parameter groups by name only. Add their values in the &#39;params&#39; field | [optional] 
 **Relations** | Pointer to [**NullableResultRelations**](ResultRelations.md) |  | [optional] 
-**Muted** | Pointer to **bool** |  | [optional] 
 **Message** | Pointer to **NullableString** |  | [optional] 
-**CreatedAt** | Pointer to **NullableFloat64** |  | [optional] 
+**Defect** | Pointer to **bool** | If true and the result is failed, the defect associated with the result will be created | [optional] 
 
 ## Methods
 
@@ -166,20 +165,20 @@ SetExecution sets Execution field to given value.
 
 ### GetFields
 
-`func (o *ResultCreate) GetFields() map[string]string`
+`func (o *ResultCreate) GetFields() ResultCreateFields`
 
 GetFields returns the Fields field if non-nil, zero value otherwise.
 
 ### GetFieldsOk
 
-`func (o *ResultCreate) GetFieldsOk() (*map[string]string, bool)`
+`func (o *ResultCreate) GetFieldsOk() (*ResultCreateFields, bool)`
 
 GetFieldsOk returns a tuple with the Fields field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetFields
 
-`func (o *ResultCreate) SetFields(v map[string]string)`
+`func (o *ResultCreate) SetFields(v ResultCreateFields)`
 
 SetFields sets Fields field to given value.
 
@@ -299,31 +298,41 @@ SetParams sets Params field to given value.
 
 HasParams returns a boolean if a field has been set.
 
-### GetAuthor
+### GetParamGroups
 
-`func (o *ResultCreate) GetAuthor() string`
+`func (o *ResultCreate) GetParamGroups() [][]string`
 
-GetAuthor returns the Author field if non-nil, zero value otherwise.
+GetParamGroups returns the ParamGroups field if non-nil, zero value otherwise.
 
-### GetAuthorOk
+### GetParamGroupsOk
 
-`func (o *ResultCreate) GetAuthorOk() (*string, bool)`
+`func (o *ResultCreate) GetParamGroupsOk() (*[][]string, bool)`
 
-GetAuthorOk returns a tuple with the Author field if it's non-nil, zero value otherwise
+GetParamGroupsOk returns a tuple with the ParamGroups field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAuthor
+### SetParamGroups
 
-`func (o *ResultCreate) SetAuthor(v string)`
+`func (o *ResultCreate) SetParamGroups(v [][]string)`
 
-SetAuthor sets Author field to given value.
+SetParamGroups sets ParamGroups field to given value.
 
-### HasAuthor
+### HasParamGroups
 
-`func (o *ResultCreate) HasAuthor() bool`
+`func (o *ResultCreate) HasParamGroups() bool`
 
-HasAuthor returns a boolean if a field has been set.
+HasParamGroups returns a boolean if a field has been set.
 
+### SetParamGroupsNil
+
+`func (o *ResultCreate) SetParamGroupsNil(b bool)`
+
+ SetParamGroupsNil sets the value for ParamGroups to be an explicit nil
+
+### UnsetParamGroups
+`func (o *ResultCreate) UnsetParamGroups()`
+
+UnsetParamGroups ensures that no value is present for ParamGroups, not even an explicit nil
 ### GetRelations
 
 `func (o *ResultCreate) GetRelations() ResultRelations`
@@ -359,31 +368,6 @@ HasRelations returns a boolean if a field has been set.
 `func (o *ResultCreate) UnsetRelations()`
 
 UnsetRelations ensures that no value is present for Relations, not even an explicit nil
-### GetMuted
-
-`func (o *ResultCreate) GetMuted() bool`
-
-GetMuted returns the Muted field if non-nil, zero value otherwise.
-
-### GetMutedOk
-
-`func (o *ResultCreate) GetMutedOk() (*bool, bool)`
-
-GetMutedOk returns a tuple with the Muted field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetMuted
-
-`func (o *ResultCreate) SetMuted(v bool)`
-
-SetMuted sets Muted field to given value.
-
-### HasMuted
-
-`func (o *ResultCreate) HasMuted() bool`
-
-HasMuted returns a boolean if a field has been set.
-
 ### GetMessage
 
 `func (o *ResultCreate) GetMessage() string`
@@ -419,41 +403,31 @@ HasMessage returns a boolean if a field has been set.
 `func (o *ResultCreate) UnsetMessage()`
 
 UnsetMessage ensures that no value is present for Message, not even an explicit nil
-### GetCreatedAt
+### GetDefect
 
-`func (o *ResultCreate) GetCreatedAt() float64`
+`func (o *ResultCreate) GetDefect() bool`
 
-GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+GetDefect returns the Defect field if non-nil, zero value otherwise.
 
-### GetCreatedAtOk
+### GetDefectOk
 
-`func (o *ResultCreate) GetCreatedAtOk() (*float64, bool)`
+`func (o *ResultCreate) GetDefectOk() (*bool, bool)`
 
-GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+GetDefectOk returns a tuple with the Defect field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetCreatedAt
+### SetDefect
 
-`func (o *ResultCreate) SetCreatedAt(v float64)`
+`func (o *ResultCreate) SetDefect(v bool)`
 
-SetCreatedAt sets CreatedAt field to given value.
+SetDefect sets Defect field to given value.
 
-### HasCreatedAt
+### HasDefect
 
-`func (o *ResultCreate) HasCreatedAt() bool`
+`func (o *ResultCreate) HasDefect() bool`
 
-HasCreatedAt returns a boolean if a field has been set.
+HasDefect returns a boolean if a field has been set.
 
-### SetCreatedAtNil
-
-`func (o *ResultCreate) SetCreatedAtNil(b bool)`
-
- SetCreatedAtNil sets the value for CreatedAt to be an explicit nil
-
-### UnsetCreatedAt
-`func (o *ResultCreate) UnsetCreatedAt()`
-
-UnsetCreatedAt ensures that no value is present for CreatedAt, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
