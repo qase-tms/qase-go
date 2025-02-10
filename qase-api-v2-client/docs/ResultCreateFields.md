@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Author** | Pointer to **string** |  | [optional] 
+**Author** | Pointer to **string** | Author of the related test case (member id, name or email). If set and test case auto-creation is enabled, the author will be used to create the test case | [optional] 
 **Description** | Pointer to **string** |  | [optional] 
 **Preconditions** | Pointer to **string** |  | [optional] 
 **Postconditions** | Pointer to **string** |  | [optional] 
@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **Type** | Pointer to **string** |  | [optional] 
 **Muted** | Pointer to **string** |  | [optional] 
 **IsFlaky** | Pointer to **string** |  | [optional] 
+**ExecutedBy** | Pointer to **string** | User who executed the test (member id, name or email) | [optional] 
 
 ## Methods
 
@@ -309,6 +310,31 @@ SetIsFlaky sets IsFlaky field to given value.
 `func (o *ResultCreateFields) HasIsFlaky() bool`
 
 HasIsFlaky returns a boolean if a field has been set.
+
+### GetExecutedBy
+
+`func (o *ResultCreateFields) GetExecutedBy() string`
+
+GetExecutedBy returns the ExecutedBy field if non-nil, zero value otherwise.
+
+### GetExecutedByOk
+
+`func (o *ResultCreateFields) GetExecutedByOk() (*string, bool)`
+
+GetExecutedByOk returns a tuple with the ExecutedBy field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetExecutedBy
+
+`func (o *ResultCreateFields) SetExecutedBy(v string)`
+
+SetExecutedBy sets ExecutedBy field to given value.
+
+### HasExecutedBy
+
+`func (o *ResultCreateFields) HasExecutedBy() bool`
+
+HasExecutedBy returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
