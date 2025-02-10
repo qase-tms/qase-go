@@ -4,8 +4,8 @@ All URIs are relative to *https://api.qase.io/v2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateResultV2**](ResultsAPI.md#CreateResultV2) | **Post** /{project_code}/run/{run_id}/result | (Beta) Create test run result
-[**CreateResultsV2**](ResultsAPI.md#CreateResultsV2) | **Post** /{project_code}/run/{run_id}/results | (Beta) Bulk create test run result
+[**CreateResultV2**](ResultsAPI.md#CreateResultV2) | **Post** /{project_code}/run/{run_id}/result | Create test run result
+[**CreateResultsV2**](ResultsAPI.md#CreateResultsV2) | **Post** /{project_code}/run/{run_id}/results | Bulk create test run result
 
 
 
@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 > CreateResultV2(ctx, projectCode, runId).ResultCreate(resultCreate).Execute()
 
-(Beta) Create test run result
+Create test run result
 
 
 
@@ -75,7 +75,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -86,7 +86,7 @@ Name | Type | Description  | Notes
 
 > CreateResultsV2(ctx, projectCode, runId).CreateResultsRequestV2(createResultsRequestV2).Execute()
 
-(Beta) Bulk create test run result
+Bulk create test run result
 
 
 
@@ -148,7 +148,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

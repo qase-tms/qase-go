@@ -41,7 +41,7 @@ func (r ApiCreateResultV2Request) Execute() (*http.Response, error) {
 }
 
 /*
-CreateResultV2 (Beta) Create test run result
+CreateResultV2 Create test run result
 
 This method allows to create single test run result.
 
@@ -95,7 +95,7 @@ func (a *ResultsAPIService) CreateResultV2Execute(r ApiCreateResultV2Request) (*
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -140,16 +140,6 @@ func (a *ResultsAPIService) CreateResultV2Execute(r ApiCreateResultV2Request) (*
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v CreateResultV2422Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
 		return localVarHTTPResponse, newErr
 	}
 
@@ -174,7 +164,7 @@ func (r ApiCreateResultsV2Request) Execute() (*http.Response, error) {
 }
 
 /*
-CreateResultsV2 (Beta) Bulk create test run result
+CreateResultsV2 Bulk create test run result
 
 This method allows to create several test run results at once.
 
@@ -228,7 +218,7 @@ func (a *ResultsAPIService) CreateResultsV2Execute(r ApiCreateResultsV2Request) 
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -272,16 +262,6 @@ func (a *ResultsAPIService) CreateResultsV2Execute(r ApiCreateResultsV2Request) 
 		newErr := &GenericOpenAPIError{
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v CreateResultV2422Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

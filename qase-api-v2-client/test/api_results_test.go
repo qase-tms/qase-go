@@ -11,10 +11,11 @@ package api_v2_client
 
 import (
 	"context"
+	"testing"
+
 	openapiclient "github.com/qase-tms/qase-go/qase-api-v2-client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func Test_api_v2_client_ResultsAPIService(t *testing.T) {

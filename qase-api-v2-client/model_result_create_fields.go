@@ -20,17 +20,20 @@ var _ MappedNullable = &ResultCreateFields{}
 
 // ResultCreateFields struct for ResultCreateFields
 type ResultCreateFields struct {
-	Author               *string `json:"author,omitempty"`
-	Description          *string `json:"description,omitempty"`
-	Preconditions        *string `json:"preconditions,omitempty"`
-	Postconditions       *string `json:"postconditions,omitempty"`
-	Layer                *string `json:"layer,omitempty"`
-	Severity             *string `json:"severity,omitempty"`
-	Priority             *string `json:"priority,omitempty"`
-	Behavior             *string `json:"behavior,omitempty"`
-	Type                 *string `json:"type,omitempty"`
-	Muted                *string `json:"muted,omitempty"`
-	IsFlaky              *string `json:"is_flaky,omitempty"`
+	// Author of the related test case (member id, name or email). If set and test case auto-creation is enabled, the author will be used to create the test case
+	Author         *string `json:"author,omitempty"`
+	Description    *string `json:"description,omitempty"`
+	Preconditions  *string `json:"preconditions,omitempty"`
+	Postconditions *string `json:"postconditions,omitempty"`
+	Layer          *string `json:"layer,omitempty"`
+	Severity       *string `json:"severity,omitempty"`
+	Priority       *string `json:"priority,omitempty"`
+	Behavior       *string `json:"behavior,omitempty"`
+	Type           *string `json:"type,omitempty"`
+	Muted          *string `json:"muted,omitempty"`
+	IsFlaky        *string `json:"is_flaky,omitempty"`
+	// User who executed the test (member id, name or email)
+	ExecutedBy           *string `json:"executed_by,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -405,6 +408,38 @@ func (o *ResultCreateFields) SetIsFlaky(v string) {
 	o.IsFlaky = &v
 }
 
+// GetExecutedBy returns the ExecutedBy field value if set, zero value otherwise.
+func (o *ResultCreateFields) GetExecutedBy() string {
+	if o == nil || IsNil(o.ExecutedBy) {
+		var ret string
+		return ret
+	}
+	return *o.ExecutedBy
+}
+
+// GetExecutedByOk returns a tuple with the ExecutedBy field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ResultCreateFields) GetExecutedByOk() (*string, bool) {
+	if o == nil || IsNil(o.ExecutedBy) {
+		return nil, false
+	}
+	return o.ExecutedBy, true
+}
+
+// HasExecutedBy returns a boolean if a field has been set.
+func (o *ResultCreateFields) HasExecutedBy() bool {
+	if o != nil && !IsNil(o.ExecutedBy) {
+		return true
+	}
+
+	return false
+}
+
+// SetExecutedBy gets a reference to the given string and assigns it to the ExecutedBy field.
+func (o *ResultCreateFields) SetExecutedBy(v string) {
+	o.ExecutedBy = &v
+}
+
 func (o ResultCreateFields) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -448,6 +483,9 @@ func (o ResultCreateFields) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IsFlaky) {
 		toSerialize["is_flaky"] = o.IsFlaky
 	}
+	if !IsNil(o.ExecutedBy) {
+		toSerialize["executed_by"] = o.ExecutedBy
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -481,6 +519,7 @@ func (o *ResultCreateFields) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "type")
 		delete(additionalProperties, "muted")
 		delete(additionalProperties, "is_flaky")
+		delete(additionalProperties, "executed_by")
 		o.AdditionalProperties = additionalProperties
 	}
 
