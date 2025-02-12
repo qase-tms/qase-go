@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**TestCaseId** | **int64** |  | 
 **Position** | Pointer to **int32** |  | [optional] 
 **Title** | Pointer to **string** |  | [optional] 
 **Description** | Pointer to **NullableString** |  | [optional] 
@@ -35,7 +36,7 @@ Name | Type | Description | Notes
 
 ### NewTestCaseQuery
 
-`func NewTestCaseQuery() *TestCaseQuery`
+`func NewTestCaseQuery(testCaseId int64, ) *TestCaseQuery`
 
 NewTestCaseQuery instantiates a new TestCaseQuery object
 This constructor will assign default values to properties that have it defined,
@@ -74,6 +75,26 @@ SetId sets Id field to given value.
 `func (o *TestCaseQuery) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetTestCaseId
+
+`func (o *TestCaseQuery) GetTestCaseId() int64`
+
+GetTestCaseId returns the TestCaseId field if non-nil, zero value otherwise.
+
+### GetTestCaseIdOk
+
+`func (o *TestCaseQuery) GetTestCaseIdOk() (*int64, bool)`
+
+GetTestCaseIdOk returns a tuple with the TestCaseId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTestCaseId
+
+`func (o *TestCaseQuery) SetTestCaseId(v int64)`
+
+SetTestCaseId sets TestCaseId field to given value.
+
 
 ### GetPosition
 

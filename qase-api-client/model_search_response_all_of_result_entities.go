@@ -18,12 +18,12 @@ import (
 
 // SearchResponseAllOfResultEntities - struct for SearchResponseAllOfResultEntities
 type SearchResponseAllOfResultEntities struct {
-	DefectQuery   *DefectQuery
-	PlanQuery     *PlanQuery
-	Requirement   *Requirement
-	Result        *Result
-	Run           *Run
-	TestCaseQuery *TestCaseQuery
+	DefectQuery      *DefectQuery
+	PlanQuery        *PlanQuery
+	RequirementQuery *RequirementQuery
+	ResultQuery      *ResultQuery
+	RunQuery         *RunQuery
+	TestCaseQuery    *TestCaseQuery
 }
 
 // DefectQueryAsSearchResponseAllOfResultEntities is a convenience function that returns DefectQuery wrapped in SearchResponseAllOfResultEntities
@@ -40,24 +40,24 @@ func PlanQueryAsSearchResponseAllOfResultEntities(v *PlanQuery) SearchResponseAl
 	}
 }
 
-// RequirementAsSearchResponseAllOfResultEntities is a convenience function that returns Requirement wrapped in SearchResponseAllOfResultEntities
-func RequirementAsSearchResponseAllOfResultEntities(v *Requirement) SearchResponseAllOfResultEntities {
+// RequirementQueryAsSearchResponseAllOfResultEntities is a convenience function that returns RequirementQuery wrapped in SearchResponseAllOfResultEntities
+func RequirementQueryAsSearchResponseAllOfResultEntities(v *RequirementQuery) SearchResponseAllOfResultEntities {
 	return SearchResponseAllOfResultEntities{
-		Requirement: v,
+		RequirementQuery: v,
 	}
 }
 
-// ResultAsSearchResponseAllOfResultEntities is a convenience function that returns Result wrapped in SearchResponseAllOfResultEntities
-func ResultAsSearchResponseAllOfResultEntities(v *Result) SearchResponseAllOfResultEntities {
+// ResultQueryAsSearchResponseAllOfResultEntities is a convenience function that returns ResultQuery wrapped in SearchResponseAllOfResultEntities
+func ResultQueryAsSearchResponseAllOfResultEntities(v *ResultQuery) SearchResponseAllOfResultEntities {
 	return SearchResponseAllOfResultEntities{
-		Result: v,
+		ResultQuery: v,
 	}
 }
 
-// RunAsSearchResponseAllOfResultEntities is a convenience function that returns Run wrapped in SearchResponseAllOfResultEntities
-func RunAsSearchResponseAllOfResultEntities(v *Run) SearchResponseAllOfResultEntities {
+// RunQueryAsSearchResponseAllOfResultEntities is a convenience function that returns RunQuery wrapped in SearchResponseAllOfResultEntities
+func RunQueryAsSearchResponseAllOfResultEntities(v *RunQuery) SearchResponseAllOfResultEntities {
 	return SearchResponseAllOfResultEntities{
-		Run: v,
+		RunQuery: v,
 	}
 }
 
@@ -98,43 +98,43 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		dst.PlanQuery = nil
 	}
 
-	// try to unmarshal data into Requirement
-	err = newStrictDecoder(data).Decode(&dst.Requirement)
+	// try to unmarshal data into RequirementQuery
+	err = newStrictDecoder(data).Decode(&dst.RequirementQuery)
 	if err == nil {
-		jsonRequirement, _ := json.Marshal(dst.Requirement)
-		if string(jsonRequirement) == "{}" { // empty struct
-			dst.Requirement = nil
+		jsonRequirementQuery, _ := json.Marshal(dst.RequirementQuery)
+		if string(jsonRequirementQuery) == "{}" { // empty struct
+			dst.RequirementQuery = nil
 		} else {
 			match++
 		}
 	} else {
-		dst.Requirement = nil
+		dst.RequirementQuery = nil
 	}
 
-	// try to unmarshal data into Result
-	err = newStrictDecoder(data).Decode(&dst.Result)
+	// try to unmarshal data into ResultQuery
+	err = newStrictDecoder(data).Decode(&dst.ResultQuery)
 	if err == nil {
-		jsonResult, _ := json.Marshal(dst.Result)
-		if string(jsonResult) == "{}" { // empty struct
-			dst.Result = nil
+		jsonResultQuery, _ := json.Marshal(dst.ResultQuery)
+		if string(jsonResultQuery) == "{}" { // empty struct
+			dst.ResultQuery = nil
 		} else {
 			match++
 		}
 	} else {
-		dst.Result = nil
+		dst.ResultQuery = nil
 	}
 
-	// try to unmarshal data into Run
-	err = newStrictDecoder(data).Decode(&dst.Run)
+	// try to unmarshal data into RunQuery
+	err = newStrictDecoder(data).Decode(&dst.RunQuery)
 	if err == nil {
-		jsonRun, _ := json.Marshal(dst.Run)
-		if string(jsonRun) == "{}" { // empty struct
-			dst.Run = nil
+		jsonRunQuery, _ := json.Marshal(dst.RunQuery)
+		if string(jsonRunQuery) == "{}" { // empty struct
+			dst.RunQuery = nil
 		} else {
 			match++
 		}
 	} else {
-		dst.Run = nil
+		dst.RunQuery = nil
 	}
 
 	// try to unmarshal data into TestCaseQuery
@@ -154,9 +154,9 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		// reset to nil
 		dst.DefectQuery = nil
 		dst.PlanQuery = nil
-		dst.Requirement = nil
-		dst.Result = nil
-		dst.Run = nil
+		dst.RequirementQuery = nil
+		dst.ResultQuery = nil
+		dst.RunQuery = nil
 		dst.TestCaseQuery = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(SearchResponseAllOfResultEntities)")
@@ -177,16 +177,16 @@ func (src SearchResponseAllOfResultEntities) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.PlanQuery)
 	}
 
-	if src.Requirement != nil {
-		return json.Marshal(&src.Requirement)
+	if src.RequirementQuery != nil {
+		return json.Marshal(&src.RequirementQuery)
 	}
 
-	if src.Result != nil {
-		return json.Marshal(&src.Result)
+	if src.ResultQuery != nil {
+		return json.Marshal(&src.ResultQuery)
 	}
 
-	if src.Run != nil {
-		return json.Marshal(&src.Run)
+	if src.RunQuery != nil {
+		return json.Marshal(&src.RunQuery)
 	}
 
 	if src.TestCaseQuery != nil {
@@ -209,16 +209,16 @@ func (obj *SearchResponseAllOfResultEntities) GetActualInstance() interface{} {
 		return obj.PlanQuery
 	}
 
-	if obj.Requirement != nil {
-		return obj.Requirement
+	if obj.RequirementQuery != nil {
+		return obj.RequirementQuery
 	}
 
-	if obj.Result != nil {
-		return obj.Result
+	if obj.ResultQuery != nil {
+		return obj.ResultQuery
 	}
 
-	if obj.Run != nil {
-		return obj.Run
+	if obj.RunQuery != nil {
+		return obj.RunQuery
 	}
 
 	if obj.TestCaseQuery != nil {

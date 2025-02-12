@@ -12,7 +12,9 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -22,6 +24,7 @@ var _ MappedNullable = &QqlPlan{}
 // QqlPlan struct for QqlPlan
 type QqlPlan struct {
 	Id          *int64         `json:"id,omitempty"`
+	PlanId      int64          `json:"plan_id"`
 	Title       *string        `json:"title,omitempty"`
 	Description NullableString `json:"description,omitempty"`
 	CasesCount  *int32         `json:"cases_count,omitempty"`
@@ -29,12 +32,15 @@ type QqlPlan struct {
 	UpdatedAt   *time.Time     `json:"updated_at,omitempty"`
 }
 
+type _QqlPlan QqlPlan
+
 // NewQqlPlan instantiates a new QqlPlan object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewQqlPlan() *QqlPlan {
+func NewQqlPlan(planId int64) *QqlPlan {
 	this := QqlPlan{}
+	this.PlanId = planId
 	return &this
 }
 
@@ -76,6 +82,30 @@ func (o *QqlPlan) HasId() bool {
 // SetId gets a reference to the given int64 and assigns it to the Id field.
 func (o *QqlPlan) SetId(v int64) {
 	o.Id = &v
+}
+
+// GetPlanId returns the PlanId field value
+func (o *QqlPlan) GetPlanId() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.PlanId
+}
+
+// GetPlanIdOk returns a tuple with the PlanId field value
+// and a boolean to check if the value has been set.
+func (o *QqlPlan) GetPlanIdOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.PlanId, true
+}
+
+// SetPlanId sets field value
+func (o *QqlPlan) SetPlanId(v int64) {
+	o.PlanId = v
 }
 
 // GetTitle returns the Title field value if set, zero value otherwise.
@@ -262,6 +292,7 @@ func (o QqlPlan) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
+	toSerialize["plan_id"] = o.PlanId
 	if !IsNil(o.Title) {
 		toSerialize["title"] = o.Title
 	}
@@ -278,6 +309,43 @@ func (o QqlPlan) ToMap() (map[string]interface{}, error) {
 		toSerialize["updated_at"] = o.UpdatedAt
 	}
 	return toSerialize, nil
+}
+
+func (o *QqlPlan) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"plan_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varQqlPlan := _QqlPlan{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varQqlPlan)
+
+	if err != nil {
+		return err
+	}
+
+	*o = QqlPlan(varQqlPlan)
+
+	return err
 }
 
 type NullableQqlPlan struct {

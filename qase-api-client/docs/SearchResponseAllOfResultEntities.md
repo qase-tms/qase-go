@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**RunId** | **int64** |  | 
 **Title** | Pointer to **string** |  | [optional] 
 **Description** | Pointer to **NullableString** |  | [optional] 
 **Status** | Pointer to **string** |  | [optional] 
@@ -19,21 +20,23 @@ Name | Type | Description | Notes
 **CustomFields** | Pointer to [**[]CustomFieldValue**](CustomFieldValue.md) |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **Cases** | Pointer to **[]int64** |  | [optional] 
-**PlanId** | Pointer to **NullableInt64** |  | [optional] 
+**PlanId** | **int64** |  | 
 **Hash** | Pointer to **string** |  | [optional] 
+**ResultHash** | **string** |  | 
 **Comment** | Pointer to **NullableString** |  | [optional] 
 **Stacktrace** | Pointer to **NullableString** |  | [optional] 
-**RunId** | Pointer to **int64** |  | [optional] 
 **CaseId** | Pointer to **int64** |  | [optional] 
 **Steps** | Pointer to [**[]TestStep**](TestStep.md) |  | [optional] 
 **IsApiResult** | Pointer to **bool** |  | [optional] 
 **TimeSpentMs** | Pointer to **int64** |  | [optional] 
 **Attachments** | Pointer to [**[]Attachment**](Attachment.md) |  | [optional] 
+**RequirementId** | **int64** |  | 
 **ParentId** | Pointer to **NullableInt64** |  | [optional] 
 **MemberId** | Pointer to **int64** | Deprecated, use &#x60;author_id&#x60; instead. | [optional] 
 **Type** | Pointer to **int32** |  | [optional] 
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **UpdatedAt** | Pointer to **time.Time** |  | [optional] 
+**TestCaseId** | **int64** |  | 
 **Position** | Pointer to **int32** |  | [optional] 
 **Preconditions** | Pointer to **NullableString** |  | [optional] 
 **Postconditions** | Pointer to **NullableString** |  | [optional] 
@@ -48,6 +51,7 @@ Name | Type | Description | Notes
 **StepsType** | Pointer to **NullableString** |  | [optional] 
 **Params** | Pointer to [**TestCaseParams**](TestCaseParams.md) |  | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
+**DefectId** | **int64** |  | 
 **ActualResult** | Pointer to **string** |  | [optional] 
 **Resolved** | Pointer to **NullableTime** |  | [optional] 
 **ExternalData** | Pointer to **string** |  | [optional] 
@@ -57,7 +61,7 @@ Name | Type | Description | Notes
 
 ### NewSearchResponseAllOfResultEntities
 
-`func NewSearchResponseAllOfResultEntities() *SearchResponseAllOfResultEntities`
+`func NewSearchResponseAllOfResultEntities(runId int64, planId int64, resultHash string, requirementId int64, testCaseId int64, defectId int64, ) *SearchResponseAllOfResultEntities`
 
 NewSearchResponseAllOfResultEntities instantiates a new SearchResponseAllOfResultEntities object
 This constructor will assign default values to properties that have it defined,
@@ -96,6 +100,26 @@ SetId sets Id field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetRunId
+
+`func (o *SearchResponseAllOfResultEntities) GetRunId() int64`
+
+GetRunId returns the RunId field if non-nil, zero value otherwise.
+
+### GetRunIdOk
+
+`func (o *SearchResponseAllOfResultEntities) GetRunIdOk() (*int64, bool)`
+
+GetRunIdOk returns a tuple with the RunId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRunId
+
+`func (o *SearchResponseAllOfResultEntities) SetRunId(v int64)`
+
+SetRunId sets RunId field to given value.
+
 
 ### GetTitle
 
@@ -516,22 +540,7 @@ and a boolean to check if the value has been set.
 
 SetPlanId sets PlanId field to given value.
 
-### HasPlanId
 
-`func (o *SearchResponseAllOfResultEntities) HasPlanId() bool`
-
-HasPlanId returns a boolean if a field has been set.
-
-### SetPlanIdNil
-
-`func (o *SearchResponseAllOfResultEntities) SetPlanIdNil(b bool)`
-
- SetPlanIdNil sets the value for PlanId to be an explicit nil
-
-### UnsetPlanId
-`func (o *SearchResponseAllOfResultEntities) UnsetPlanId()`
-
-UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
 ### GetHash
 
 `func (o *SearchResponseAllOfResultEntities) GetHash() string`
@@ -556,6 +565,26 @@ SetHash sets Hash field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasHash() bool`
 
 HasHash returns a boolean if a field has been set.
+
+### GetResultHash
+
+`func (o *SearchResponseAllOfResultEntities) GetResultHash() string`
+
+GetResultHash returns the ResultHash field if non-nil, zero value otherwise.
+
+### GetResultHashOk
+
+`func (o *SearchResponseAllOfResultEntities) GetResultHashOk() (*string, bool)`
+
+GetResultHashOk returns a tuple with the ResultHash field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetResultHash
+
+`func (o *SearchResponseAllOfResultEntities) SetResultHash(v string)`
+
+SetResultHash sets ResultHash field to given value.
+
 
 ### GetComment
 
@@ -627,31 +656,6 @@ HasStacktrace returns a boolean if a field has been set.
 `func (o *SearchResponseAllOfResultEntities) UnsetStacktrace()`
 
 UnsetStacktrace ensures that no value is present for Stacktrace, not even an explicit nil
-### GetRunId
-
-`func (o *SearchResponseAllOfResultEntities) GetRunId() int64`
-
-GetRunId returns the RunId field if non-nil, zero value otherwise.
-
-### GetRunIdOk
-
-`func (o *SearchResponseAllOfResultEntities) GetRunIdOk() (*int64, bool)`
-
-GetRunIdOk returns a tuple with the RunId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetRunId
-
-`func (o *SearchResponseAllOfResultEntities) SetRunId(v int64)`
-
-SetRunId sets RunId field to given value.
-
-### HasRunId
-
-`func (o *SearchResponseAllOfResultEntities) HasRunId() bool`
-
-HasRunId returns a boolean if a field has been set.
-
 ### GetCaseId
 
 `func (o *SearchResponseAllOfResultEntities) GetCaseId() int64`
@@ -776,6 +780,26 @@ SetAttachments sets Attachments field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasAttachments() bool`
 
 HasAttachments returns a boolean if a field has been set.
+
+### GetRequirementId
+
+`func (o *SearchResponseAllOfResultEntities) GetRequirementId() int64`
+
+GetRequirementId returns the RequirementId field if non-nil, zero value otherwise.
+
+### GetRequirementIdOk
+
+`func (o *SearchResponseAllOfResultEntities) GetRequirementIdOk() (*int64, bool)`
+
+GetRequirementIdOk returns a tuple with the RequirementId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRequirementId
+
+`func (o *SearchResponseAllOfResultEntities) SetRequirementId(v int64)`
+
+SetRequirementId sets RequirementId field to given value.
+
 
 ### GetParentId
 
@@ -911,6 +935,26 @@ SetUpdatedAt sets UpdatedAt field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasUpdatedAt() bool`
 
 HasUpdatedAt returns a boolean if a field has been set.
+
+### GetTestCaseId
+
+`func (o *SearchResponseAllOfResultEntities) GetTestCaseId() int64`
+
+GetTestCaseId returns the TestCaseId field if non-nil, zero value otherwise.
+
+### GetTestCaseIdOk
+
+`func (o *SearchResponseAllOfResultEntities) GetTestCaseIdOk() (*int64, bool)`
+
+GetTestCaseIdOk returns a tuple with the TestCaseId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTestCaseId
+
+`func (o *SearchResponseAllOfResultEntities) SetTestCaseId(v int64)`
+
+SetTestCaseId sets TestCaseId field to given value.
+
 
 ### GetPosition
 
@@ -1311,6 +1355,26 @@ SetAuthorId sets AuthorId field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasAuthorId() bool`
 
 HasAuthorId returns a boolean if a field has been set.
+
+### GetDefectId
+
+`func (o *SearchResponseAllOfResultEntities) GetDefectId() int64`
+
+GetDefectId returns the DefectId field if non-nil, zero value otherwise.
+
+### GetDefectIdOk
+
+`func (o *SearchResponseAllOfResultEntities) GetDefectIdOk() (*int64, bool)`
+
+GetDefectIdOk returns a tuple with the DefectId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefectId
+
+`func (o *SearchResponseAllOfResultEntities) SetDefectId(v int64)`
+
+SetDefectId sets DefectId field to given value.
+
 
 ### GetActualResult
 

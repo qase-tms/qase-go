@@ -21,7 +21,9 @@ var _ MappedNullable = &Author{}
 // Author struct for Author
 type Author struct {
 	Id         *int64  `json:"id,omitempty"`
+	AuthorId   *int64  `json:"author_id,omitempty"`
 	EntityType *string `json:"entity_type,omitempty"`
+	EntityId   *int64  `json:"entity_id,omitempty"`
 	Email      *string `json:"email,omitempty"`
 	Name       *string `json:"name,omitempty"`
 	IsActive   *bool   `json:"is_active,omitempty"`
@@ -76,6 +78,38 @@ func (o *Author) SetId(v int64) {
 	o.Id = &v
 }
 
+// GetAuthorId returns the AuthorId field value if set, zero value otherwise.
+func (o *Author) GetAuthorId() int64 {
+	if o == nil || IsNil(o.AuthorId) {
+		var ret int64
+		return ret
+	}
+	return *o.AuthorId
+}
+
+// GetAuthorIdOk returns a tuple with the AuthorId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Author) GetAuthorIdOk() (*int64, bool) {
+	if o == nil || IsNil(o.AuthorId) {
+		return nil, false
+	}
+	return o.AuthorId, true
+}
+
+// HasAuthorId returns a boolean if a field has been set.
+func (o *Author) HasAuthorId() bool {
+	if o != nil && !IsNil(o.AuthorId) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuthorId gets a reference to the given int64 and assigns it to the AuthorId field.
+func (o *Author) SetAuthorId(v int64) {
+	o.AuthorId = &v
+}
+
 // GetEntityType returns the EntityType field value if set, zero value otherwise.
 func (o *Author) GetEntityType() string {
 	if o == nil || IsNil(o.EntityType) {
@@ -106,6 +140,38 @@ func (o *Author) HasEntityType() bool {
 // SetEntityType gets a reference to the given string and assigns it to the EntityType field.
 func (o *Author) SetEntityType(v string) {
 	o.EntityType = &v
+}
+
+// GetEntityId returns the EntityId field value if set, zero value otherwise.
+func (o *Author) GetEntityId() int64 {
+	if o == nil || IsNil(o.EntityId) {
+		var ret int64
+		return ret
+	}
+	return *o.EntityId
+}
+
+// GetEntityIdOk returns a tuple with the EntityId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Author) GetEntityIdOk() (*int64, bool) {
+	if o == nil || IsNil(o.EntityId) {
+		return nil, false
+	}
+	return o.EntityId, true
+}
+
+// HasEntityId returns a boolean if a field has been set.
+func (o *Author) HasEntityId() bool {
+	if o != nil && !IsNil(o.EntityId) {
+		return true
+	}
+
+	return false
+}
+
+// SetEntityId gets a reference to the given int64 and assigns it to the EntityId field.
+func (o *Author) SetEntityId(v int64) {
+	o.EntityId = &v
 }
 
 // GetEmail returns the Email field value if set, zero value otherwise.
@@ -217,8 +283,14 @@ func (o Author) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
+	if !IsNil(o.AuthorId) {
+		toSerialize["author_id"] = o.AuthorId
+	}
 	if !IsNil(o.EntityType) {
 		toSerialize["entity_type"] = o.EntityType
+	}
+	if !IsNil(o.EntityId) {
+		toSerialize["entity_id"] = o.EntityId
 	}
 	if !IsNil(o.Email) {
 		toSerialize["email"] = o.Email

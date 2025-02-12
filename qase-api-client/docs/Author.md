@@ -5,7 +5,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**AuthorId** | Pointer to **int64** |  | [optional] 
 **EntityType** | Pointer to **string** |  | [optional] 
+**EntityId** | Pointer to **int64** |  | [optional] 
 **Email** | Pointer to **string** |  | [optional] 
 **Name** | Pointer to **string** |  | [optional] 
 **IsActive** | Pointer to **bool** |  | [optional] 
@@ -54,6 +56,31 @@ SetId sets Id field to given value.
 
 HasId returns a boolean if a field has been set.
 
+### GetAuthorId
+
+`func (o *Author) GetAuthorId() int64`
+
+GetAuthorId returns the AuthorId field if non-nil, zero value otherwise.
+
+### GetAuthorIdOk
+
+`func (o *Author) GetAuthorIdOk() (*int64, bool)`
+
+GetAuthorIdOk returns a tuple with the AuthorId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAuthorId
+
+`func (o *Author) SetAuthorId(v int64)`
+
+SetAuthorId sets AuthorId field to given value.
+
+### HasAuthorId
+
+`func (o *Author) HasAuthorId() bool`
+
+HasAuthorId returns a boolean if a field has been set.
+
 ### GetEntityType
 
 `func (o *Author) GetEntityType() string`
@@ -78,6 +105,31 @@ SetEntityType sets EntityType field to given value.
 `func (o *Author) HasEntityType() bool`
 
 HasEntityType returns a boolean if a field has been set.
+
+### GetEntityId
+
+`func (o *Author) GetEntityId() int64`
+
+GetEntityId returns the EntityId field if non-nil, zero value otherwise.
+
+### GetEntityIdOk
+
+`func (o *Author) GetEntityIdOk() (*int64, bool)`
+
+GetEntityIdOk returns a tuple with the EntityId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEntityId
+
+`func (o *Author) SetEntityId(v int64)`
+
+SetEntityId sets EntityId field to given value.
+
+### HasEntityId
+
+`func (o *Author) HasEntityId() bool`
+
+HasEntityId returns a boolean if a field has been set.
 
 ### GetEmail
 

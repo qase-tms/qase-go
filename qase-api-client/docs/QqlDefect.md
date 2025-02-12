@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**DefectId** | **int64** |  | 
 **Title** | Pointer to **string** |  | [optional] 
 **ActualResult** | Pointer to **string** |  | [optional] 
 **Severity** | Pointer to **string** |  | [optional] 
@@ -24,7 +25,7 @@ Name | Type | Description | Notes
 
 ### NewQqlDefect
 
-`func NewQqlDefect() *QqlDefect`
+`func NewQqlDefect(defectId int64, ) *QqlDefect`
 
 NewQqlDefect instantiates a new QqlDefect object
 This constructor will assign default values to properties that have it defined,
@@ -63,6 +64,26 @@ SetId sets Id field to given value.
 `func (o *QqlDefect) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetDefectId
+
+`func (o *QqlDefect) GetDefectId() int64`
+
+GetDefectId returns the DefectId field if non-nil, zero value otherwise.
+
+### GetDefectIdOk
+
+`func (o *QqlDefect) GetDefectIdOk() (*int64, bool)`
+
+GetDefectIdOk returns a tuple with the DefectId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefectId
+
+`func (o *QqlDefect) SetDefectId(v int64)`
+
+SetDefectId sets DefectId field to given value.
+
 
 ### GetTitle
 
