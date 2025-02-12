@@ -35,6 +35,8 @@ type Defect struct {
 	MemberId     *int64     `json:"member_id,omitempty"`
 	AuthorId     *int64     `json:"author_id,omitempty"`
 	ExternalData *string    `json:"external_data,omitempty"`
+	Runs         []int64    `json:"runs,omitempty"`
+	Results      []string   `json:"results,omitempty"`
 	Tags         []TagValue `json:"tags,omitempty"`
 	CreatedAt    *time.Time `json:"created_at,omitempty"`
 	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
@@ -472,6 +474,70 @@ func (o *Defect) SetExternalData(v string) {
 	o.ExternalData = &v
 }
 
+// GetRuns returns the Runs field value if set, zero value otherwise.
+func (o *Defect) GetRuns() []int64 {
+	if o == nil || IsNil(o.Runs) {
+		var ret []int64
+		return ret
+	}
+	return o.Runs
+}
+
+// GetRunsOk returns a tuple with the Runs field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Defect) GetRunsOk() ([]int64, bool) {
+	if o == nil || IsNil(o.Runs) {
+		return nil, false
+	}
+	return o.Runs, true
+}
+
+// HasRuns returns a boolean if a field has been set.
+func (o *Defect) HasRuns() bool {
+	if o != nil && !IsNil(o.Runs) {
+		return true
+	}
+
+	return false
+}
+
+// SetRuns gets a reference to the given []int64 and assigns it to the Runs field.
+func (o *Defect) SetRuns(v []int64) {
+	o.Runs = v
+}
+
+// GetResults returns the Results field value if set, zero value otherwise.
+func (o *Defect) GetResults() []string {
+	if o == nil || IsNil(o.Results) {
+		var ret []string
+		return ret
+	}
+	return o.Results
+}
+
+// GetResultsOk returns a tuple with the Results field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Defect) GetResultsOk() ([]string, bool) {
+	if o == nil || IsNil(o.Results) {
+		return nil, false
+	}
+	return o.Results, true
+}
+
+// HasResults returns a boolean if a field has been set.
+func (o *Defect) HasResults() bool {
+	if o != nil && !IsNil(o.Results) {
+		return true
+	}
+
+	return false
+}
+
+// SetResults gets a reference to the given []string and assigns it to the Results field.
+func (o *Defect) SetResults(v []string) {
+	o.Results = v
+}
+
 // GetTags returns the Tags field value if set, zero value otherwise.
 func (o *Defect) GetTags() []TagValue {
 	if o == nil || IsNil(o.Tags) {
@@ -683,6 +749,12 @@ func (o Defect) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.ExternalData) {
 		toSerialize["external_data"] = o.ExternalData
+	}
+	if !IsNil(o.Runs) {
+		toSerialize["runs"] = o.Runs
+	}
+	if !IsNil(o.Results) {
+		toSerialize["results"] = o.Results
 	}
 	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags

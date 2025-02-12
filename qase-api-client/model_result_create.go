@@ -35,7 +35,7 @@ type ResultCreate struct {
 	Comment     NullableString `json:"comment,omitempty"`
 	// A map of parameters (name => value)
 	Param map[string]string `json:"param,omitempty"`
-	// A list of parameter groups
+	// List parameter groups by name only. Add their values in the 'param' field
 	ParamGroups [][]string             `json:"param_groups,omitempty"`
 	Steps       []TestStepResultCreate `json:"steps,omitempty"`
 	AuthorId    NullableInt64          `json:"author_id,omitempty"`

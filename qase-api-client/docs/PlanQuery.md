@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**PlanId** | **int64** |  | 
 **Title** | Pointer to **string** |  | [optional] 
 **Description** | Pointer to **NullableString** |  | [optional] 
 **CasesCount** | Pointer to **int32** |  | [optional] 
@@ -15,7 +16,7 @@ Name | Type | Description | Notes
 
 ### NewPlanQuery
 
-`func NewPlanQuery() *PlanQuery`
+`func NewPlanQuery(planId int64, ) *PlanQuery`
 
 NewPlanQuery instantiates a new PlanQuery object
 This constructor will assign default values to properties that have it defined,
@@ -54,6 +55,26 @@ SetId sets Id field to given value.
 `func (o *PlanQuery) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetPlanId
+
+`func (o *PlanQuery) GetPlanId() int64`
+
+GetPlanId returns the PlanId field if non-nil, zero value otherwise.
+
+### GetPlanIdOk
+
+`func (o *PlanQuery) GetPlanIdOk() (*int64, bool)`
+
+GetPlanIdOk returns a tuple with the PlanId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetPlanId
+
+`func (o *PlanQuery) SetPlanId(v int64)`
+
+SetPlanId sets PlanId field to given value.
+
 
 ### GetTitle
 

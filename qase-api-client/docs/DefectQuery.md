@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
+**DefectId** | **int64** |  | 
 **Title** | Pointer to **string** |  | [optional] 
 **ActualResult** | Pointer to **string** |  | [optional] 
 **Severity** | Pointer to **string** |  | [optional] 
@@ -24,7 +25,7 @@ Name | Type | Description | Notes
 
 ### NewDefectQuery
 
-`func NewDefectQuery() *DefectQuery`
+`func NewDefectQuery(defectId int64, ) *DefectQuery`
 
 NewDefectQuery instantiates a new DefectQuery object
 This constructor will assign default values to properties that have it defined,
@@ -63,6 +64,26 @@ SetId sets Id field to given value.
 `func (o *DefectQuery) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetDefectId
+
+`func (o *DefectQuery) GetDefectId() int64`
+
+GetDefectId returns the DefectId field if non-nil, zero value otherwise.
+
+### GetDefectIdOk
+
+`func (o *DefectQuery) GetDefectIdOk() (*int64, bool)`
+
+GetDefectIdOk returns a tuple with the DefectId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefectId
+
+`func (o *DefectQuery) SetDefectId(v int64)`
+
+SetDefectId sets DefectId field to given value.
+
 
 ### GetTitle
 

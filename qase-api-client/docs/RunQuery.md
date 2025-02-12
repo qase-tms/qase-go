@@ -1,11 +1,11 @@
-# Run
+# RunQuery
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
-**RunId** | Pointer to **int64** |  | [optional] 
+**RunId** | **int64** |  | 
 **Title** | Pointer to **string** |  | [optional] 
 **Description** | Pointer to **NullableString** |  | [optional] 
 **Status** | Pointer to **int32** |  | [optional] 
@@ -24,506 +24,501 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewRun
+### NewRunQuery
 
-`func NewRun() *Run`
+`func NewRunQuery(runId int64, ) *RunQuery`
 
-NewRun instantiates a new Run object
+NewRunQuery instantiates a new RunQuery object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewRunWithDefaults
+### NewRunQueryWithDefaults
 
-`func NewRunWithDefaults() *Run`
+`func NewRunQueryWithDefaults() *RunQuery`
 
-NewRunWithDefaults instantiates a new Run object
+NewRunQueryWithDefaults instantiates a new RunQuery object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetId
 
-`func (o *Run) GetId() int64`
+`func (o *RunQuery) GetId() int64`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *Run) GetIdOk() (*int64, bool)`
+`func (o *RunQuery) GetIdOk() (*int64, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *Run) SetId(v int64)`
+`func (o *RunQuery) SetId(v int64)`
 
 SetId sets Id field to given value.
 
 ### HasId
 
-`func (o *Run) HasId() bool`
+`func (o *RunQuery) HasId() bool`
 
 HasId returns a boolean if a field has been set.
 
 ### GetRunId
 
-`func (o *Run) GetRunId() int64`
+`func (o *RunQuery) GetRunId() int64`
 
 GetRunId returns the RunId field if non-nil, zero value otherwise.
 
 ### GetRunIdOk
 
-`func (o *Run) GetRunIdOk() (*int64, bool)`
+`func (o *RunQuery) GetRunIdOk() (*int64, bool)`
 
 GetRunIdOk returns a tuple with the RunId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetRunId
 
-`func (o *Run) SetRunId(v int64)`
+`func (o *RunQuery) SetRunId(v int64)`
 
 SetRunId sets RunId field to given value.
 
-### HasRunId
-
-`func (o *Run) HasRunId() bool`
-
-HasRunId returns a boolean if a field has been set.
 
 ### GetTitle
 
-`func (o *Run) GetTitle() string`
+`func (o *RunQuery) GetTitle() string`
 
 GetTitle returns the Title field if non-nil, zero value otherwise.
 
 ### GetTitleOk
 
-`func (o *Run) GetTitleOk() (*string, bool)`
+`func (o *RunQuery) GetTitleOk() (*string, bool)`
 
 GetTitleOk returns a tuple with the Title field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTitle
 
-`func (o *Run) SetTitle(v string)`
+`func (o *RunQuery) SetTitle(v string)`
 
 SetTitle sets Title field to given value.
 
 ### HasTitle
 
-`func (o *Run) HasTitle() bool`
+`func (o *RunQuery) HasTitle() bool`
 
 HasTitle returns a boolean if a field has been set.
 
 ### GetDescription
 
-`func (o *Run) GetDescription() string`
+`func (o *RunQuery) GetDescription() string`
 
 GetDescription returns the Description field if non-nil, zero value otherwise.
 
 ### GetDescriptionOk
 
-`func (o *Run) GetDescriptionOk() (*string, bool)`
+`func (o *RunQuery) GetDescriptionOk() (*string, bool)`
 
 GetDescriptionOk returns a tuple with the Description field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDescription
 
-`func (o *Run) SetDescription(v string)`
+`func (o *RunQuery) SetDescription(v string)`
 
 SetDescription sets Description field to given value.
 
 ### HasDescription
 
-`func (o *Run) HasDescription() bool`
+`func (o *RunQuery) HasDescription() bool`
 
 HasDescription returns a boolean if a field has been set.
 
 ### SetDescriptionNil
 
-`func (o *Run) SetDescriptionNil(b bool)`
+`func (o *RunQuery) SetDescriptionNil(b bool)`
 
  SetDescriptionNil sets the value for Description to be an explicit nil
 
 ### UnsetDescription
-`func (o *Run) UnsetDescription()`
+`func (o *RunQuery) UnsetDescription()`
 
 UnsetDescription ensures that no value is present for Description, not even an explicit nil
 ### GetStatus
 
-`func (o *Run) GetStatus() int32`
+`func (o *RunQuery) GetStatus() int32`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *Run) GetStatusOk() (*int32, bool)`
+`func (o *RunQuery) GetStatusOk() (*int32, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *Run) SetStatus(v int32)`
+`func (o *RunQuery) SetStatus(v int32)`
 
 SetStatus sets Status field to given value.
 
 ### HasStatus
 
-`func (o *Run) HasStatus() bool`
+`func (o *RunQuery) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
 
 ### GetStatusText
 
-`func (o *Run) GetStatusText() string`
+`func (o *RunQuery) GetStatusText() string`
 
 GetStatusText returns the StatusText field if non-nil, zero value otherwise.
 
 ### GetStatusTextOk
 
-`func (o *Run) GetStatusTextOk() (*string, bool)`
+`func (o *RunQuery) GetStatusTextOk() (*string, bool)`
 
 GetStatusTextOk returns a tuple with the StatusText field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatusText
 
-`func (o *Run) SetStatusText(v string)`
+`func (o *RunQuery) SetStatusText(v string)`
 
 SetStatusText sets StatusText field to given value.
 
 ### HasStatusText
 
-`func (o *Run) HasStatusText() bool`
+`func (o *RunQuery) HasStatusText() bool`
 
 HasStatusText returns a boolean if a field has been set.
 
 ### GetStartTime
 
-`func (o *Run) GetStartTime() time.Time`
+`func (o *RunQuery) GetStartTime() time.Time`
 
 GetStartTime returns the StartTime field if non-nil, zero value otherwise.
 
 ### GetStartTimeOk
 
-`func (o *Run) GetStartTimeOk() (*time.Time, bool)`
+`func (o *RunQuery) GetStartTimeOk() (*time.Time, bool)`
 
 GetStartTimeOk returns a tuple with the StartTime field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStartTime
 
-`func (o *Run) SetStartTime(v time.Time)`
+`func (o *RunQuery) SetStartTime(v time.Time)`
 
 SetStartTime sets StartTime field to given value.
 
 ### HasStartTime
 
-`func (o *Run) HasStartTime() bool`
+`func (o *RunQuery) HasStartTime() bool`
 
 HasStartTime returns a boolean if a field has been set.
 
 ### SetStartTimeNil
 
-`func (o *Run) SetStartTimeNil(b bool)`
+`func (o *RunQuery) SetStartTimeNil(b bool)`
 
  SetStartTimeNil sets the value for StartTime to be an explicit nil
 
 ### UnsetStartTime
-`func (o *Run) UnsetStartTime()`
+`func (o *RunQuery) UnsetStartTime()`
 
 UnsetStartTime ensures that no value is present for StartTime, not even an explicit nil
 ### GetEndTime
 
-`func (o *Run) GetEndTime() time.Time`
+`func (o *RunQuery) GetEndTime() time.Time`
 
 GetEndTime returns the EndTime field if non-nil, zero value otherwise.
 
 ### GetEndTimeOk
 
-`func (o *Run) GetEndTimeOk() (*time.Time, bool)`
+`func (o *RunQuery) GetEndTimeOk() (*time.Time, bool)`
 
 GetEndTimeOk returns a tuple with the EndTime field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetEndTime
 
-`func (o *Run) SetEndTime(v time.Time)`
+`func (o *RunQuery) SetEndTime(v time.Time)`
 
 SetEndTime sets EndTime field to given value.
 
 ### HasEndTime
 
-`func (o *Run) HasEndTime() bool`
+`func (o *RunQuery) HasEndTime() bool`
 
 HasEndTime returns a boolean if a field has been set.
 
 ### SetEndTimeNil
 
-`func (o *Run) SetEndTimeNil(b bool)`
+`func (o *RunQuery) SetEndTimeNil(b bool)`
 
  SetEndTimeNil sets the value for EndTime to be an explicit nil
 
 ### UnsetEndTime
-`func (o *Run) UnsetEndTime()`
+`func (o *RunQuery) UnsetEndTime()`
 
 UnsetEndTime ensures that no value is present for EndTime, not even an explicit nil
 ### GetPublic
 
-`func (o *Run) GetPublic() bool`
+`func (o *RunQuery) GetPublic() bool`
 
 GetPublic returns the Public field if non-nil, zero value otherwise.
 
 ### GetPublicOk
 
-`func (o *Run) GetPublicOk() (*bool, bool)`
+`func (o *RunQuery) GetPublicOk() (*bool, bool)`
 
 GetPublicOk returns a tuple with the Public field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPublic
 
-`func (o *Run) SetPublic(v bool)`
+`func (o *RunQuery) SetPublic(v bool)`
 
 SetPublic sets Public field to given value.
 
 ### HasPublic
 
-`func (o *Run) HasPublic() bool`
+`func (o *RunQuery) HasPublic() bool`
 
 HasPublic returns a boolean if a field has been set.
 
 ### GetStats
 
-`func (o *Run) GetStats() RunStats`
+`func (o *RunQuery) GetStats() RunStats`
 
 GetStats returns the Stats field if non-nil, zero value otherwise.
 
 ### GetStatsOk
 
-`func (o *Run) GetStatsOk() (*RunStats, bool)`
+`func (o *RunQuery) GetStatsOk() (*RunStats, bool)`
 
 GetStatsOk returns a tuple with the Stats field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStats
 
-`func (o *Run) SetStats(v RunStats)`
+`func (o *RunQuery) SetStats(v RunStats)`
 
 SetStats sets Stats field to given value.
 
 ### HasStats
 
-`func (o *Run) HasStats() bool`
+`func (o *RunQuery) HasStats() bool`
 
 HasStats returns a boolean if a field has been set.
 
 ### GetTimeSpent
 
-`func (o *Run) GetTimeSpent() int64`
+`func (o *RunQuery) GetTimeSpent() int64`
 
 GetTimeSpent returns the TimeSpent field if non-nil, zero value otherwise.
 
 ### GetTimeSpentOk
 
-`func (o *Run) GetTimeSpentOk() (*int64, bool)`
+`func (o *RunQuery) GetTimeSpentOk() (*int64, bool)`
 
 GetTimeSpentOk returns a tuple with the TimeSpent field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTimeSpent
 
-`func (o *Run) SetTimeSpent(v int64)`
+`func (o *RunQuery) SetTimeSpent(v int64)`
 
 SetTimeSpent sets TimeSpent field to given value.
 
 ### HasTimeSpent
 
-`func (o *Run) HasTimeSpent() bool`
+`func (o *RunQuery) HasTimeSpent() bool`
 
 HasTimeSpent returns a boolean if a field has been set.
 
 ### GetEnvironment
 
-`func (o *Run) GetEnvironment() RunEnvironment`
+`func (o *RunQuery) GetEnvironment() RunEnvironment`
 
 GetEnvironment returns the Environment field if non-nil, zero value otherwise.
 
 ### GetEnvironmentOk
 
-`func (o *Run) GetEnvironmentOk() (*RunEnvironment, bool)`
+`func (o *RunQuery) GetEnvironmentOk() (*RunEnvironment, bool)`
 
 GetEnvironmentOk returns a tuple with the Environment field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetEnvironment
 
-`func (o *Run) SetEnvironment(v RunEnvironment)`
+`func (o *RunQuery) SetEnvironment(v RunEnvironment)`
 
 SetEnvironment sets Environment field to given value.
 
 ### HasEnvironment
 
-`func (o *Run) HasEnvironment() bool`
+`func (o *RunQuery) HasEnvironment() bool`
 
 HasEnvironment returns a boolean if a field has been set.
 
 ### SetEnvironmentNil
 
-`func (o *Run) SetEnvironmentNil(b bool)`
+`func (o *RunQuery) SetEnvironmentNil(b bool)`
 
  SetEnvironmentNil sets the value for Environment to be an explicit nil
 
 ### UnsetEnvironment
-`func (o *Run) UnsetEnvironment()`
+`func (o *RunQuery) UnsetEnvironment()`
 
 UnsetEnvironment ensures that no value is present for Environment, not even an explicit nil
 ### GetMilestone
 
-`func (o *Run) GetMilestone() RunMilestone`
+`func (o *RunQuery) GetMilestone() RunMilestone`
 
 GetMilestone returns the Milestone field if non-nil, zero value otherwise.
 
 ### GetMilestoneOk
 
-`func (o *Run) GetMilestoneOk() (*RunMilestone, bool)`
+`func (o *RunQuery) GetMilestoneOk() (*RunMilestone, bool)`
 
 GetMilestoneOk returns a tuple with the Milestone field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMilestone
 
-`func (o *Run) SetMilestone(v RunMilestone)`
+`func (o *RunQuery) SetMilestone(v RunMilestone)`
 
 SetMilestone sets Milestone field to given value.
 
 ### HasMilestone
 
-`func (o *Run) HasMilestone() bool`
+`func (o *RunQuery) HasMilestone() bool`
 
 HasMilestone returns a boolean if a field has been set.
 
 ### SetMilestoneNil
 
-`func (o *Run) SetMilestoneNil(b bool)`
+`func (o *RunQuery) SetMilestoneNil(b bool)`
 
  SetMilestoneNil sets the value for Milestone to be an explicit nil
 
 ### UnsetMilestone
-`func (o *Run) UnsetMilestone()`
+`func (o *RunQuery) UnsetMilestone()`
 
 UnsetMilestone ensures that no value is present for Milestone, not even an explicit nil
 ### GetCustomFields
 
-`func (o *Run) GetCustomFields() []CustomFieldValue`
+`func (o *RunQuery) GetCustomFields() []CustomFieldValue`
 
 GetCustomFields returns the CustomFields field if non-nil, zero value otherwise.
 
 ### GetCustomFieldsOk
 
-`func (o *Run) GetCustomFieldsOk() (*[]CustomFieldValue, bool)`
+`func (o *RunQuery) GetCustomFieldsOk() (*[]CustomFieldValue, bool)`
 
 GetCustomFieldsOk returns a tuple with the CustomFields field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCustomFields
 
-`func (o *Run) SetCustomFields(v []CustomFieldValue)`
+`func (o *RunQuery) SetCustomFields(v []CustomFieldValue)`
 
 SetCustomFields sets CustomFields field to given value.
 
 ### HasCustomFields
 
-`func (o *Run) HasCustomFields() bool`
+`func (o *RunQuery) HasCustomFields() bool`
 
 HasCustomFields returns a boolean if a field has been set.
 
 ### GetTags
 
-`func (o *Run) GetTags() []TagValue`
+`func (o *RunQuery) GetTags() []TagValue`
 
 GetTags returns the Tags field if non-nil, zero value otherwise.
 
 ### GetTagsOk
 
-`func (o *Run) GetTagsOk() (*[]TagValue, bool)`
+`func (o *RunQuery) GetTagsOk() (*[]TagValue, bool)`
 
 GetTagsOk returns a tuple with the Tags field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTags
 
-`func (o *Run) SetTags(v []TagValue)`
+`func (o *RunQuery) SetTags(v []TagValue)`
 
 SetTags sets Tags field to given value.
 
 ### HasTags
 
-`func (o *Run) HasTags() bool`
+`func (o *RunQuery) HasTags() bool`
 
 HasTags returns a boolean if a field has been set.
 
 ### GetCases
 
-`func (o *Run) GetCases() []int64`
+`func (o *RunQuery) GetCases() []int64`
 
 GetCases returns the Cases field if non-nil, zero value otherwise.
 
 ### GetCasesOk
 
-`func (o *Run) GetCasesOk() (*[]int64, bool)`
+`func (o *RunQuery) GetCasesOk() (*[]int64, bool)`
 
 GetCasesOk returns a tuple with the Cases field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCases
 
-`func (o *Run) SetCases(v []int64)`
+`func (o *RunQuery) SetCases(v []int64)`
 
 SetCases sets Cases field to given value.
 
 ### HasCases
 
-`func (o *Run) HasCases() bool`
+`func (o *RunQuery) HasCases() bool`
 
 HasCases returns a boolean if a field has been set.
 
 ### GetPlanId
 
-`func (o *Run) GetPlanId() int64`
+`func (o *RunQuery) GetPlanId() int64`
 
 GetPlanId returns the PlanId field if non-nil, zero value otherwise.
 
 ### GetPlanIdOk
 
-`func (o *Run) GetPlanIdOk() (*int64, bool)`
+`func (o *RunQuery) GetPlanIdOk() (*int64, bool)`
 
 GetPlanIdOk returns a tuple with the PlanId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPlanId
 
-`func (o *Run) SetPlanId(v int64)`
+`func (o *RunQuery) SetPlanId(v int64)`
 
 SetPlanId sets PlanId field to given value.
 
 ### HasPlanId
 
-`func (o *Run) HasPlanId() bool`
+`func (o *RunQuery) HasPlanId() bool`
 
 HasPlanId returns a boolean if a field has been set.
 
 ### SetPlanIdNil
 
-`func (o *Run) SetPlanIdNil(b bool)`
+`func (o *RunQuery) SetPlanIdNil(b bool)`
 
  SetPlanIdNil sets the value for PlanId to be an explicit nil
 
 ### UnsetPlanId
-`func (o *Run) UnsetPlanId()`
+`func (o *RunQuery) UnsetPlanId()`
 
 UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
 

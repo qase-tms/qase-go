@@ -12,7 +12,9 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -22,6 +24,7 @@ var _ MappedNullable = &TestCaseQuery{}
 // TestCaseQuery struct for TestCaseQuery
 type TestCaseQuery struct {
 	Id             *int64             `json:"id,omitempty"`
+	TestCaseId     int64              `json:"test_case_id"`
 	Position       *int32             `json:"position,omitempty"`
 	Title          *string            `json:"title,omitempty"`
 	Description    NullableString     `json:"description,omitempty"`
@@ -51,12 +54,15 @@ type TestCaseQuery struct {
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
+type _TestCaseQuery TestCaseQuery
+
 // NewTestCaseQuery instantiates a new TestCaseQuery object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTestCaseQuery() *TestCaseQuery {
+func NewTestCaseQuery(testCaseId int64) *TestCaseQuery {
 	this := TestCaseQuery{}
+	this.TestCaseId = testCaseId
 	return &this
 }
 
@@ -98,6 +104,30 @@ func (o *TestCaseQuery) HasId() bool {
 // SetId gets a reference to the given int64 and assigns it to the Id field.
 func (o *TestCaseQuery) SetId(v int64) {
 	o.Id = &v
+}
+
+// GetTestCaseId returns the TestCaseId field value
+func (o *TestCaseQuery) GetTestCaseId() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.TestCaseId
+}
+
+// GetTestCaseIdOk returns a tuple with the TestCaseId field value
+// and a boolean to check if the value has been set.
+func (o *TestCaseQuery) GetTestCaseIdOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TestCaseId, true
+}
+
+// SetTestCaseId sets field value
+func (o *TestCaseQuery) SetTestCaseId(v int64) {
+	o.TestCaseId = v
 }
 
 // GetPosition returns the Position field value if set, zero value otherwise.
@@ -982,6 +1012,7 @@ func (o TestCaseQuery) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
+	toSerialize["test_case_id"] = o.TestCaseId
 	if !IsNil(o.Position) {
 		toSerialize["position"] = o.Position
 	}
@@ -1058,6 +1089,43 @@ func (o TestCaseQuery) ToMap() (map[string]interface{}, error) {
 		toSerialize["updated_at"] = o.UpdatedAt
 	}
 	return toSerialize, nil
+}
+
+func (o *TestCaseQuery) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"test_case_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTestCaseQuery := _TestCaseQuery{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTestCaseQuery)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TestCaseQuery(varTestCaseQuery)
+
+	return err
 }
 
 type NullableTestCaseQuery struct {

@@ -12,17 +12,19 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
-// checks if the Run type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Run{}
+// checks if the RunQuery type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &RunQuery{}
 
-// Run struct for Run
-type Run struct {
+// RunQuery struct for RunQuery
+type RunQuery struct {
 	Id          *int64         `json:"id,omitempty"`
-	RunId       *int64         `json:"run_id,omitempty"`
+	RunId       int64          `json:"run_id"`
 	Title       *string        `json:"title,omitempty"`
 	Description NullableString `json:"description,omitempty"`
 	Status      *int32         `json:"status,omitempty"`
@@ -41,25 +43,28 @@ type Run struct {
 	PlanId       NullableInt64          `json:"plan_id,omitempty"`
 }
 
-// NewRun instantiates a new Run object
+type _RunQuery RunQuery
+
+// NewRunQuery instantiates a new RunQuery object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRun() *Run {
-	this := Run{}
+func NewRunQuery(runId int64) *RunQuery {
+	this := RunQuery{}
+	this.RunId = runId
 	return &this
 }
 
-// NewRunWithDefaults instantiates a new Run object
+// NewRunQueryWithDefaults instantiates a new RunQuery object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewRunWithDefaults() *Run {
-	this := Run{}
+func NewRunQueryWithDefaults() *RunQuery {
+	this := RunQuery{}
 	return &this
 }
 
 // GetId returns the Id field value if set, zero value otherwise.
-func (o *Run) GetId() int64 {
+func (o *RunQuery) GetId() int64 {
 	if o == nil || IsNil(o.Id) {
 		var ret int64
 		return ret
@@ -69,7 +74,7 @@ func (o *Run) GetId() int64 {
 
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetIdOk() (*int64, bool) {
+func (o *RunQuery) GetIdOk() (*int64, bool) {
 	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
@@ -77,7 +82,7 @@ func (o *Run) GetIdOk() (*int64, bool) {
 }
 
 // HasId returns a boolean if a field has been set.
-func (o *Run) HasId() bool {
+func (o *RunQuery) HasId() bool {
 	if o != nil && !IsNil(o.Id) {
 		return true
 	}
@@ -86,44 +91,36 @@ func (o *Run) HasId() bool {
 }
 
 // SetId gets a reference to the given int64 and assigns it to the Id field.
-func (o *Run) SetId(v int64) {
+func (o *RunQuery) SetId(v int64) {
 	o.Id = &v
 }
 
-// GetRunId returns the RunId field value if set, zero value otherwise.
-func (o *Run) GetRunId() int64 {
-	if o == nil || IsNil(o.RunId) {
+// GetRunId returns the RunId field value
+func (o *RunQuery) GetRunId() int64 {
+	if o == nil {
 		var ret int64
 		return ret
 	}
-	return *o.RunId
+
+	return o.RunId
 }
 
-// GetRunIdOk returns a tuple with the RunId field value if set, nil otherwise
+// GetRunIdOk returns a tuple with the RunId field value
 // and a boolean to check if the value has been set.
-func (o *Run) GetRunIdOk() (*int64, bool) {
-	if o == nil || IsNil(o.RunId) {
+func (o *RunQuery) GetRunIdOk() (*int64, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.RunId, true
+	return &o.RunId, true
 }
 
-// HasRunId returns a boolean if a field has been set.
-func (o *Run) HasRunId() bool {
-	if o != nil && !IsNil(o.RunId) {
-		return true
-	}
-
-	return false
-}
-
-// SetRunId gets a reference to the given int64 and assigns it to the RunId field.
-func (o *Run) SetRunId(v int64) {
-	o.RunId = &v
+// SetRunId sets field value
+func (o *RunQuery) SetRunId(v int64) {
+	o.RunId = v
 }
 
 // GetTitle returns the Title field value if set, zero value otherwise.
-func (o *Run) GetTitle() string {
+func (o *RunQuery) GetTitle() string {
 	if o == nil || IsNil(o.Title) {
 		var ret string
 		return ret
@@ -133,7 +130,7 @@ func (o *Run) GetTitle() string {
 
 // GetTitleOk returns a tuple with the Title field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetTitleOk() (*string, bool) {
+func (o *RunQuery) GetTitleOk() (*string, bool) {
 	if o == nil || IsNil(o.Title) {
 		return nil, false
 	}
@@ -141,7 +138,7 @@ func (o *Run) GetTitleOk() (*string, bool) {
 }
 
 // HasTitle returns a boolean if a field has been set.
-func (o *Run) HasTitle() bool {
+func (o *RunQuery) HasTitle() bool {
 	if o != nil && !IsNil(o.Title) {
 		return true
 	}
@@ -150,12 +147,12 @@ func (o *Run) HasTitle() bool {
 }
 
 // SetTitle gets a reference to the given string and assigns it to the Title field.
-func (o *Run) SetTitle(v string) {
+func (o *RunQuery) SetTitle(v string) {
 	o.Title = &v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetDescription() string {
+func (o *RunQuery) GetDescription() string {
 	if o == nil || IsNil(o.Description.Get()) {
 		var ret string
 		return ret
@@ -166,7 +163,7 @@ func (o *Run) GetDescription() string {
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetDescriptionOk() (*string, bool) {
+func (o *RunQuery) GetDescriptionOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -174,7 +171,7 @@ func (o *Run) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *Run) HasDescription() bool {
+func (o *RunQuery) HasDescription() bool {
 	if o != nil && o.Description.IsSet() {
 		return true
 	}
@@ -183,22 +180,22 @@ func (o *Run) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given NullableString and assigns it to the Description field.
-func (o *Run) SetDescription(v string) {
+func (o *RunQuery) SetDescription(v string) {
 	o.Description.Set(&v)
 }
 
 // SetDescriptionNil sets the value for Description to be an explicit nil
-func (o *Run) SetDescriptionNil() {
+func (o *RunQuery) SetDescriptionNil() {
 	o.Description.Set(nil)
 }
 
 // UnsetDescription ensures that no value is present for Description, not even an explicit nil
-func (o *Run) UnsetDescription() {
+func (o *RunQuery) UnsetDescription() {
 	o.Description.Unset()
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *Run) GetStatus() int32 {
+func (o *RunQuery) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -208,7 +205,7 @@ func (o *Run) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetStatusOk() (*int32, bool) {
+func (o *RunQuery) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -216,7 +213,7 @@ func (o *Run) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *Run) HasStatus() bool {
+func (o *RunQuery) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -225,12 +222,12 @@ func (o *Run) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *Run) SetStatus(v int32) {
+func (o *RunQuery) SetStatus(v int32) {
 	o.Status = &v
 }
 
 // GetStatusText returns the StatusText field value if set, zero value otherwise.
-func (o *Run) GetStatusText() string {
+func (o *RunQuery) GetStatusText() string {
 	if o == nil || IsNil(o.StatusText) {
 		var ret string
 		return ret
@@ -240,7 +237,7 @@ func (o *Run) GetStatusText() string {
 
 // GetStatusTextOk returns a tuple with the StatusText field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetStatusTextOk() (*string, bool) {
+func (o *RunQuery) GetStatusTextOk() (*string, bool) {
 	if o == nil || IsNil(o.StatusText) {
 		return nil, false
 	}
@@ -248,7 +245,7 @@ func (o *Run) GetStatusTextOk() (*string, bool) {
 }
 
 // HasStatusText returns a boolean if a field has been set.
-func (o *Run) HasStatusText() bool {
+func (o *RunQuery) HasStatusText() bool {
 	if o != nil && !IsNil(o.StatusText) {
 		return true
 	}
@@ -257,12 +254,12 @@ func (o *Run) HasStatusText() bool {
 }
 
 // SetStatusText gets a reference to the given string and assigns it to the StatusText field.
-func (o *Run) SetStatusText(v string) {
+func (o *RunQuery) SetStatusText(v string) {
 	o.StatusText = &v
 }
 
 // GetStartTime returns the StartTime field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetStartTime() time.Time {
+func (o *RunQuery) GetStartTime() time.Time {
 	if o == nil || IsNil(o.StartTime.Get()) {
 		var ret time.Time
 		return ret
@@ -273,7 +270,7 @@ func (o *Run) GetStartTime() time.Time {
 // GetStartTimeOk returns a tuple with the StartTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetStartTimeOk() (*time.Time, bool) {
+func (o *RunQuery) GetStartTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -281,7 +278,7 @@ func (o *Run) GetStartTimeOk() (*time.Time, bool) {
 }
 
 // HasStartTime returns a boolean if a field has been set.
-func (o *Run) HasStartTime() bool {
+func (o *RunQuery) HasStartTime() bool {
 	if o != nil && o.StartTime.IsSet() {
 		return true
 	}
@@ -290,22 +287,22 @@ func (o *Run) HasStartTime() bool {
 }
 
 // SetStartTime gets a reference to the given NullableTime and assigns it to the StartTime field.
-func (o *Run) SetStartTime(v time.Time) {
+func (o *RunQuery) SetStartTime(v time.Time) {
 	o.StartTime.Set(&v)
 }
 
 // SetStartTimeNil sets the value for StartTime to be an explicit nil
-func (o *Run) SetStartTimeNil() {
+func (o *RunQuery) SetStartTimeNil() {
 	o.StartTime.Set(nil)
 }
 
 // UnsetStartTime ensures that no value is present for StartTime, not even an explicit nil
-func (o *Run) UnsetStartTime() {
+func (o *RunQuery) UnsetStartTime() {
 	o.StartTime.Unset()
 }
 
 // GetEndTime returns the EndTime field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetEndTime() time.Time {
+func (o *RunQuery) GetEndTime() time.Time {
 	if o == nil || IsNil(o.EndTime.Get()) {
 		var ret time.Time
 		return ret
@@ -316,7 +313,7 @@ func (o *Run) GetEndTime() time.Time {
 // GetEndTimeOk returns a tuple with the EndTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetEndTimeOk() (*time.Time, bool) {
+func (o *RunQuery) GetEndTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -324,7 +321,7 @@ func (o *Run) GetEndTimeOk() (*time.Time, bool) {
 }
 
 // HasEndTime returns a boolean if a field has been set.
-func (o *Run) HasEndTime() bool {
+func (o *RunQuery) HasEndTime() bool {
 	if o != nil && o.EndTime.IsSet() {
 		return true
 	}
@@ -333,22 +330,22 @@ func (o *Run) HasEndTime() bool {
 }
 
 // SetEndTime gets a reference to the given NullableTime and assigns it to the EndTime field.
-func (o *Run) SetEndTime(v time.Time) {
+func (o *RunQuery) SetEndTime(v time.Time) {
 	o.EndTime.Set(&v)
 }
 
 // SetEndTimeNil sets the value for EndTime to be an explicit nil
-func (o *Run) SetEndTimeNil() {
+func (o *RunQuery) SetEndTimeNil() {
 	o.EndTime.Set(nil)
 }
 
 // UnsetEndTime ensures that no value is present for EndTime, not even an explicit nil
-func (o *Run) UnsetEndTime() {
+func (o *RunQuery) UnsetEndTime() {
 	o.EndTime.Unset()
 }
 
 // GetPublic returns the Public field value if set, zero value otherwise.
-func (o *Run) GetPublic() bool {
+func (o *RunQuery) GetPublic() bool {
 	if o == nil || IsNil(o.Public) {
 		var ret bool
 		return ret
@@ -358,7 +355,7 @@ func (o *Run) GetPublic() bool {
 
 // GetPublicOk returns a tuple with the Public field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetPublicOk() (*bool, bool) {
+func (o *RunQuery) GetPublicOk() (*bool, bool) {
 	if o == nil || IsNil(o.Public) {
 		return nil, false
 	}
@@ -366,7 +363,7 @@ func (o *Run) GetPublicOk() (*bool, bool) {
 }
 
 // HasPublic returns a boolean if a field has been set.
-func (o *Run) HasPublic() bool {
+func (o *RunQuery) HasPublic() bool {
 	if o != nil && !IsNil(o.Public) {
 		return true
 	}
@@ -375,12 +372,12 @@ func (o *Run) HasPublic() bool {
 }
 
 // SetPublic gets a reference to the given bool and assigns it to the Public field.
-func (o *Run) SetPublic(v bool) {
+func (o *RunQuery) SetPublic(v bool) {
 	o.Public = &v
 }
 
 // GetStats returns the Stats field value if set, zero value otherwise.
-func (o *Run) GetStats() RunStats {
+func (o *RunQuery) GetStats() RunStats {
 	if o == nil || IsNil(o.Stats) {
 		var ret RunStats
 		return ret
@@ -390,7 +387,7 @@ func (o *Run) GetStats() RunStats {
 
 // GetStatsOk returns a tuple with the Stats field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetStatsOk() (*RunStats, bool) {
+func (o *RunQuery) GetStatsOk() (*RunStats, bool) {
 	if o == nil || IsNil(o.Stats) {
 		return nil, false
 	}
@@ -398,7 +395,7 @@ func (o *Run) GetStatsOk() (*RunStats, bool) {
 }
 
 // HasStats returns a boolean if a field has been set.
-func (o *Run) HasStats() bool {
+func (o *RunQuery) HasStats() bool {
 	if o != nil && !IsNil(o.Stats) {
 		return true
 	}
@@ -407,12 +404,12 @@ func (o *Run) HasStats() bool {
 }
 
 // SetStats gets a reference to the given RunStats and assigns it to the Stats field.
-func (o *Run) SetStats(v RunStats) {
+func (o *RunQuery) SetStats(v RunStats) {
 	o.Stats = &v
 }
 
 // GetTimeSpent returns the TimeSpent field value if set, zero value otherwise.
-func (o *Run) GetTimeSpent() int64 {
+func (o *RunQuery) GetTimeSpent() int64 {
 	if o == nil || IsNil(o.TimeSpent) {
 		var ret int64
 		return ret
@@ -422,7 +419,7 @@ func (o *Run) GetTimeSpent() int64 {
 
 // GetTimeSpentOk returns a tuple with the TimeSpent field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetTimeSpentOk() (*int64, bool) {
+func (o *RunQuery) GetTimeSpentOk() (*int64, bool) {
 	if o == nil || IsNil(o.TimeSpent) {
 		return nil, false
 	}
@@ -430,7 +427,7 @@ func (o *Run) GetTimeSpentOk() (*int64, bool) {
 }
 
 // HasTimeSpent returns a boolean if a field has been set.
-func (o *Run) HasTimeSpent() bool {
+func (o *RunQuery) HasTimeSpent() bool {
 	if o != nil && !IsNil(o.TimeSpent) {
 		return true
 	}
@@ -439,12 +436,12 @@ func (o *Run) HasTimeSpent() bool {
 }
 
 // SetTimeSpent gets a reference to the given int64 and assigns it to the TimeSpent field.
-func (o *Run) SetTimeSpent(v int64) {
+func (o *RunQuery) SetTimeSpent(v int64) {
 	o.TimeSpent = &v
 }
 
 // GetEnvironment returns the Environment field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetEnvironment() RunEnvironment {
+func (o *RunQuery) GetEnvironment() RunEnvironment {
 	if o == nil || IsNil(o.Environment.Get()) {
 		var ret RunEnvironment
 		return ret
@@ -455,7 +452,7 @@ func (o *Run) GetEnvironment() RunEnvironment {
 // GetEnvironmentOk returns a tuple with the Environment field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetEnvironmentOk() (*RunEnvironment, bool) {
+func (o *RunQuery) GetEnvironmentOk() (*RunEnvironment, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -463,7 +460,7 @@ func (o *Run) GetEnvironmentOk() (*RunEnvironment, bool) {
 }
 
 // HasEnvironment returns a boolean if a field has been set.
-func (o *Run) HasEnvironment() bool {
+func (o *RunQuery) HasEnvironment() bool {
 	if o != nil && o.Environment.IsSet() {
 		return true
 	}
@@ -472,22 +469,22 @@ func (o *Run) HasEnvironment() bool {
 }
 
 // SetEnvironment gets a reference to the given NullableRunEnvironment and assigns it to the Environment field.
-func (o *Run) SetEnvironment(v RunEnvironment) {
+func (o *RunQuery) SetEnvironment(v RunEnvironment) {
 	o.Environment.Set(&v)
 }
 
 // SetEnvironmentNil sets the value for Environment to be an explicit nil
-func (o *Run) SetEnvironmentNil() {
+func (o *RunQuery) SetEnvironmentNil() {
 	o.Environment.Set(nil)
 }
 
 // UnsetEnvironment ensures that no value is present for Environment, not even an explicit nil
-func (o *Run) UnsetEnvironment() {
+func (o *RunQuery) UnsetEnvironment() {
 	o.Environment.Unset()
 }
 
 // GetMilestone returns the Milestone field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetMilestone() RunMilestone {
+func (o *RunQuery) GetMilestone() RunMilestone {
 	if o == nil || IsNil(o.Milestone.Get()) {
 		var ret RunMilestone
 		return ret
@@ -498,7 +495,7 @@ func (o *Run) GetMilestone() RunMilestone {
 // GetMilestoneOk returns a tuple with the Milestone field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetMilestoneOk() (*RunMilestone, bool) {
+func (o *RunQuery) GetMilestoneOk() (*RunMilestone, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -506,7 +503,7 @@ func (o *Run) GetMilestoneOk() (*RunMilestone, bool) {
 }
 
 // HasMilestone returns a boolean if a field has been set.
-func (o *Run) HasMilestone() bool {
+func (o *RunQuery) HasMilestone() bool {
 	if o != nil && o.Milestone.IsSet() {
 		return true
 	}
@@ -515,22 +512,22 @@ func (o *Run) HasMilestone() bool {
 }
 
 // SetMilestone gets a reference to the given NullableRunMilestone and assigns it to the Milestone field.
-func (o *Run) SetMilestone(v RunMilestone) {
+func (o *RunQuery) SetMilestone(v RunMilestone) {
 	o.Milestone.Set(&v)
 }
 
 // SetMilestoneNil sets the value for Milestone to be an explicit nil
-func (o *Run) SetMilestoneNil() {
+func (o *RunQuery) SetMilestoneNil() {
 	o.Milestone.Set(nil)
 }
 
 // UnsetMilestone ensures that no value is present for Milestone, not even an explicit nil
-func (o *Run) UnsetMilestone() {
+func (o *RunQuery) UnsetMilestone() {
 	o.Milestone.Unset()
 }
 
 // GetCustomFields returns the CustomFields field value if set, zero value otherwise.
-func (o *Run) GetCustomFields() []CustomFieldValue {
+func (o *RunQuery) GetCustomFields() []CustomFieldValue {
 	if o == nil || IsNil(o.CustomFields) {
 		var ret []CustomFieldValue
 		return ret
@@ -540,7 +537,7 @@ func (o *Run) GetCustomFields() []CustomFieldValue {
 
 // GetCustomFieldsOk returns a tuple with the CustomFields field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetCustomFieldsOk() ([]CustomFieldValue, bool) {
+func (o *RunQuery) GetCustomFieldsOk() ([]CustomFieldValue, bool) {
 	if o == nil || IsNil(o.CustomFields) {
 		return nil, false
 	}
@@ -548,7 +545,7 @@ func (o *Run) GetCustomFieldsOk() ([]CustomFieldValue, bool) {
 }
 
 // HasCustomFields returns a boolean if a field has been set.
-func (o *Run) HasCustomFields() bool {
+func (o *RunQuery) HasCustomFields() bool {
 	if o != nil && !IsNil(o.CustomFields) {
 		return true
 	}
@@ -557,12 +554,12 @@ func (o *Run) HasCustomFields() bool {
 }
 
 // SetCustomFields gets a reference to the given []CustomFieldValue and assigns it to the CustomFields field.
-func (o *Run) SetCustomFields(v []CustomFieldValue) {
+func (o *RunQuery) SetCustomFields(v []CustomFieldValue) {
 	o.CustomFields = v
 }
 
 // GetTags returns the Tags field value if set, zero value otherwise.
-func (o *Run) GetTags() []TagValue {
+func (o *RunQuery) GetTags() []TagValue {
 	if o == nil || IsNil(o.Tags) {
 		var ret []TagValue
 		return ret
@@ -572,7 +569,7 @@ func (o *Run) GetTags() []TagValue {
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetTagsOk() ([]TagValue, bool) {
+func (o *RunQuery) GetTagsOk() ([]TagValue, bool) {
 	if o == nil || IsNil(o.Tags) {
 		return nil, false
 	}
@@ -580,7 +577,7 @@ func (o *Run) GetTagsOk() ([]TagValue, bool) {
 }
 
 // HasTags returns a boolean if a field has been set.
-func (o *Run) HasTags() bool {
+func (o *RunQuery) HasTags() bool {
 	if o != nil && !IsNil(o.Tags) {
 		return true
 	}
@@ -589,12 +586,12 @@ func (o *Run) HasTags() bool {
 }
 
 // SetTags gets a reference to the given []TagValue and assigns it to the Tags field.
-func (o *Run) SetTags(v []TagValue) {
+func (o *RunQuery) SetTags(v []TagValue) {
 	o.Tags = v
 }
 
 // GetCases returns the Cases field value if set, zero value otherwise.
-func (o *Run) GetCases() []int64 {
+func (o *RunQuery) GetCases() []int64 {
 	if o == nil || IsNil(o.Cases) {
 		var ret []int64
 		return ret
@@ -604,7 +601,7 @@ func (o *Run) GetCases() []int64 {
 
 // GetCasesOk returns a tuple with the Cases field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Run) GetCasesOk() ([]int64, bool) {
+func (o *RunQuery) GetCasesOk() ([]int64, bool) {
 	if o == nil || IsNil(o.Cases) {
 		return nil, false
 	}
@@ -612,7 +609,7 @@ func (o *Run) GetCasesOk() ([]int64, bool) {
 }
 
 // HasCases returns a boolean if a field has been set.
-func (o *Run) HasCases() bool {
+func (o *RunQuery) HasCases() bool {
 	if o != nil && !IsNil(o.Cases) {
 		return true
 	}
@@ -621,12 +618,12 @@ func (o *Run) HasCases() bool {
 }
 
 // SetCases gets a reference to the given []int64 and assigns it to the Cases field.
-func (o *Run) SetCases(v []int64) {
+func (o *RunQuery) SetCases(v []int64) {
 	o.Cases = v
 }
 
 // GetPlanId returns the PlanId field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Run) GetPlanId() int64 {
+func (o *RunQuery) GetPlanId() int64 {
 	if o == nil || IsNil(o.PlanId.Get()) {
 		var ret int64
 		return ret
@@ -637,7 +634,7 @@ func (o *Run) GetPlanId() int64 {
 // GetPlanIdOk returns a tuple with the PlanId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Run) GetPlanIdOk() (*int64, bool) {
+func (o *RunQuery) GetPlanIdOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -645,7 +642,7 @@ func (o *Run) GetPlanIdOk() (*int64, bool) {
 }
 
 // HasPlanId returns a boolean if a field has been set.
-func (o *Run) HasPlanId() bool {
+func (o *RunQuery) HasPlanId() bool {
 	if o != nil && o.PlanId.IsSet() {
 		return true
 	}
@@ -654,21 +651,21 @@ func (o *Run) HasPlanId() bool {
 }
 
 // SetPlanId gets a reference to the given NullableInt64 and assigns it to the PlanId field.
-func (o *Run) SetPlanId(v int64) {
+func (o *RunQuery) SetPlanId(v int64) {
 	o.PlanId.Set(&v)
 }
 
 // SetPlanIdNil sets the value for PlanId to be an explicit nil
-func (o *Run) SetPlanIdNil() {
+func (o *RunQuery) SetPlanIdNil() {
 	o.PlanId.Set(nil)
 }
 
 // UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
-func (o *Run) UnsetPlanId() {
+func (o *RunQuery) UnsetPlanId() {
 	o.PlanId.Unset()
 }
 
-func (o Run) MarshalJSON() ([]byte, error) {
+func (o RunQuery) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -676,14 +673,12 @@ func (o Run) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Run) ToMap() (map[string]interface{}, error) {
+func (o RunQuery) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if !IsNil(o.RunId) {
-		toSerialize["run_id"] = o.RunId
-	}
+	toSerialize["run_id"] = o.RunId
 	if !IsNil(o.Title) {
 		toSerialize["title"] = o.Title
 	}
@@ -732,38 +727,75 @@ func (o Run) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableRun struct {
-	value *Run
+func (o *RunQuery) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"run_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varRunQuery := _RunQuery{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varRunQuery)
+
+	if err != nil {
+		return err
+	}
+
+	*o = RunQuery(varRunQuery)
+
+	return err
+}
+
+type NullableRunQuery struct {
+	value *RunQuery
 	isSet bool
 }
 
-func (v NullableRun) Get() *Run {
+func (v NullableRunQuery) Get() *RunQuery {
 	return v.value
 }
 
-func (v *NullableRun) Set(val *Run) {
+func (v *NullableRunQuery) Set(val *RunQuery) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableRun) IsSet() bool {
+func (v NullableRunQuery) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableRun) Unset() {
+func (v *NullableRunQuery) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableRun(val *Run) *NullableRun {
-	return &NullableRun{value: val, isSet: true}
+func NewNullableRunQuery(val *RunQuery) *NullableRunQuery {
+	return &NullableRunQuery{value: val, isSet: true}
 }
 
-func (v NullableRun) MarshalJSON() ([]byte, error) {
+func (v NullableRunQuery) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableRun) UnmarshalJSON(src []byte) error {
+func (v *NullableRunQuery) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

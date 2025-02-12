@@ -12,17 +12,19 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
-// checks if the Result type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Result{}
+// checks if the ResultQuery type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ResultQuery{}
 
-// Result struct for Result
-type Result struct {
+// ResultQuery struct for ResultQuery
+type ResultQuery struct {
 	Hash        *string          `json:"hash,omitempty"`
-	ResultHash  *string          `json:"result_hash,omitempty"`
+	ResultHash  string           `json:"result_hash"`
 	Comment     NullableString   `json:"comment,omitempty"`
 	Stacktrace  NullableString   `json:"stacktrace,omitempty"`
 	RunId       *int64           `json:"run_id,omitempty"`
@@ -35,25 +37,28 @@ type Result struct {
 	Attachments []Attachment     `json:"attachments,omitempty"`
 }
 
-// NewResult instantiates a new Result object
+type _ResultQuery ResultQuery
+
+// NewResultQuery instantiates a new ResultQuery object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewResult() *Result {
-	this := Result{}
+func NewResultQuery(resultHash string) *ResultQuery {
+	this := ResultQuery{}
+	this.ResultHash = resultHash
 	return &this
 }
 
-// NewResultWithDefaults instantiates a new Result object
+// NewResultQueryWithDefaults instantiates a new ResultQuery object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewResultWithDefaults() *Result {
-	this := Result{}
+func NewResultQueryWithDefaults() *ResultQuery {
+	this := ResultQuery{}
 	return &this
 }
 
 // GetHash returns the Hash field value if set, zero value otherwise.
-func (o *Result) GetHash() string {
+func (o *ResultQuery) GetHash() string {
 	if o == nil || IsNil(o.Hash) {
 		var ret string
 		return ret
@@ -63,7 +68,7 @@ func (o *Result) GetHash() string {
 
 // GetHashOk returns a tuple with the Hash field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetHashOk() (*string, bool) {
+func (o *ResultQuery) GetHashOk() (*string, bool) {
 	if o == nil || IsNil(o.Hash) {
 		return nil, false
 	}
@@ -71,7 +76,7 @@ func (o *Result) GetHashOk() (*string, bool) {
 }
 
 // HasHash returns a boolean if a field has been set.
-func (o *Result) HasHash() bool {
+func (o *ResultQuery) HasHash() bool {
 	if o != nil && !IsNil(o.Hash) {
 		return true
 	}
@@ -80,44 +85,36 @@ func (o *Result) HasHash() bool {
 }
 
 // SetHash gets a reference to the given string and assigns it to the Hash field.
-func (o *Result) SetHash(v string) {
+func (o *ResultQuery) SetHash(v string) {
 	o.Hash = &v
 }
 
-// GetResultHash returns the ResultHash field value if set, zero value otherwise.
-func (o *Result) GetResultHash() string {
-	if o == nil || IsNil(o.ResultHash) {
+// GetResultHash returns the ResultHash field value
+func (o *ResultQuery) GetResultHash() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ResultHash
+
+	return o.ResultHash
 }
 
-// GetResultHashOk returns a tuple with the ResultHash field value if set, nil otherwise
+// GetResultHashOk returns a tuple with the ResultHash field value
 // and a boolean to check if the value has been set.
-func (o *Result) GetResultHashOk() (*string, bool) {
-	if o == nil || IsNil(o.ResultHash) {
+func (o *ResultQuery) GetResultHashOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ResultHash, true
+	return &o.ResultHash, true
 }
 
-// HasResultHash returns a boolean if a field has been set.
-func (o *Result) HasResultHash() bool {
-	if o != nil && !IsNil(o.ResultHash) {
-		return true
-	}
-
-	return false
-}
-
-// SetResultHash gets a reference to the given string and assigns it to the ResultHash field.
-func (o *Result) SetResultHash(v string) {
-	o.ResultHash = &v
+// SetResultHash sets field value
+func (o *ResultQuery) SetResultHash(v string) {
+	o.ResultHash = v
 }
 
 // GetComment returns the Comment field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Result) GetComment() string {
+func (o *ResultQuery) GetComment() string {
 	if o == nil || IsNil(o.Comment.Get()) {
 		var ret string
 		return ret
@@ -128,7 +125,7 @@ func (o *Result) GetComment() string {
 // GetCommentOk returns a tuple with the Comment field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Result) GetCommentOk() (*string, bool) {
+func (o *ResultQuery) GetCommentOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -136,7 +133,7 @@ func (o *Result) GetCommentOk() (*string, bool) {
 }
 
 // HasComment returns a boolean if a field has been set.
-func (o *Result) HasComment() bool {
+func (o *ResultQuery) HasComment() bool {
 	if o != nil && o.Comment.IsSet() {
 		return true
 	}
@@ -145,22 +142,22 @@ func (o *Result) HasComment() bool {
 }
 
 // SetComment gets a reference to the given NullableString and assigns it to the Comment field.
-func (o *Result) SetComment(v string) {
+func (o *ResultQuery) SetComment(v string) {
 	o.Comment.Set(&v)
 }
 
 // SetCommentNil sets the value for Comment to be an explicit nil
-func (o *Result) SetCommentNil() {
+func (o *ResultQuery) SetCommentNil() {
 	o.Comment.Set(nil)
 }
 
 // UnsetComment ensures that no value is present for Comment, not even an explicit nil
-func (o *Result) UnsetComment() {
+func (o *ResultQuery) UnsetComment() {
 	o.Comment.Unset()
 }
 
 // GetStacktrace returns the Stacktrace field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Result) GetStacktrace() string {
+func (o *ResultQuery) GetStacktrace() string {
 	if o == nil || IsNil(o.Stacktrace.Get()) {
 		var ret string
 		return ret
@@ -171,7 +168,7 @@ func (o *Result) GetStacktrace() string {
 // GetStacktraceOk returns a tuple with the Stacktrace field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Result) GetStacktraceOk() (*string, bool) {
+func (o *ResultQuery) GetStacktraceOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -179,7 +176,7 @@ func (o *Result) GetStacktraceOk() (*string, bool) {
 }
 
 // HasStacktrace returns a boolean if a field has been set.
-func (o *Result) HasStacktrace() bool {
+func (o *ResultQuery) HasStacktrace() bool {
 	if o != nil && o.Stacktrace.IsSet() {
 		return true
 	}
@@ -188,22 +185,22 @@ func (o *Result) HasStacktrace() bool {
 }
 
 // SetStacktrace gets a reference to the given NullableString and assigns it to the Stacktrace field.
-func (o *Result) SetStacktrace(v string) {
+func (o *ResultQuery) SetStacktrace(v string) {
 	o.Stacktrace.Set(&v)
 }
 
 // SetStacktraceNil sets the value for Stacktrace to be an explicit nil
-func (o *Result) SetStacktraceNil() {
+func (o *ResultQuery) SetStacktraceNil() {
 	o.Stacktrace.Set(nil)
 }
 
 // UnsetStacktrace ensures that no value is present for Stacktrace, not even an explicit nil
-func (o *Result) UnsetStacktrace() {
+func (o *ResultQuery) UnsetStacktrace() {
 	o.Stacktrace.Unset()
 }
 
 // GetRunId returns the RunId field value if set, zero value otherwise.
-func (o *Result) GetRunId() int64 {
+func (o *ResultQuery) GetRunId() int64 {
 	if o == nil || IsNil(o.RunId) {
 		var ret int64
 		return ret
@@ -213,7 +210,7 @@ func (o *Result) GetRunId() int64 {
 
 // GetRunIdOk returns a tuple with the RunId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetRunIdOk() (*int64, bool) {
+func (o *ResultQuery) GetRunIdOk() (*int64, bool) {
 	if o == nil || IsNil(o.RunId) {
 		return nil, false
 	}
@@ -221,7 +218,7 @@ func (o *Result) GetRunIdOk() (*int64, bool) {
 }
 
 // HasRunId returns a boolean if a field has been set.
-func (o *Result) HasRunId() bool {
+func (o *ResultQuery) HasRunId() bool {
 	if o != nil && !IsNil(o.RunId) {
 		return true
 	}
@@ -230,12 +227,12 @@ func (o *Result) HasRunId() bool {
 }
 
 // SetRunId gets a reference to the given int64 and assigns it to the RunId field.
-func (o *Result) SetRunId(v int64) {
+func (o *ResultQuery) SetRunId(v int64) {
 	o.RunId = &v
 }
 
 // GetCaseId returns the CaseId field value if set, zero value otherwise.
-func (o *Result) GetCaseId() int64 {
+func (o *ResultQuery) GetCaseId() int64 {
 	if o == nil || IsNil(o.CaseId) {
 		var ret int64
 		return ret
@@ -245,7 +242,7 @@ func (o *Result) GetCaseId() int64 {
 
 // GetCaseIdOk returns a tuple with the CaseId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetCaseIdOk() (*int64, bool) {
+func (o *ResultQuery) GetCaseIdOk() (*int64, bool) {
 	if o == nil || IsNil(o.CaseId) {
 		return nil, false
 	}
@@ -253,7 +250,7 @@ func (o *Result) GetCaseIdOk() (*int64, bool) {
 }
 
 // HasCaseId returns a boolean if a field has been set.
-func (o *Result) HasCaseId() bool {
+func (o *ResultQuery) HasCaseId() bool {
 	if o != nil && !IsNil(o.CaseId) {
 		return true
 	}
@@ -262,12 +259,12 @@ func (o *Result) HasCaseId() bool {
 }
 
 // SetCaseId gets a reference to the given int64 and assigns it to the CaseId field.
-func (o *Result) SetCaseId(v int64) {
+func (o *ResultQuery) SetCaseId(v int64) {
 	o.CaseId = &v
 }
 
 // GetSteps returns the Steps field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Result) GetSteps() []TestStepResult {
+func (o *ResultQuery) GetSteps() []TestStepResult {
 	if o == nil {
 		var ret []TestStepResult
 		return ret
@@ -278,7 +275,7 @@ func (o *Result) GetSteps() []TestStepResult {
 // GetStepsOk returns a tuple with the Steps field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Result) GetStepsOk() ([]TestStepResult, bool) {
+func (o *ResultQuery) GetStepsOk() ([]TestStepResult, bool) {
 	if o == nil || IsNil(o.Steps) {
 		return nil, false
 	}
@@ -286,7 +283,7 @@ func (o *Result) GetStepsOk() ([]TestStepResult, bool) {
 }
 
 // HasSteps returns a boolean if a field has been set.
-func (o *Result) HasSteps() bool {
+func (o *ResultQuery) HasSteps() bool {
 	if o != nil && !IsNil(o.Steps) {
 		return true
 	}
@@ -295,12 +292,12 @@ func (o *Result) HasSteps() bool {
 }
 
 // SetSteps gets a reference to the given []TestStepResult and assigns it to the Steps field.
-func (o *Result) SetSteps(v []TestStepResult) {
+func (o *ResultQuery) SetSteps(v []TestStepResult) {
 	o.Steps = v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *Result) GetStatus() string {
+func (o *ResultQuery) GetStatus() string {
 	if o == nil || IsNil(o.Status) {
 		var ret string
 		return ret
@@ -310,7 +307,7 @@ func (o *Result) GetStatus() string {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetStatusOk() (*string, bool) {
+func (o *ResultQuery) GetStatusOk() (*string, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -318,7 +315,7 @@ func (o *Result) GetStatusOk() (*string, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *Result) HasStatus() bool {
+func (o *ResultQuery) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -327,12 +324,12 @@ func (o *Result) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given string and assigns it to the Status field.
-func (o *Result) SetStatus(v string) {
+func (o *ResultQuery) SetStatus(v string) {
 	o.Status = &v
 }
 
 // GetIsApiResult returns the IsApiResult field value if set, zero value otherwise.
-func (o *Result) GetIsApiResult() bool {
+func (o *ResultQuery) GetIsApiResult() bool {
 	if o == nil || IsNil(o.IsApiResult) {
 		var ret bool
 		return ret
@@ -342,7 +339,7 @@ func (o *Result) GetIsApiResult() bool {
 
 // GetIsApiResultOk returns a tuple with the IsApiResult field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetIsApiResultOk() (*bool, bool) {
+func (o *ResultQuery) GetIsApiResultOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsApiResult) {
 		return nil, false
 	}
@@ -350,7 +347,7 @@ func (o *Result) GetIsApiResultOk() (*bool, bool) {
 }
 
 // HasIsApiResult returns a boolean if a field has been set.
-func (o *Result) HasIsApiResult() bool {
+func (o *ResultQuery) HasIsApiResult() bool {
 	if o != nil && !IsNil(o.IsApiResult) {
 		return true
 	}
@@ -359,12 +356,12 @@ func (o *Result) HasIsApiResult() bool {
 }
 
 // SetIsApiResult gets a reference to the given bool and assigns it to the IsApiResult field.
-func (o *Result) SetIsApiResult(v bool) {
+func (o *ResultQuery) SetIsApiResult(v bool) {
 	o.IsApiResult = &v
 }
 
 // GetTimeSpentMs returns the TimeSpentMs field value if set, zero value otherwise.
-func (o *Result) GetTimeSpentMs() int64 {
+func (o *ResultQuery) GetTimeSpentMs() int64 {
 	if o == nil || IsNil(o.TimeSpentMs) {
 		var ret int64
 		return ret
@@ -374,7 +371,7 @@ func (o *Result) GetTimeSpentMs() int64 {
 
 // GetTimeSpentMsOk returns a tuple with the TimeSpentMs field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetTimeSpentMsOk() (*int64, bool) {
+func (o *ResultQuery) GetTimeSpentMsOk() (*int64, bool) {
 	if o == nil || IsNil(o.TimeSpentMs) {
 		return nil, false
 	}
@@ -382,7 +379,7 @@ func (o *Result) GetTimeSpentMsOk() (*int64, bool) {
 }
 
 // HasTimeSpentMs returns a boolean if a field has been set.
-func (o *Result) HasTimeSpentMs() bool {
+func (o *ResultQuery) HasTimeSpentMs() bool {
 	if o != nil && !IsNil(o.TimeSpentMs) {
 		return true
 	}
@@ -391,12 +388,12 @@ func (o *Result) HasTimeSpentMs() bool {
 }
 
 // SetTimeSpentMs gets a reference to the given int64 and assigns it to the TimeSpentMs field.
-func (o *Result) SetTimeSpentMs(v int64) {
+func (o *ResultQuery) SetTimeSpentMs(v int64) {
 	o.TimeSpentMs = &v
 }
 
 // GetEndTime returns the EndTime field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Result) GetEndTime() time.Time {
+func (o *ResultQuery) GetEndTime() time.Time {
 	if o == nil || IsNil(o.EndTime.Get()) {
 		var ret time.Time
 		return ret
@@ -407,7 +404,7 @@ func (o *Result) GetEndTime() time.Time {
 // GetEndTimeOk returns a tuple with the EndTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Result) GetEndTimeOk() (*time.Time, bool) {
+func (o *ResultQuery) GetEndTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -415,7 +412,7 @@ func (o *Result) GetEndTimeOk() (*time.Time, bool) {
 }
 
 // HasEndTime returns a boolean if a field has been set.
-func (o *Result) HasEndTime() bool {
+func (o *ResultQuery) HasEndTime() bool {
 	if o != nil && o.EndTime.IsSet() {
 		return true
 	}
@@ -424,22 +421,22 @@ func (o *Result) HasEndTime() bool {
 }
 
 // SetEndTime gets a reference to the given NullableTime and assigns it to the EndTime field.
-func (o *Result) SetEndTime(v time.Time) {
+func (o *ResultQuery) SetEndTime(v time.Time) {
 	o.EndTime.Set(&v)
 }
 
 // SetEndTimeNil sets the value for EndTime to be an explicit nil
-func (o *Result) SetEndTimeNil() {
+func (o *ResultQuery) SetEndTimeNil() {
 	o.EndTime.Set(nil)
 }
 
 // UnsetEndTime ensures that no value is present for EndTime, not even an explicit nil
-func (o *Result) UnsetEndTime() {
+func (o *ResultQuery) UnsetEndTime() {
 	o.EndTime.Unset()
 }
 
 // GetAttachments returns the Attachments field value if set, zero value otherwise.
-func (o *Result) GetAttachments() []Attachment {
+func (o *ResultQuery) GetAttachments() []Attachment {
 	if o == nil || IsNil(o.Attachments) {
 		var ret []Attachment
 		return ret
@@ -449,7 +446,7 @@ func (o *Result) GetAttachments() []Attachment {
 
 // GetAttachmentsOk returns a tuple with the Attachments field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Result) GetAttachmentsOk() ([]Attachment, bool) {
+func (o *ResultQuery) GetAttachmentsOk() ([]Attachment, bool) {
 	if o == nil || IsNil(o.Attachments) {
 		return nil, false
 	}
@@ -457,7 +454,7 @@ func (o *Result) GetAttachmentsOk() ([]Attachment, bool) {
 }
 
 // HasAttachments returns a boolean if a field has been set.
-func (o *Result) HasAttachments() bool {
+func (o *ResultQuery) HasAttachments() bool {
 	if o != nil && !IsNil(o.Attachments) {
 		return true
 	}
@@ -466,11 +463,11 @@ func (o *Result) HasAttachments() bool {
 }
 
 // SetAttachments gets a reference to the given []Attachment and assigns it to the Attachments field.
-func (o *Result) SetAttachments(v []Attachment) {
+func (o *ResultQuery) SetAttachments(v []Attachment) {
 	o.Attachments = v
 }
 
-func (o Result) MarshalJSON() ([]byte, error) {
+func (o ResultQuery) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -478,14 +475,12 @@ func (o Result) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Result) ToMap() (map[string]interface{}, error) {
+func (o ResultQuery) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Hash) {
 		toSerialize["hash"] = o.Hash
 	}
-	if !IsNil(o.ResultHash) {
-		toSerialize["result_hash"] = o.ResultHash
-	}
+	toSerialize["result_hash"] = o.ResultHash
 	if o.Comment.IsSet() {
 		toSerialize["comment"] = o.Comment.Get()
 	}
@@ -519,38 +514,75 @@ func (o Result) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableResult struct {
-	value *Result
+func (o *ResultQuery) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"result_hash",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varResultQuery := _ResultQuery{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varResultQuery)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ResultQuery(varResultQuery)
+
+	return err
+}
+
+type NullableResultQuery struct {
+	value *ResultQuery
 	isSet bool
 }
 
-func (v NullableResult) Get() *Result {
+func (v NullableResultQuery) Get() *ResultQuery {
 	return v.value
 }
 
-func (v *NullableResult) Set(val *Result) {
+func (v *NullableResultQuery) Set(val *ResultQuery) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableResult) IsSet() bool {
+func (v NullableResultQuery) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableResult) Unset() {
+func (v *NullableResultQuery) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableResult(val *Result) *NullableResult {
-	return &NullableResult{value: val, isSet: true}
+func NewNullableResultQuery(val *ResultQuery) *NullableResultQuery {
+	return &NullableResultQuery{value: val, isSet: true}
 }
 
-func (v NullableResult) MarshalJSON() ([]byte, error) {
+func (v NullableResultQuery) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableResult) UnmarshalJSON(src []byte) error {
+func (v *NullableResultQuery) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

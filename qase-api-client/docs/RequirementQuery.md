@@ -1,11 +1,11 @@
-# Requirement
+# RequirementQuery
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
-**RequirementId** | Pointer to **int64** |  | [optional] 
+**RequirementId** | **int64** |  | 
 **ParentId** | Pointer to **NullableInt64** |  | [optional] 
 **MemberId** | Pointer to **int64** |  | [optional] 
 **Title** | Pointer to **string** |  | [optional] 
@@ -17,301 +17,296 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewRequirement
+### NewRequirementQuery
 
-`func NewRequirement() *Requirement`
+`func NewRequirementQuery(requirementId int64, ) *RequirementQuery`
 
-NewRequirement instantiates a new Requirement object
+NewRequirementQuery instantiates a new RequirementQuery object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewRequirementWithDefaults
+### NewRequirementQueryWithDefaults
 
-`func NewRequirementWithDefaults() *Requirement`
+`func NewRequirementQueryWithDefaults() *RequirementQuery`
 
-NewRequirementWithDefaults instantiates a new Requirement object
+NewRequirementQueryWithDefaults instantiates a new RequirementQuery object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetId
 
-`func (o *Requirement) GetId() int64`
+`func (o *RequirementQuery) GetId() int64`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *Requirement) GetIdOk() (*int64, bool)`
+`func (o *RequirementQuery) GetIdOk() (*int64, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *Requirement) SetId(v int64)`
+`func (o *RequirementQuery) SetId(v int64)`
 
 SetId sets Id field to given value.
 
 ### HasId
 
-`func (o *Requirement) HasId() bool`
+`func (o *RequirementQuery) HasId() bool`
 
 HasId returns a boolean if a field has been set.
 
 ### GetRequirementId
 
-`func (o *Requirement) GetRequirementId() int64`
+`func (o *RequirementQuery) GetRequirementId() int64`
 
 GetRequirementId returns the RequirementId field if non-nil, zero value otherwise.
 
 ### GetRequirementIdOk
 
-`func (o *Requirement) GetRequirementIdOk() (*int64, bool)`
+`func (o *RequirementQuery) GetRequirementIdOk() (*int64, bool)`
 
 GetRequirementIdOk returns a tuple with the RequirementId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetRequirementId
 
-`func (o *Requirement) SetRequirementId(v int64)`
+`func (o *RequirementQuery) SetRequirementId(v int64)`
 
 SetRequirementId sets RequirementId field to given value.
 
-### HasRequirementId
-
-`func (o *Requirement) HasRequirementId() bool`
-
-HasRequirementId returns a boolean if a field has been set.
 
 ### GetParentId
 
-`func (o *Requirement) GetParentId() int64`
+`func (o *RequirementQuery) GetParentId() int64`
 
 GetParentId returns the ParentId field if non-nil, zero value otherwise.
 
 ### GetParentIdOk
 
-`func (o *Requirement) GetParentIdOk() (*int64, bool)`
+`func (o *RequirementQuery) GetParentIdOk() (*int64, bool)`
 
 GetParentIdOk returns a tuple with the ParentId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetParentId
 
-`func (o *Requirement) SetParentId(v int64)`
+`func (o *RequirementQuery) SetParentId(v int64)`
 
 SetParentId sets ParentId field to given value.
 
 ### HasParentId
 
-`func (o *Requirement) HasParentId() bool`
+`func (o *RequirementQuery) HasParentId() bool`
 
 HasParentId returns a boolean if a field has been set.
 
 ### SetParentIdNil
 
-`func (o *Requirement) SetParentIdNil(b bool)`
+`func (o *RequirementQuery) SetParentIdNil(b bool)`
 
  SetParentIdNil sets the value for ParentId to be an explicit nil
 
 ### UnsetParentId
-`func (o *Requirement) UnsetParentId()`
+`func (o *RequirementQuery) UnsetParentId()`
 
 UnsetParentId ensures that no value is present for ParentId, not even an explicit nil
 ### GetMemberId
 
-`func (o *Requirement) GetMemberId() int64`
+`func (o *RequirementQuery) GetMemberId() int64`
 
 GetMemberId returns the MemberId field if non-nil, zero value otherwise.
 
 ### GetMemberIdOk
 
-`func (o *Requirement) GetMemberIdOk() (*int64, bool)`
+`func (o *RequirementQuery) GetMemberIdOk() (*int64, bool)`
 
 GetMemberIdOk returns a tuple with the MemberId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMemberId
 
-`func (o *Requirement) SetMemberId(v int64)`
+`func (o *RequirementQuery) SetMemberId(v int64)`
 
 SetMemberId sets MemberId field to given value.
 
 ### HasMemberId
 
-`func (o *Requirement) HasMemberId() bool`
+`func (o *RequirementQuery) HasMemberId() bool`
 
 HasMemberId returns a boolean if a field has been set.
 
 ### GetTitle
 
-`func (o *Requirement) GetTitle() string`
+`func (o *RequirementQuery) GetTitle() string`
 
 GetTitle returns the Title field if non-nil, zero value otherwise.
 
 ### GetTitleOk
 
-`func (o *Requirement) GetTitleOk() (*string, bool)`
+`func (o *RequirementQuery) GetTitleOk() (*string, bool)`
 
 GetTitleOk returns a tuple with the Title field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTitle
 
-`func (o *Requirement) SetTitle(v string)`
+`func (o *RequirementQuery) SetTitle(v string)`
 
 SetTitle sets Title field to given value.
 
 ### HasTitle
 
-`func (o *Requirement) HasTitle() bool`
+`func (o *RequirementQuery) HasTitle() bool`
 
 HasTitle returns a boolean if a field has been set.
 
 ### GetDescription
 
-`func (o *Requirement) GetDescription() string`
+`func (o *RequirementQuery) GetDescription() string`
 
 GetDescription returns the Description field if non-nil, zero value otherwise.
 
 ### GetDescriptionOk
 
-`func (o *Requirement) GetDescriptionOk() (*string, bool)`
+`func (o *RequirementQuery) GetDescriptionOk() (*string, bool)`
 
 GetDescriptionOk returns a tuple with the Description field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDescription
 
-`func (o *Requirement) SetDescription(v string)`
+`func (o *RequirementQuery) SetDescription(v string)`
 
 SetDescription sets Description field to given value.
 
 ### HasDescription
 
-`func (o *Requirement) HasDescription() bool`
+`func (o *RequirementQuery) HasDescription() bool`
 
 HasDescription returns a boolean if a field has been set.
 
 ### SetDescriptionNil
 
-`func (o *Requirement) SetDescriptionNil(b bool)`
+`func (o *RequirementQuery) SetDescriptionNil(b bool)`
 
  SetDescriptionNil sets the value for Description to be an explicit nil
 
 ### UnsetDescription
-`func (o *Requirement) UnsetDescription()`
+`func (o *RequirementQuery) UnsetDescription()`
 
 UnsetDescription ensures that no value is present for Description, not even an explicit nil
 ### GetStatus
 
-`func (o *Requirement) GetStatus() string`
+`func (o *RequirementQuery) GetStatus() string`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *Requirement) GetStatusOk() (*string, bool)`
+`func (o *RequirementQuery) GetStatusOk() (*string, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *Requirement) SetStatus(v string)`
+`func (o *RequirementQuery) SetStatus(v string)`
 
 SetStatus sets Status field to given value.
 
 ### HasStatus
 
-`func (o *Requirement) HasStatus() bool`
+`func (o *RequirementQuery) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
 
 ### GetType
 
-`func (o *Requirement) GetType() string`
+`func (o *RequirementQuery) GetType() string`
 
 GetType returns the Type field if non-nil, zero value otherwise.
 
 ### GetTypeOk
 
-`func (o *Requirement) GetTypeOk() (*string, bool)`
+`func (o *RequirementQuery) GetTypeOk() (*string, bool)`
 
 GetTypeOk returns a tuple with the Type field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetType
 
-`func (o *Requirement) SetType(v string)`
+`func (o *RequirementQuery) SetType(v string)`
 
 SetType sets Type field to given value.
 
 ### HasType
 
-`func (o *Requirement) HasType() bool`
+`func (o *RequirementQuery) HasType() bool`
 
 HasType returns a boolean if a field has been set.
 
 ### GetCreatedAt
 
-`func (o *Requirement) GetCreatedAt() time.Time`
+`func (o *RequirementQuery) GetCreatedAt() time.Time`
 
 GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
 ### GetCreatedAtOk
 
-`func (o *Requirement) GetCreatedAtOk() (*time.Time, bool)`
+`func (o *RequirementQuery) GetCreatedAtOk() (*time.Time, bool)`
 
 GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCreatedAt
 
-`func (o *Requirement) SetCreatedAt(v time.Time)`
+`func (o *RequirementQuery) SetCreatedAt(v time.Time)`
 
 SetCreatedAt sets CreatedAt field to given value.
 
 ### HasCreatedAt
 
-`func (o *Requirement) HasCreatedAt() bool`
+`func (o *RequirementQuery) HasCreatedAt() bool`
 
 HasCreatedAt returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
-`func (o *Requirement) GetUpdatedAt() time.Time`
+`func (o *RequirementQuery) GetUpdatedAt() time.Time`
 
 GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
 
 ### GetUpdatedAtOk
 
-`func (o *Requirement) GetUpdatedAtOk() (*time.Time, bool)`
+`func (o *RequirementQuery) GetUpdatedAtOk() (*time.Time, bool)`
 
 GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetUpdatedAt
 
-`func (o *Requirement) SetUpdatedAt(v time.Time)`
+`func (o *RequirementQuery) SetUpdatedAt(v time.Time)`
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
 ### HasUpdatedAt
 
-`func (o *Requirement) HasUpdatedAt() bool`
+`func (o *RequirementQuery) HasUpdatedAt() bool`
 
 HasUpdatedAt returns a boolean if a field has been set.
 
 ### SetUpdatedAtNil
 
-`func (o *Requirement) SetUpdatedAtNil(b bool)`
+`func (o *RequirementQuery) SetUpdatedAtNil(b bool)`
 
  SetUpdatedAtNil sets the value for UpdatedAt to be an explicit nil
 
 ### UnsetUpdatedAt
-`func (o *Requirement) UnsetUpdatedAt()`
+`func (o *RequirementQuery) UnsetUpdatedAt()`
 
 UnsetUpdatedAt ensures that no value is present for UpdatedAt, not even an explicit nil
 

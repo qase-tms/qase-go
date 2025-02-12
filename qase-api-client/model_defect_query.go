@@ -12,7 +12,9 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -22,6 +24,7 @@ var _ MappedNullable = &DefectQuery{}
 // DefectQuery struct for DefectQuery
 type DefectQuery struct {
 	Id           *int64             `json:"id,omitempty"`
+	DefectId     int64              `json:"defect_id"`
 	Title        *string            `json:"title,omitempty"`
 	ActualResult *string            `json:"actual_result,omitempty"`
 	Severity     *string            `json:"severity,omitempty"`
@@ -40,12 +43,15 @@ type DefectQuery struct {
 	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
 }
 
+type _DefectQuery DefectQuery
+
 // NewDefectQuery instantiates a new DefectQuery object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDefectQuery() *DefectQuery {
+func NewDefectQuery(defectId int64) *DefectQuery {
 	this := DefectQuery{}
+	this.DefectId = defectId
 	return &this
 }
 
@@ -87,6 +93,30 @@ func (o *DefectQuery) HasId() bool {
 // SetId gets a reference to the given int64 and assigns it to the Id field.
 func (o *DefectQuery) SetId(v int64) {
 	o.Id = &v
+}
+
+// GetDefectId returns the DefectId field value
+func (o *DefectQuery) GetDefectId() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.DefectId
+}
+
+// GetDefectIdOk returns a tuple with the DefectId field value
+// and a boolean to check if the value has been set.
+func (o *DefectQuery) GetDefectIdOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.DefectId, true
+}
+
+// SetDefectId sets field value
+func (o *DefectQuery) SetDefectId(v int64) {
+	o.DefectId = v
 }
 
 // GetTitle returns the Title field value if set, zero value otherwise.
@@ -575,6 +605,7 @@ func (o DefectQuery) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
+	toSerialize["defect_id"] = o.DefectId
 	if !IsNil(o.Title) {
 		toSerialize["title"] = o.Title
 	}
@@ -618,6 +649,43 @@ func (o DefectQuery) ToMap() (map[string]interface{}, error) {
 		toSerialize["updated_at"] = o.UpdatedAt
 	}
 	return toSerialize, nil
+}
+
+func (o *DefectQuery) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"defect_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varDefectQuery := _DefectQuery{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varDefectQuery)
+
+	if err != nil {
+		return err
+	}
+
+	*o = DefectQuery(varDefectQuery)
+
+	return err
 }
 
 type NullableDefectQuery struct {
