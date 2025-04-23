@@ -374,7 +374,7 @@ Name | Type | Description  | Notes
 
 ## GetCase
 
-> TestCaseResponse GetCase(ctx, code, id).Execute()
+> TestCaseResponse GetCase(ctx, code, id).Include(include).Execute()
 
 Get a specific test case
 
@@ -395,10 +395,11 @@ import (
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
 	id := int32(56) // int32 | Identifier.
+	include := "include_example" // string | A list of entities to include in response separated by comma. Possible values: external_issues.  (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.CasesAPI.GetCase(context.Background(), code, id).Execute()
+	resp, r, err := apiClient.CasesAPI.GetCase(context.Background(), code, id).Include(include).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `CasesAPI.GetCase``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -426,6 +427,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
+ **include** | **string** | A list of entities to include in response separated by comma. Possible values: external_issues.  | 
 
 ### Return type
 

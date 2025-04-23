@@ -34,7 +34,9 @@ type RunQuery struct {
 	Public      *bool          `json:"public,omitempty"`
 	Stats       *RunStats      `json:"stats,omitempty"`
 	// Time in ms.
-	TimeSpent    *int64                 `json:"time_spent,omitempty"`
+	TimeSpent *int64 `json:"time_spent,omitempty"`
+	// Time in ms.
+	ElapsedTime  *int64                 `json:"elapsed_time,omitempty"`
 	Environment  NullableRunEnvironment `json:"environment,omitempty"`
 	Milestone    NullableRunMilestone   `json:"milestone,omitempty"`
 	CustomFields []CustomFieldValue     `json:"custom_fields,omitempty"`
@@ -440,6 +442,38 @@ func (o *RunQuery) SetTimeSpent(v int64) {
 	o.TimeSpent = &v
 }
 
+// GetElapsedTime returns the ElapsedTime field value if set, zero value otherwise.
+func (o *RunQuery) GetElapsedTime() int64 {
+	if o == nil || IsNil(o.ElapsedTime) {
+		var ret int64
+		return ret
+	}
+	return *o.ElapsedTime
+}
+
+// GetElapsedTimeOk returns a tuple with the ElapsedTime field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RunQuery) GetElapsedTimeOk() (*int64, bool) {
+	if o == nil || IsNil(o.ElapsedTime) {
+		return nil, false
+	}
+	return o.ElapsedTime, true
+}
+
+// HasElapsedTime returns a boolean if a field has been set.
+func (o *RunQuery) HasElapsedTime() bool {
+	if o != nil && !IsNil(o.ElapsedTime) {
+		return true
+	}
+
+	return false
+}
+
+// SetElapsedTime gets a reference to the given int64 and assigns it to the ElapsedTime field.
+func (o *RunQuery) SetElapsedTime(v int64) {
+	o.ElapsedTime = &v
+}
+
 // GetEnvironment returns the Environment field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *RunQuery) GetEnvironment() RunEnvironment {
 	if o == nil || IsNil(o.Environment.Get()) {
@@ -705,6 +739,9 @@ func (o RunQuery) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.TimeSpent) {
 		toSerialize["time_spent"] = o.TimeSpent
+	}
+	if !IsNil(o.ElapsedTime) {
+		toSerialize["elapsed_time"] = o.ElapsedTime
 	}
 	if o.Environment.IsSet() {
 		toSerialize["environment"] = o.Environment.Get()

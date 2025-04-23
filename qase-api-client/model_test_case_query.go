@@ -52,6 +52,8 @@ type TestCaseQuery struct {
 	AuthorId  *int64     `json:"author_id,omitempty"`
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+	// Author ID of the last update.
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 }
 
 type _TestCaseQuery TestCaseQuery
@@ -999,6 +1001,38 @@ func (o *TestCaseQuery) SetUpdatedAt(v time.Time) {
 	o.UpdatedAt = &v
 }
 
+// GetUpdatedBy returns the UpdatedBy field value if set, zero value otherwise.
+func (o *TestCaseQuery) GetUpdatedBy() int64 {
+	if o == nil || IsNil(o.UpdatedBy) {
+		var ret int64
+		return ret
+	}
+	return *o.UpdatedBy
+}
+
+// GetUpdatedByOk returns a tuple with the UpdatedBy field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCaseQuery) GetUpdatedByOk() (*int64, bool) {
+	if o == nil || IsNil(o.UpdatedBy) {
+		return nil, false
+	}
+	return o.UpdatedBy, true
+}
+
+// HasUpdatedBy returns a boolean if a field has been set.
+func (o *TestCaseQuery) HasUpdatedBy() bool {
+	if o != nil && !IsNil(o.UpdatedBy) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdatedBy gets a reference to the given int64 and assigns it to the UpdatedBy field.
+func (o *TestCaseQuery) SetUpdatedBy(v int64) {
+	o.UpdatedBy = &v
+}
+
 func (o TestCaseQuery) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -1087,6 +1121,9 @@ func (o TestCaseQuery) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.UpdatedAt) {
 		toSerialize["updated_at"] = o.UpdatedAt
+	}
+	if !IsNil(o.UpdatedBy) {
+		toSerialize["updated_by"] = o.UpdatedBy
 	}
 	return toSerialize, nil
 }
