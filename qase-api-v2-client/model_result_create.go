@@ -23,10 +23,13 @@ var _ MappedNullable = &ResultCreate{}
 // ResultCreate struct for ResultCreate
 type ResultCreate struct {
 	// If passed, used as an idempotency key
-	Id          *string                 `json:"id,omitempty"`
-	Title       string                  `json:"title"`
-	Signature   *string                 `json:"signature,omitempty"`
-	TestopsId   NullableInt64           `json:"testops_id,omitempty"`
+	Id        *string `json:"id,omitempty"`
+	Title     string  `json:"title"`
+	Signature *string `json:"signature,omitempty"`
+	// ID of the test case. Cannot be specified together with testopd_ids.
+	TestopsId NullableInt64 `json:"testops_id,omitempty"`
+	// IDs of the test cases. Cannot be specified together with testopd_id.
+	TestopsIds  []int64                 `json:"testops_ids,omitempty"`
 	Execution   ResultExecution         `json:"execution"`
 	Fields      *ResultCreateFields     `json:"fields,omitempty"`
 	Attachments []string                `json:"attachments,omitempty"`
@@ -191,6 +194,39 @@ func (o *ResultCreate) SetTestopsIdNil() {
 // UnsetTestopsId ensures that no value is present for TestopsId, not even an explicit nil
 func (o *ResultCreate) UnsetTestopsId() {
 	o.TestopsId.Unset()
+}
+
+// GetTestopsIds returns the TestopsIds field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResultCreate) GetTestopsIds() []int64 {
+	if o == nil {
+		var ret []int64
+		return ret
+	}
+	return o.TestopsIds
+}
+
+// GetTestopsIdsOk returns a tuple with the TestopsIds field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResultCreate) GetTestopsIdsOk() ([]int64, bool) {
+	if o == nil || IsNil(o.TestopsIds) {
+		return nil, false
+	}
+	return o.TestopsIds, true
+}
+
+// HasTestopsIds returns a boolean if a field has been set.
+func (o *ResultCreate) HasTestopsIds() bool {
+	if o != nil && !IsNil(o.TestopsIds) {
+		return true
+	}
+
+	return false
+}
+
+// SetTestopsIds gets a reference to the given []int64 and assigns it to the TestopsIds field.
+func (o *ResultCreate) SetTestopsIds(v []int64) {
+	o.TestopsIds = v
 }
 
 // GetExecution returns the Execution field value
@@ -558,6 +594,9 @@ func (o ResultCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if o.TestopsId.IsSet() {
 		toSerialize["testops_id"] = o.TestopsId.Get()
+	}
+	if o.TestopsIds != nil {
+		toSerialize["testops_ids"] = o.TestopsIds
 	}
 	toSerialize["execution"] = o.Execution
 	if !IsNil(o.Fields) {

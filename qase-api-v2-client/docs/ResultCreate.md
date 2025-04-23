@@ -7,7 +7,8 @@ Name | Type | Description | Notes
 **Id** | Pointer to **string** | If passed, used as an idempotency key | [optional] 
 **Title** | **string** |  | 
 **Signature** | Pointer to **string** |  | [optional] 
-**TestopsId** | Pointer to **NullableInt64** |  | [optional] 
+**TestopsId** | Pointer to **NullableInt64** | ID of the test case. Cannot be specified together with testopd_ids. | [optional] 
+**TestopsIds** | Pointer to **[]int64** | IDs of the test cases. Cannot be specified together with testopd_id. | [optional] 
 **Execution** | [**ResultExecution**](ResultExecution.md) |  | 
 **Fields** | Pointer to [**ResultCreateFields**](ResultCreateFields.md) |  | [optional] 
 **Attachments** | Pointer to **[]string** |  | [optional] 
@@ -143,6 +144,41 @@ HasTestopsId returns a boolean if a field has been set.
 `func (o *ResultCreate) UnsetTestopsId()`
 
 UnsetTestopsId ensures that no value is present for TestopsId, not even an explicit nil
+### GetTestopsIds
+
+`func (o *ResultCreate) GetTestopsIds() []int64`
+
+GetTestopsIds returns the TestopsIds field if non-nil, zero value otherwise.
+
+### GetTestopsIdsOk
+
+`func (o *ResultCreate) GetTestopsIdsOk() (*[]int64, bool)`
+
+GetTestopsIdsOk returns a tuple with the TestopsIds field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTestopsIds
+
+`func (o *ResultCreate) SetTestopsIds(v []int64)`
+
+SetTestopsIds sets TestopsIds field to given value.
+
+### HasTestopsIds
+
+`func (o *ResultCreate) HasTestopsIds() bool`
+
+HasTestopsIds returns a boolean if a field has been set.
+
+### SetTestopsIdsNil
+
+`func (o *ResultCreate) SetTestopsIdsNil(b bool)`
+
+ SetTestopsIdsNil sets the value for TestopsIds to be an explicit nil
+
+### UnsetTestopsIds
+`func (o *ResultCreate) UnsetTestopsIds()`
+
+UnsetTestopsIds ensures that no value is present for TestopsIds, not even an explicit nil
 ### GetExecution
 
 `func (o *ResultCreate) GetExecution() ResultExecution`
