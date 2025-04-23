@@ -692,6 +692,13 @@ type ApiGetCaseRequest struct {
 	ApiService *CasesAPIService
 	code       string
 	id         int32
+	include    *string
+}
+
+// A list of entities to include in response separated by comma. Possible values: external_issues.
+func (r ApiGetCaseRequest) Include(include string) ApiGetCaseRequest {
+	r.include = &include
+	return r
 }
 
 func (r ApiGetCaseRequest) Execute() (*TestCaseResponse, *http.Response, error) {
@@ -747,6 +754,9 @@ func (a *CasesAPIService) GetCaseExecute(r ApiGetCaseRequest) (*TestCaseResponse
 		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
 	}
 
+	if r.include != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

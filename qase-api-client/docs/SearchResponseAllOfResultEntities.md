@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **Public** | Pointer to **bool** |  | [optional] 
 **Stats** | Pointer to [**RunStats**](RunStats.md) |  | [optional] 
 **TimeSpent** | Pointer to **int64** | Time in ms. | [optional] 
+**ElapsedTime** | Pointer to **int64** | Time in ms. | [optional] 
 **Environment** | Pointer to [**NullableRunEnvironment**](RunEnvironment.md) |  | [optional] 
 **Milestone** | Pointer to [**NullableRunMilestone**](RunMilestone.md) |  | [optional] 
 **CustomFields** | Pointer to [**[]CustomFieldValue**](CustomFieldValue.md) |  | [optional] 
@@ -51,6 +52,7 @@ Name | Type | Description | Notes
 **StepsType** | Pointer to **NullableString** |  | [optional] 
 **Params** | Pointer to [**TestCaseParams**](TestCaseParams.md) |  | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
+**UpdatedBy** | Pointer to **int64** | Author ID of the last update. | [optional] 
 **DefectId** | **int64** |  | 
 **ActualResult** | Pointer to **string** |  | [optional] 
 **Resolved** | Pointer to **NullableTime** |  | [optional] 
@@ -375,6 +377,31 @@ SetTimeSpent sets TimeSpent field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasTimeSpent() bool`
 
 HasTimeSpent returns a boolean if a field has been set.
+
+### GetElapsedTime
+
+`func (o *SearchResponseAllOfResultEntities) GetElapsedTime() int64`
+
+GetElapsedTime returns the ElapsedTime field if non-nil, zero value otherwise.
+
+### GetElapsedTimeOk
+
+`func (o *SearchResponseAllOfResultEntities) GetElapsedTimeOk() (*int64, bool)`
+
+GetElapsedTimeOk returns a tuple with the ElapsedTime field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetElapsedTime
+
+`func (o *SearchResponseAllOfResultEntities) SetElapsedTime(v int64)`
+
+SetElapsedTime sets ElapsedTime field to given value.
+
+### HasElapsedTime
+
+`func (o *SearchResponseAllOfResultEntities) HasElapsedTime() bool`
+
+HasElapsedTime returns a boolean if a field has been set.
 
 ### GetEnvironment
 
@@ -1355,6 +1382,31 @@ SetAuthorId sets AuthorId field to given value.
 `func (o *SearchResponseAllOfResultEntities) HasAuthorId() bool`
 
 HasAuthorId returns a boolean if a field has been set.
+
+### GetUpdatedBy
+
+`func (o *SearchResponseAllOfResultEntities) GetUpdatedBy() int64`
+
+GetUpdatedBy returns the UpdatedBy field if non-nil, zero value otherwise.
+
+### GetUpdatedByOk
+
+`func (o *SearchResponseAllOfResultEntities) GetUpdatedByOk() (*int64, bool)`
+
+GetUpdatedByOk returns a tuple with the UpdatedBy field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdatedBy
+
+`func (o *SearchResponseAllOfResultEntities) SetUpdatedBy(v int64)`
+
+SetUpdatedBy sets UpdatedBy field to given value.
+
+### HasUpdatedBy
+
+`func (o *SearchResponseAllOfResultEntities) HasUpdatedBy() bool`
+
+HasUpdatedBy returns a boolean if a field has been set.
 
 ### GetDefectId
 

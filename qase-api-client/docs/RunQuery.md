@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **Public** | Pointer to **bool** |  | [optional] 
 **Stats** | Pointer to [**RunStats**](RunStats.md) |  | [optional] 
 **TimeSpent** | Pointer to **int64** | Time in ms. | [optional] 
+**ElapsedTime** | Pointer to **int64** | Time in ms. | [optional] 
 **Environment** | Pointer to [**NullableRunEnvironment**](RunEnvironment.md) |  | [optional] 
 **Milestone** | Pointer to [**NullableRunMilestone**](RunMilestone.md) |  | [optional] 
 **CustomFields** | Pointer to [**[]CustomFieldValue**](CustomFieldValue.md) |  | [optional] 
@@ -340,6 +341,31 @@ SetTimeSpent sets TimeSpent field to given value.
 `func (o *RunQuery) HasTimeSpent() bool`
 
 HasTimeSpent returns a boolean if a field has been set.
+
+### GetElapsedTime
+
+`func (o *RunQuery) GetElapsedTime() int64`
+
+GetElapsedTime returns the ElapsedTime field if non-nil, zero value otherwise.
+
+### GetElapsedTimeOk
+
+`func (o *RunQuery) GetElapsedTimeOk() (*int64, bool)`
+
+GetElapsedTimeOk returns a tuple with the ElapsedTime field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetElapsedTime
+
+`func (o *RunQuery) SetElapsedTime(v int64)`
+
+SetElapsedTime sets ElapsedTime field to given value.
+
+### HasElapsedTime
+
+`func (o *RunQuery) HasElapsedTime() bool`
+
+HasElapsedTime returns a boolean if a field has been set.
 
 ### GetEnvironment
 
