@@ -21,10 +21,11 @@ type ResultStepStatus string
 
 // List of ResultStepStatus
 const (
-	PASSED  ResultStepStatus = "passed"
-	FAILED  ResultStepStatus = "failed"
-	BLOCKED ResultStepStatus = "blocked"
-	SKIPPED ResultStepStatus = "skipped"
+	PASSED      ResultStepStatus = "passed"
+	FAILED      ResultStepStatus = "failed"
+	BLOCKED     ResultStepStatus = "blocked"
+	SKIPPED     ResultStepStatus = "skipped"
+	IN_PROGRESS ResultStepStatus = "in_progress"
 )
 
 // All allowed values of ResultStepStatus enum
@@ -33,6 +34,7 @@ var AllowedResultStepStatusEnumValues = []ResultStepStatus{
 	"failed",
 	"blocked",
 	"skipped",
+	"in_progress",
 }
 
 func (v *ResultStepStatus) UnmarshalJSON(src []byte) error {
