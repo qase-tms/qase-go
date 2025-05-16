@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Status** | Pointer to **int32** |  | [optional] 
+**Status** | Pointer to **int32** | 1 - passed, 2 - failed, 3 - blocked, 5 - skipped, 7 - in_progress | [optional] 
 **Position** | Pointer to **int32** |  | [optional] 
 **Attachments** | Pointer to [**[]Attachment**](Attachment.md) |  | [optional] 
 **Steps** | Pointer to **[]map[string]interface{}** | Nested steps results will be here. The same structure is used for them for them. | [optional] 

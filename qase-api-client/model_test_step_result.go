@@ -20,6 +20,7 @@ var _ MappedNullable = &TestStepResult{}
 
 // TestStepResult struct for TestStepResult
 type TestStepResult struct {
+	// 1 - passed, 2 - failed, 3 - blocked, 5 - skipped, 7 - in_progress
 	Status *int32 `json:"status,omitempty"`
 	// Deprecated
 	Position    *int32       `json:"position,omitempty"`
