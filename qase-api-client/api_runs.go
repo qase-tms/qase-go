@@ -422,7 +422,7 @@ type ApiGetRunRequest struct {
 	include    *string
 }
 
-// Include a list of related entities IDs into response. Should be separated by comma. Possible values: cases, defects
+// Include a list of related entities IDs into response. Should be separated by comma. Possible values: cases, defects, external_issue
 func (r ApiGetRunRequest) Include(include string) ApiGetRunRequest {
 	r.include = &include
 	return r
@@ -610,7 +610,7 @@ func (r ApiGetRunsRequest) Offset(offset int32) ApiGetRunsRequest {
 	return r
 }
 
-// Include a list of related entities IDs into response. Should be separated by comma. Possible values: cases, defects
+// Include a list of related entities IDs into response. Should be separated by comma. Possible values: cases, defects, external_issue
 func (r ApiGetRunsRequest) Include(include string) ApiGetRunsRequest {
 	r.include = &include
 	return r
@@ -716,6 +716,277 @@ func (a *RunsAPIService) GetRunsExecute(r ApiGetRunsRequest) (*RunListResponse, 
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["TokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiRunUpdateExternalIssueRequest struct {
+	ctx               context.Context
+	ApiService        *RunsAPIService
+	code              string
+	runexternalIssues *RunexternalIssues
+}
+
+func (r ApiRunUpdateExternalIssueRequest) RunexternalIssues(runexternalIssues RunexternalIssues) ApiRunUpdateExternalIssueRequest {
+	r.runexternalIssues = &runexternalIssues
+	return r
+}
+
+func (r ApiRunUpdateExternalIssueRequest) Execute() (*http.Response, error) {
+	return r.ApiService.RunUpdateExternalIssueExecute(r)
+}
+
+/*
+RunUpdateExternalIssue Update external issues for runs
+
+This method allows you to update links between test runs and external issues (such as Jira tickets).
+
+You can use this endpoint to:
+- Link test runs to external issues by providing the external issue identifier (e.g., "PROJ-1234")
+- Update existing links by providing a new external issue identifier
+- Remove existing links by setting the external_issue field to null
+
+**Important**: Each test run can have only one link with an external issue. If a test run already has an external issue link, providing a new external_issue value will replace the existing link.
+
+The endpoint supports both Jira Cloud and Jira Server integrations. Each request can update multiple test run links in a single operation.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param code Code of project, where to search entities.
+	@return ApiRunUpdateExternalIssueRequest
+*/
+func (a *RunsAPIService) RunUpdateExternalIssue(ctx context.Context, code string) ApiRunUpdateExternalIssueRequest {
+	return ApiRunUpdateExternalIssueRequest{
+		ApiService: a,
+		ctx:        ctx,
+		code:       code,
+	}
+}
+
+// Execute executes the request
+func (a *RunsAPIService) RunUpdateExternalIssueExecute(r ApiRunUpdateExternalIssueRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RunsAPIService.RunUpdateExternalIssue")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/run/{code}/external-issue"
+	localVarPath = strings.Replace(localVarPath, "{"+"code"+"}", url.PathEscape(parameterValueToString(r.code, "code")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.code) < 2 {
+		return nil, reportError("code must have at least 2 elements")
+	}
+	if strlen(r.code) > 10 {
+		return nil, reportError("code must have less than 10 elements")
+	}
+	if r.runexternalIssues == nil {
+		return nil, reportError("runexternalIssues is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.runexternalIssues
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["TokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
+type ApiUpdateRunRequest struct {
+	ctx        context.Context
+	ApiService *RunsAPIService
+	code       string
+	id         int32
+	runupdate  *Runupdate
+}
+
+func (r ApiUpdateRunRequest) Runupdate(runupdate Runupdate) ApiUpdateRunRequest {
+	r.runupdate = &runupdate
+	return r
+}
+
+func (r ApiUpdateRunRequest) Execute() (*BaseResponse, *http.Response, error) {
+	return r.ApiService.UpdateRunExecute(r)
+}
+
+/*
+UpdateRun Update a specific run
+
+This method allows to update a specific run.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param code Code of project, where to search entities.
+	@param id Identifier.
+	@return ApiUpdateRunRequest
+*/
+func (a *RunsAPIService) UpdateRun(ctx context.Context, code string, id int32) ApiUpdateRunRequest {
+	return ApiUpdateRunRequest{
+		ApiService: a,
+		ctx:        ctx,
+		code:       code,
+		id:         id,
+	}
+}
+
+// Execute executes the request
+//
+//	@return BaseResponse
+func (a *RunsAPIService) UpdateRunExecute(r ApiUpdateRunRequest) (*BaseResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *BaseResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RunsAPIService.UpdateRun")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/run/{code}/{id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"code"+"}", url.PathEscape(parameterValueToString(r.code, "code")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.code) < 2 {
+		return localVarReturnValue, nil, reportError("code must have at least 2 elements")
+	}
+	if strlen(r.code) > 10 {
+		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
+	}
+	if r.runupdate == nil {
+		return localVarReturnValue, nil, reportError("runupdate is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.runupdate
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
