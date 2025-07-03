@@ -32,7 +32,6 @@ type TestCaseCreate struct {
 	Type           *int32  `json:"type,omitempty"`
 	Layer          *int32  `json:"layer,omitempty"`
 	IsFlaky        *int32  `json:"is_flaky,omitempty"`
-	AuthorId       *int32  `json:"author_id,omitempty"`
 	SuiteId        *int64  `json:"suite_id,omitempty"`
 	MilestoneId    *int64  `json:"milestone_id,omitempty"`
 	Automation     *int32  `json:"automation,omitempty"`
@@ -378,38 +377,6 @@ func (o *TestCaseCreate) HasIsFlaky() bool {
 // SetIsFlaky gets a reference to the given int32 and assigns it to the IsFlaky field.
 func (o *TestCaseCreate) SetIsFlaky(v int32) {
 	o.IsFlaky = &v
-}
-
-// GetAuthorId returns the AuthorId field value if set, zero value otherwise.
-func (o *TestCaseCreate) GetAuthorId() int32 {
-	if o == nil || IsNil(o.AuthorId) {
-		var ret int32
-		return ret
-	}
-	return *o.AuthorId
-}
-
-// GetAuthorIdOk returns a tuple with the AuthorId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TestCaseCreate) GetAuthorIdOk() (*int32, bool) {
-	if o == nil || IsNil(o.AuthorId) {
-		return nil, false
-	}
-	return o.AuthorId, true
-}
-
-// HasAuthorId returns a boolean if a field has been set.
-func (o *TestCaseCreate) HasAuthorId() bool {
-	if o != nil && !IsNil(o.AuthorId) {
-		return true
-	}
-
-	return false
-}
-
-// SetAuthorId gets a reference to the given int32 and assigns it to the AuthorId field.
-func (o *TestCaseCreate) SetAuthorId(v int32) {
-	o.AuthorId = &v
 }
 
 // GetSuiteId returns the SuiteId field value if set, zero value otherwise.
@@ -802,9 +769,6 @@ func (o TestCaseCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.IsFlaky) {
 		toSerialize["is_flaky"] = o.IsFlaky
-	}
-	if !IsNil(o.AuthorId) {
-		toSerialize["author_id"] = o.AuthorId
 	}
 	if !IsNil(o.SuiteId) {
 		toSerialize["suite_id"] = o.SuiteId

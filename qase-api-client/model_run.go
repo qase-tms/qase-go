@@ -34,13 +34,15 @@ type Run struct {
 	// Time in ms.
 	TimeSpent *int64 `json:"time_spent,omitempty"`
 	// Time in ms.
-	ElapsedTime  *int64                 `json:"elapsed_time,omitempty"`
-	Environment  NullableRunEnvironment `json:"environment,omitempty"`
-	Milestone    NullableRunMilestone   `json:"milestone,omitempty"`
-	CustomFields []CustomFieldValue     `json:"custom_fields,omitempty"`
-	Tags         []TagValue             `json:"tags,omitempty"`
-	Cases        []int64                `json:"cases,omitempty"`
-	PlanId       NullableInt64          `json:"plan_id,omitempty"`
+	ElapsedTime    *int64                   `json:"elapsed_time,omitempty"`
+	Environment    NullableRunEnvironment   `json:"environment,omitempty"`
+	Milestone      NullableRunMilestone     `json:"milestone,omitempty"`
+	CustomFields   []CustomFieldValue       `json:"custom_fields,omitempty"`
+	Tags           []TagValue               `json:"tags,omitempty"`
+	Cases          []int64                  `json:"cases,omitempty"`
+	PlanId         NullableInt64            `json:"plan_id,omitempty"`
+	Configurations []int64                  `json:"configurations,omitempty"`
+	ExternalIssue  NullableRunExternalIssue `json:"external_issue,omitempty"`
 }
 
 // NewRun instantiates a new Run object
@@ -702,6 +704,81 @@ func (o *Run) UnsetPlanId() {
 	o.PlanId.Unset()
 }
 
+// GetConfigurations returns the Configurations field value if set, zero value otherwise.
+func (o *Run) GetConfigurations() []int64 {
+	if o == nil || IsNil(o.Configurations) {
+		var ret []int64
+		return ret
+	}
+	return o.Configurations
+}
+
+// GetConfigurationsOk returns a tuple with the Configurations field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Run) GetConfigurationsOk() ([]int64, bool) {
+	if o == nil || IsNil(o.Configurations) {
+		return nil, false
+	}
+	return o.Configurations, true
+}
+
+// HasConfigurations returns a boolean if a field has been set.
+func (o *Run) HasConfigurations() bool {
+	if o != nil && !IsNil(o.Configurations) {
+		return true
+	}
+
+	return false
+}
+
+// SetConfigurations gets a reference to the given []int64 and assigns it to the Configurations field.
+func (o *Run) SetConfigurations(v []int64) {
+	o.Configurations = v
+}
+
+// GetExternalIssue returns the ExternalIssue field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Run) GetExternalIssue() RunExternalIssue {
+	if o == nil || IsNil(o.ExternalIssue.Get()) {
+		var ret RunExternalIssue
+		return ret
+	}
+	return *o.ExternalIssue.Get()
+}
+
+// GetExternalIssueOk returns a tuple with the ExternalIssue field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Run) GetExternalIssueOk() (*RunExternalIssue, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.ExternalIssue.Get(), o.ExternalIssue.IsSet()
+}
+
+// HasExternalIssue returns a boolean if a field has been set.
+func (o *Run) HasExternalIssue() bool {
+	if o != nil && o.ExternalIssue.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetExternalIssue gets a reference to the given NullableRunExternalIssue and assigns it to the ExternalIssue field.
+func (o *Run) SetExternalIssue(v RunExternalIssue) {
+	o.ExternalIssue.Set(&v)
+}
+
+// SetExternalIssueNil sets the value for ExternalIssue to be an explicit nil
+func (o *Run) SetExternalIssueNil() {
+	o.ExternalIssue.Set(nil)
+}
+
+// UnsetExternalIssue ensures that no value is present for ExternalIssue, not even an explicit nil
+func (o *Run) UnsetExternalIssue() {
+	o.ExternalIssue.Unset()
+}
+
 func (o Run) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -765,6 +842,12 @@ func (o Run) ToMap() (map[string]interface{}, error) {
 	}
 	if o.PlanId.IsSet() {
 		toSerialize["plan_id"] = o.PlanId.Get()
+	}
+	if !IsNil(o.Configurations) {
+		toSerialize["configurations"] = o.Configurations
+	}
+	if o.ExternalIssue.IsSet() {
+		toSerialize["external_issue"] = o.ExternalIssue.Get()
 	}
 	return toSerialize, nil
 }
