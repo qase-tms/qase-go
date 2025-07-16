@@ -14,8 +14,8 @@ func TestNewConfig(t *testing.T) {
 	if config.Mode != "off" {
 		t.Errorf("Expected default mode 'off', got '%s'", config.Mode)
 	}
-	if config.Fallback != "report" {
-		t.Errorf("Expected default fallback 'report', got '%s'", config.Fallback)
+	if config.Fallback != "off" {
+		t.Errorf("Expected default fallback 'off', got '%s'", config.Fallback)
 	}
 	if config.TestOps.API.Host != "qase.io" {
 		t.Errorf("Expected default host 'qase.io', got '%s'", config.TestOps.API.Host)

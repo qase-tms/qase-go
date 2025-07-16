@@ -81,7 +81,7 @@ type BatchConfig struct {
 func NewConfig() *Config {
 	return &Config{
 		Mode:        "off",
-		Fallback:    "report",
+		Fallback:    "off",
 		Debug:       false,
 		Environment: "local",
 		CaptureLogs: false,
