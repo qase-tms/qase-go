@@ -39,12 +39,7 @@ jobs:
         working-directory: ./${{ matrix.changed-dir }}
         run: go build -v ./...
 
-      - name: Test (legacy projects)
-        if: steps.filter.outputs.changes == 'true' && matrix.changed-dir != 'pkg/qase-go'
+      - name: Test
+        if: steps.filter.outputs.changes == 'true'
         working-directory: ./${{ matrix.changed-dir }}
-        run: go test -v ./test
-
-      - name: Test (qase-go reporter)
-        if: steps.filter.outputs.changes == 'true' && matrix.changed-dir == 'pkg/qase-go'
-        working-directory: ./${{ matrix.changed-dir }}
-        run: go test -v -cover ./config
+        run: go test -v -cover ./...
