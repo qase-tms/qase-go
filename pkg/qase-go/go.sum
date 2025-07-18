@@ -1,0 +1,4 @@
+github.com/qase-tms/qase-go/qase-api-client v1.1.2 h1:7w3w8zGZZRShCoO+bNizpHwSna1MdcjgI9QgZLhvP1I=
+github.com/qase-tms/qase-go/qase-api-client v1.1.2/go.mod h1:5w7jTtz8r3ccc8axnK0Sq6Dx5JKJtJnaz8AuysTw7SA=
+github.com/qase-tms/qase-go/qase-api-v2-client v1.1.2 h1:YSUqrwnsGUIzDjsAzsXS2qB86TcxCiOeCLz9787ZPb0=
+github.com/qase-tms/qase-go/qase-api-v2-client v1.1.2/go.mod h1:qyIUXyT9ein6Ii2+IUW3R0eXWAJzVj44II05RRMR+wg=
