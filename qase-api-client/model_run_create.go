@@ -38,6 +38,9 @@ type RunCreate struct {
 	CustomField *map[string]string `json:"custom_field,omitempty"`
 	StartTime   *string            `json:"start_time,omitempty"`
 	EndTime     *string            `json:"end_time,omitempty"`
+	// Indicates if the run is created for the Test Cases produced by AIDEN
+	IsCloud        *bool                    `json:"is_cloud,omitempty"`
+	CloudRunConfig *RunCreateCloudRunConfig `json:"cloud_run_config,omitempty"`
 }
 
 type _RunCreate RunCreate
@@ -532,6 +535,70 @@ func (o *RunCreate) SetEndTime(v string) {
 	o.EndTime = &v
 }
 
+// GetIsCloud returns the IsCloud field value if set, zero value otherwise.
+func (o *RunCreate) GetIsCloud() bool {
+	if o == nil || IsNil(o.IsCloud) {
+		var ret bool
+		return ret
+	}
+	return *o.IsCloud
+}
+
+// GetIsCloudOk returns a tuple with the IsCloud field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RunCreate) GetIsCloudOk() (*bool, bool) {
+	if o == nil || IsNil(o.IsCloud) {
+		return nil, false
+	}
+	return o.IsCloud, true
+}
+
+// HasIsCloud returns a boolean if a field has been set.
+func (o *RunCreate) HasIsCloud() bool {
+	if o != nil && !IsNil(o.IsCloud) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsCloud gets a reference to the given bool and assigns it to the IsCloud field.
+func (o *RunCreate) SetIsCloud(v bool) {
+	o.IsCloud = &v
+}
+
+// GetCloudRunConfig returns the CloudRunConfig field value if set, zero value otherwise.
+func (o *RunCreate) GetCloudRunConfig() RunCreateCloudRunConfig {
+	if o == nil || IsNil(o.CloudRunConfig) {
+		var ret RunCreateCloudRunConfig
+		return ret
+	}
+	return *o.CloudRunConfig
+}
+
+// GetCloudRunConfigOk returns a tuple with the CloudRunConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RunCreate) GetCloudRunConfigOk() (*RunCreateCloudRunConfig, bool) {
+	if o == nil || IsNil(o.CloudRunConfig) {
+		return nil, false
+	}
+	return o.CloudRunConfig, true
+}
+
+// HasCloudRunConfig returns a boolean if a field has been set.
+func (o *RunCreate) HasCloudRunConfig() bool {
+	if o != nil && !IsNil(o.CloudRunConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetCloudRunConfig gets a reference to the given RunCreateCloudRunConfig and assigns it to the CloudRunConfig field.
+func (o *RunCreate) SetCloudRunConfig(v RunCreateCloudRunConfig) {
+	o.CloudRunConfig = &v
+}
+
 func (o RunCreate) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -584,6 +651,12 @@ func (o RunCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EndTime) {
 		toSerialize["end_time"] = o.EndTime
+	}
+	if !IsNil(o.IsCloud) {
+		toSerialize["is_cloud"] = o.IsCloud
+	}
+	if !IsNil(o.CloudRunConfig) {
+		toSerialize["cloud_run_config"] = o.CloudRunConfig
 	}
 	return toSerialize, nil
 }
