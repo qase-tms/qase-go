@@ -19,6 +19,8 @@ Name | Type | Description | Notes
 **CustomField** | Pointer to **map[string]string** | A map of custom fields values (id &#x3D;&gt; value) | [optional] 
 **StartTime** | Pointer to **string** |  | [optional] 
 **EndTime** | Pointer to **string** |  | [optional] 
+**IsCloud** | Pointer to **bool** | Indicates if the run is created for the Test Cases produced by AIDEN | [optional] 
+**CloudRunConfig** | Pointer to [**RunCreateCloudRunConfig**](RunCreateCloudRunConfig.md) |  | [optional] 
 
 ## Methods
 
@@ -408,6 +410,56 @@ SetEndTime sets EndTime field to given value.
 `func (o *RunCreate) HasEndTime() bool`
 
 HasEndTime returns a boolean if a field has been set.
+
+### GetIsCloud
+
+`func (o *RunCreate) GetIsCloud() bool`
+
+GetIsCloud returns the IsCloud field if non-nil, zero value otherwise.
+
+### GetIsCloudOk
+
+`func (o *RunCreate) GetIsCloudOk() (*bool, bool)`
+
+GetIsCloudOk returns a tuple with the IsCloud field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsCloud
+
+`func (o *RunCreate) SetIsCloud(v bool)`
+
+SetIsCloud sets IsCloud field to given value.
+
+### HasIsCloud
+
+`func (o *RunCreate) HasIsCloud() bool`
+
+HasIsCloud returns a boolean if a field has been set.
+
+### GetCloudRunConfig
+
+`func (o *RunCreate) GetCloudRunConfig() RunCreateCloudRunConfig`
+
+GetCloudRunConfig returns the CloudRunConfig field if non-nil, zero value otherwise.
+
+### GetCloudRunConfigOk
+
+`func (o *RunCreate) GetCloudRunConfigOk() (*RunCreateCloudRunConfig, bool)`
+
+GetCloudRunConfigOk returns a tuple with the CloudRunConfig field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCloudRunConfig
+
+`func (o *RunCreate) SetCloudRunConfig(v RunCreateCloudRunConfig)`
+
+SetCloudRunConfig sets CloudRunConfig field to given value.
+
+### HasCloudRunConfig
+
+`func (o *RunCreate) HasCloudRunConfig() bool`
+
+HasCloudRunConfig returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

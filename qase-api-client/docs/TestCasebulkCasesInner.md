@@ -14,7 +14,6 @@ Name | Type | Description | Notes
 **Type** | Pointer to **int32** |  | [optional] 
 **Layer** | Pointer to **int32** |  | [optional] 
 **IsFlaky** | Pointer to **int32** |  | [optional] 
-**AuthorId** | Pointer to **int32** |  | [optional] 
 **SuiteId** | Pointer to **int64** |  | [optional] 
 **MilestoneId** | Pointer to **int64** |  | [optional] 
 **Automation** | Pointer to **int32** |  | [optional] 
@@ -291,31 +290,6 @@ SetIsFlaky sets IsFlaky field to given value.
 `func (o *TestCasebulkCasesInner) HasIsFlaky() bool`
 
 HasIsFlaky returns a boolean if a field has been set.
-
-### GetAuthorId
-
-`func (o *TestCasebulkCasesInner) GetAuthorId() int32`
-
-GetAuthorId returns the AuthorId field if non-nil, zero value otherwise.
-
-### GetAuthorIdOk
-
-`func (o *TestCasebulkCasesInner) GetAuthorIdOk() (*int32, bool)`
-
-GetAuthorIdOk returns a tuple with the AuthorId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetAuthorId
-
-`func (o *TestCasebulkCasesInner) SetAuthorId(v int32)`
-
-SetAuthorId sets AuthorId field to given value.
-
-### HasAuthorId
-
-`func (o *TestCasebulkCasesInner) HasAuthorId() bool`
-
-HasAuthorId returns a boolean if a field has been set.
 
 ### GetSuiteId
 

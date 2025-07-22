@@ -22,6 +22,8 @@ Name | Type | Description | Notes
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **Cases** | Pointer to **[]int64** |  | [optional] 
 **PlanId** | Pointer to **NullableInt64** |  | [optional] 
+**Configurations** | Pointer to **[]int64** |  | [optional] 
+**ExternalIssue** | Pointer to [**NullableRunExternalIssue**](RunExternalIssue.md) |  | [optional] 
 
 ## Methods
 
@@ -552,6 +554,66 @@ HasPlanId returns a boolean if a field has been set.
 `func (o *Run) UnsetPlanId()`
 
 UnsetPlanId ensures that no value is present for PlanId, not even an explicit nil
+### GetConfigurations
+
+`func (o *Run) GetConfigurations() []int64`
+
+GetConfigurations returns the Configurations field if non-nil, zero value otherwise.
+
+### GetConfigurationsOk
+
+`func (o *Run) GetConfigurationsOk() (*[]int64, bool)`
+
+GetConfigurationsOk returns a tuple with the Configurations field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetConfigurations
+
+`func (o *Run) SetConfigurations(v []int64)`
+
+SetConfigurations sets Configurations field to given value.
+
+### HasConfigurations
+
+`func (o *Run) HasConfigurations() bool`
+
+HasConfigurations returns a boolean if a field has been set.
+
+### GetExternalIssue
+
+`func (o *Run) GetExternalIssue() RunExternalIssue`
+
+GetExternalIssue returns the ExternalIssue field if non-nil, zero value otherwise.
+
+### GetExternalIssueOk
+
+`func (o *Run) GetExternalIssueOk() (*RunExternalIssue, bool)`
+
+GetExternalIssueOk returns a tuple with the ExternalIssue field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetExternalIssue
+
+`func (o *Run) SetExternalIssue(v RunExternalIssue)`
+
+SetExternalIssue sets ExternalIssue field to given value.
+
+### HasExternalIssue
+
+`func (o *Run) HasExternalIssue() bool`
+
+HasExternalIssue returns a boolean if a field has been set.
+
+### SetExternalIssueNil
+
+`func (o *Run) SetExternalIssueNil(b bool)`
+
+ SetExternalIssueNil sets the value for ExternalIssue to be an explicit nil
+
+### UnsetExternalIssue
+`func (o *Run) UnsetExternalIssue()`
+
+UnsetExternalIssue ensures that no value is present for ExternalIssue, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
