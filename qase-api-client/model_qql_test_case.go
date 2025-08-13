@@ -44,7 +44,7 @@ type QqlTestCase struct {
 	Attachments    []Attachment       `json:"attachments,omitempty"`
 	StepsType      NullableString     `json:"steps_type,omitempty"`
 	Steps          []TestStep         `json:"steps,omitempty"`
-	Params         *TestCaseParams    `json:"params,omitempty"`
+	Params         *QqlTestCaseParams `json:"params,omitempty"`
 	Tags           []TagValue         `json:"tags,omitempty"`
 	// Deprecated, use `author_id` instead.
 	// Deprecated
@@ -807,9 +807,9 @@ func (o *QqlTestCase) SetSteps(v []TestStep) {
 }
 
 // GetParams returns the Params field value if set, zero value otherwise.
-func (o *QqlTestCase) GetParams() TestCaseParams {
+func (o *QqlTestCase) GetParams() QqlTestCaseParams {
 	if o == nil || IsNil(o.Params) {
-		var ret TestCaseParams
+		var ret QqlTestCaseParams
 		return ret
 	}
 	return *o.Params
@@ -817,7 +817,7 @@ func (o *QqlTestCase) GetParams() TestCaseParams {
 
 // GetParamsOk returns a tuple with the Params field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *QqlTestCase) GetParamsOk() (*TestCaseParams, bool) {
+func (o *QqlTestCase) GetParamsOk() (*QqlTestCaseParams, bool) {
 	if o == nil || IsNil(o.Params) {
 		return nil, false
 	}
@@ -833,8 +833,8 @@ func (o *QqlTestCase) HasParams() bool {
 	return false
 }
 
-// SetParams gets a reference to the given TestCaseParams and assigns it to the Params field.
-func (o *QqlTestCase) SetParams(v TestCaseParams) {
+// SetParams gets a reference to the given QqlTestCaseParams and assigns it to the Params field.
+func (o *QqlTestCase) SetParams(v QqlTestCaseParams) {
 	o.Params = &v
 }
 

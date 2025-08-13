@@ -41,8 +41,10 @@ type TestCase struct {
 	Attachments    []Attachment       `json:"attachments,omitempty"`
 	StepsType      NullableString     `json:"steps_type,omitempty"`
 	Steps          []TestStep         `json:"steps,omitempty"`
-	Params         *TestCaseParams    `json:"params,omitempty"`
-	Tags           []TagValue         `json:"tags,omitempty"`
+	// Deprecated
+	Params     *TestCaseParams     `json:"params,omitempty"`
+	Parameters []TestCaseParameter `json:"parameters,omitempty"`
+	Tags       []TagValue          `json:"tags,omitempty"`
 	// Deprecated, use `author_id` instead.
 	// Deprecated
 	MemberId  *int64     `json:"member_id,omitempty"`
@@ -784,6 +786,7 @@ func (o *TestCase) SetSteps(v []TestStep) {
 }
 
 // GetParams returns the Params field value if set, zero value otherwise.
+// Deprecated
 func (o *TestCase) GetParams() TestCaseParams {
 	if o == nil || IsNil(o.Params) {
 		var ret TestCaseParams
@@ -794,6 +797,7 @@ func (o *TestCase) GetParams() TestCaseParams {
 
 // GetParamsOk returns a tuple with the Params field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *TestCase) GetParamsOk() (*TestCaseParams, bool) {
 	if o == nil || IsNil(o.Params) {
 		return nil, false
@@ -811,8 +815,41 @@ func (o *TestCase) HasParams() bool {
 }
 
 // SetParams gets a reference to the given TestCaseParams and assigns it to the Params field.
+// Deprecated
 func (o *TestCase) SetParams(v TestCaseParams) {
 	o.Params = &v
+}
+
+// GetParameters returns the Parameters field value if set, zero value otherwise.
+func (o *TestCase) GetParameters() []TestCaseParameter {
+	if o == nil || IsNil(o.Parameters) {
+		var ret []TestCaseParameter
+		return ret
+	}
+	return o.Parameters
+}
+
+// GetParametersOk returns a tuple with the Parameters field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCase) GetParametersOk() ([]TestCaseParameter, bool) {
+	if o == nil || IsNil(o.Parameters) {
+		return nil, false
+	}
+	return o.Parameters, true
+}
+
+// HasParameters returns a boolean if a field has been set.
+func (o *TestCase) HasParameters() bool {
+	if o != nil && !IsNil(o.Parameters) {
+		return true
+	}
+
+	return false
+}
+
+// SetParameters gets a reference to the given []TestCaseParameter and assigns it to the Parameters field.
+func (o *TestCase) SetParameters(v []TestCaseParameter) {
+	o.Parameters = v
 }
 
 // GetTags returns the Tags field value if set, zero value otherwise.
@@ -1198,6 +1235,9 @@ func (o TestCase) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Params) {
 		toSerialize["params"] = o.Params
+	}
+	if !IsNil(o.Parameters) {
+		toSerialize["parameters"] = o.Parameters
 	}
 	if !IsNil(o.Tags) {
 		toSerialize["tags"] = o.Tags

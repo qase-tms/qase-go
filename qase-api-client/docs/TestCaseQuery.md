@@ -25,7 +25,7 @@ Name | Type | Description | Notes
 **Attachments** | Pointer to [**[]Attachment**](Attachment.md) |  | [optional] 
 **StepsType** | Pointer to **NullableString** |  | [optional] 
 **Steps** | Pointer to [**[]TestStep**](TestStep.md) |  | [optional] 
-**Params** | Pointer to [**TestCaseParams**](TestCaseParams.md) |  | [optional] 
+**Params** | Pointer to [**QqlTestCaseParams**](QqlTestCaseParams.md) |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **MemberId** | Pointer to **int64** | Deprecated, use &#x60;author_id&#x60; instead. | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
@@ -634,20 +634,20 @@ HasSteps returns a boolean if a field has been set.
 
 ### GetParams
 
-`func (o *TestCaseQuery) GetParams() TestCaseParams`
+`func (o *TestCaseQuery) GetParams() QqlTestCaseParams`
 
 GetParams returns the Params field if non-nil, zero value otherwise.
 
 ### GetParamsOk
 
-`func (o *TestCaseQuery) GetParamsOk() (*TestCaseParams, bool)`
+`func (o *TestCaseQuery) GetParamsOk() (*QqlTestCaseParams, bool)`
 
 GetParamsOk returns a tuple with the Params field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetParams
 
-`func (o *TestCaseQuery) SetParams(v TestCaseParams)`
+`func (o *TestCaseQuery) SetParams(v QqlTestCaseParams)`
 
 SetParams sets Params field to given value.
 

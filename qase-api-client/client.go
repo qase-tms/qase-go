@@ -75,6 +75,8 @@ type APIClient struct {
 
 	SearchAPI *SearchAPIService
 
+	SharedParametersAPI *SharedParametersAPIService
+
 	SharedStepsAPI *SharedStepsAPIService
 
 	SuitesAPI *SuitesAPIService
@@ -111,6 +113,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.ResultsAPI = (*ResultsAPIService)(&c.common)
 	c.RunsAPI = (*RunsAPIService)(&c.common)
 	c.SearchAPI = (*SearchAPIService)(&c.common)
+	c.SharedParametersAPI = (*SharedParametersAPIService)(&c.common)
 	c.SharedStepsAPI = (*SharedStepsAPIService)(&c.common)
 	c.SuitesAPI = (*SuitesAPIService)(&c.common)
 	c.SystemFieldsAPI = (*SystemFieldsAPIService)(&c.common)
