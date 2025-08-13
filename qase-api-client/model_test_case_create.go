@@ -37,10 +37,13 @@ type TestCaseCreate struct {
 	Automation     *int32  `json:"automation,omitempty"`
 	Status         *int32  `json:"status,omitempty"`
 	// A list of Attachment hashes.
-	Attachments []string            `json:"attachments,omitempty"`
-	Steps       []TestStepCreate    `json:"steps,omitempty"`
-	Tags        []string            `json:"tags,omitempty"`
-	Params      map[string][]string `json:"params,omitempty"`
+	Attachments []string         `json:"attachments,omitempty"`
+	Steps       []TestStepCreate `json:"steps,omitempty"`
+	Tags        []string         `json:"tags,omitempty"`
+	// Deprecated, use `parameters` instead.
+	// Deprecated
+	Params     map[string][]string       `json:"params,omitempty"`
+	Parameters []TestCaseParametercreate `json:"parameters,omitempty"`
 	// A map of custom fields values (id => value)
 	CustomField *map[string]string `json:"custom_field,omitempty"`
 	CreatedAt   *string            `json:"created_at,omitempty"`
@@ -604,6 +607,7 @@ func (o *TestCaseCreate) SetTags(v []string) {
 }
 
 // GetParams returns the Params field value if set, zero value otherwise (both if not set or set to explicit null).
+// Deprecated
 func (o *TestCaseCreate) GetParams() map[string][]string {
 	if o == nil {
 		var ret map[string][]string
@@ -615,6 +619,7 @@ func (o *TestCaseCreate) GetParams() map[string][]string {
 // GetParamsOk returns a tuple with the Params field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
+// Deprecated
 func (o *TestCaseCreate) GetParamsOk() (*map[string][]string, bool) {
 	if o == nil || IsNil(o.Params) {
 		return nil, false
@@ -632,8 +637,42 @@ func (o *TestCaseCreate) HasParams() bool {
 }
 
 // SetParams gets a reference to the given map[string][]string and assigns it to the Params field.
+// Deprecated
 func (o *TestCaseCreate) SetParams(v map[string][]string) {
 	o.Params = v
+}
+
+// GetParameters returns the Parameters field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *TestCaseCreate) GetParameters() []TestCaseParametercreate {
+	if o == nil {
+		var ret []TestCaseParametercreate
+		return ret
+	}
+	return o.Parameters
+}
+
+// GetParametersOk returns a tuple with the Parameters field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TestCaseCreate) GetParametersOk() ([]TestCaseParametercreate, bool) {
+	if o == nil || IsNil(o.Parameters) {
+		return nil, false
+	}
+	return o.Parameters, true
+}
+
+// HasParameters returns a boolean if a field has been set.
+func (o *TestCaseCreate) HasParameters() bool {
+	if o != nil && !IsNil(o.Parameters) {
+		return true
+	}
+
+	return false
+}
+
+// SetParameters gets a reference to the given []TestCaseParametercreate and assigns it to the Parameters field.
+func (o *TestCaseCreate) SetParameters(v []TestCaseParametercreate) {
+	o.Parameters = v
 }
 
 // GetCustomField returns the CustomField field value if set, zero value otherwise.
@@ -793,6 +832,9 @@ func (o TestCaseCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if o.Params != nil {
 		toSerialize["params"] = o.Params
+	}
+	if o.Parameters != nil {
+		toSerialize["parameters"] = o.Parameters
 	}
 	if !IsNil(o.CustomField) {
 		toSerialize["custom_field"] = o.CustomField

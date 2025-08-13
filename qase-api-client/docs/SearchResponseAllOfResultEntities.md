@@ -50,7 +50,7 @@ Name | Type | Description | Notes
 **MilestoneId** | Pointer to **NullableInt64** |  | [optional] 
 **SuiteId** | Pointer to **NullableInt64** |  | [optional] 
 **StepsType** | Pointer to **NullableString** |  | [optional] 
-**Params** | Pointer to [**TestCaseParams**](TestCaseParams.md) |  | [optional] 
+**Params** | Pointer to [**QqlTestCaseParams**](QqlTestCaseParams.md) |  | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
 **UpdatedBy** | Pointer to **int64** | Author ID of the last update. | [optional] 
 **DefectId** | **int64** |  | 
@@ -1335,20 +1335,20 @@ HasStepsType returns a boolean if a field has been set.
 UnsetStepsType ensures that no value is present for StepsType, not even an explicit nil
 ### GetParams
 
-`func (o *SearchResponseAllOfResultEntities) GetParams() TestCaseParams`
+`func (o *SearchResponseAllOfResultEntities) GetParams() QqlTestCaseParams`
 
 GetParams returns the Params field if non-nil, zero value otherwise.
 
 ### GetParamsOk
 
-`func (o *SearchResponseAllOfResultEntities) GetParamsOk() (*TestCaseParams, bool)`
+`func (o *SearchResponseAllOfResultEntities) GetParamsOk() (*QqlTestCaseParams, bool)`
 
 GetParamsOk returns a tuple with the Params field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetParams
 
-`func (o *SearchResponseAllOfResultEntities) SetParams(v TestCaseParams)`
+`func (o *SearchResponseAllOfResultEntities) SetParams(v QqlTestCaseParams)`
 
 SetParams sets Params field to given value.
 

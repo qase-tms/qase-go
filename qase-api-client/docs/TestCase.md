@@ -25,6 +25,7 @@ Name | Type | Description | Notes
 **StepsType** | Pointer to **NullableString** |  | [optional] 
 **Steps** | Pointer to [**[]TestStep**](TestStep.md) |  | [optional] 
 **Params** | Pointer to [**TestCaseParams**](TestCaseParams.md) |  | [optional] 
+**Parameters** | Pointer to [**[]TestCaseParameter**](TestCaseParameter.md) |  | [optional] 
 **Tags** | Pointer to [**[]TagValue**](TagValue.md) |  | [optional] 
 **MemberId** | Pointer to **int64** | Deprecated, use &#x60;author_id&#x60; instead. | [optional] 
 **AuthorId** | Pointer to **int64** |  | [optional] 
@@ -638,6 +639,31 @@ SetParams sets Params field to given value.
 `func (o *TestCase) HasParams() bool`
 
 HasParams returns a boolean if a field has been set.
+
+### GetParameters
+
+`func (o *TestCase) GetParameters() []TestCaseParameter`
+
+GetParameters returns the Parameters field if non-nil, zero value otherwise.
+
+### GetParametersOk
+
+`func (o *TestCase) GetParametersOk() (*[]TestCaseParameter, bool)`
+
+GetParametersOk returns a tuple with the Parameters field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetParameters
+
+`func (o *TestCase) SetParameters(v []TestCaseParameter)`
+
+SetParameters sets Parameters field to given value.
+
+### HasParameters
+
+`func (o *TestCase) HasParameters() bool`
+
+HasParameters returns a boolean if a field has been set.
 
 ### GetTags
 
