@@ -1,12 +1,12 @@
 # Qase Go SDK
 
-Qase Go SDK provides comprehensive tools for integrating Go applications with Qase TestOps. The SDK includes domain models, reporters, and a testing framework inspired by Allure.
+Qase Go SDK provides comprehensive tools for integrating Go applications with Qase TestOps. The SDK includes domain models, reporters, and testing utilities.
 
 ## Features
 
 - **Domain Models**: Complete Go representations of Qase TestOps data structures
 - **Reporters**: Flexible reporting system with TestOps and file-based reporters
-- **Testing Framework**: Fluent interface for creating test reports (inspired by Allure)
+- **Testing Utilities**: Helper functions for creating test reports
 - **Configuration Management**: Easy configuration setup for different environments
 - **Error Handling**: Comprehensive error handling and validation
 
@@ -28,8 +28,8 @@ import (
     "testing"
     
     "github.com/qase-tms/qase-go/pkg/qase-go/config"
-    "github.com/qase-tms/qase-go/pkg/qase-go/framework"
     "github.com/qase-tms/qase-go/pkg/qase-go/reporters"
+    "github.com/qase-tms/qase-go/pkg/qase-go/domain"
 )
 
 func TestMyFeature(t *testing.T) {
@@ -37,7 +37,13 @@ func TestMyFeature(t *testing.T) {
     cfg := &config.Config{
         Mode: "report",
         Report: config.ReportConfig{
-            Path: "./reports",
+            Driver: "local",
+            Connection: config.ConnectionConfig{
+                Local: config.LocalConfig{
+                    Path: "./reports",
+                    Format: "json",
+                },
+            },
         },
     }
     
@@ -47,28 +53,30 @@ func TestMyFeature(t *testing.T) {
         t.Fatal(err)
     }
     
-    reporter := framework.NewReporter(coreReporter)
-    
     // Start test run
     ctx := context.Background()
-    if err := reporter.StartTestRun(ctx); err != nil {
+    if err := coreReporter.StartTestRun(ctx); err != nil {
         t.Fatal(err)
     }
-    defer reporter.CompleteTestRun(ctx)
+    defer coreReporter.CompleteTestRun(ctx)
     
-    // Run test with framework
-    framework.TestWithReporter(t, "My Feature Test", reporter, func(t framework.Provider) {
-        t.Title("My Feature Test")
-        t.Description("Testing my feature functionality")
-        
-        // Create step with builder pattern
-        step := framework.NewStep("Perform action").
-            WithExpectedResult("Action completed successfully").
-            WithData("input: test data").
-            Passed().
-            Build()
-        t.Step(step)
-    })
+    // Create test result
+    result := domain.NewTestResult("My Feature Test")
+    result.Title = "My Feature Test"
+    result.Fields["description"] = "Testing my feature functionality"
+    
+    // Create test step
+    step := domain.NewTestStep("Perform action")
+    step.SetExpectedResult("Action completed successfully")
+    step.SetData("input: test data")
+    step.SetStatus(domain.StepStatusPassed)
+    
+    result.AddStep(step)
+    
+    // Add result to reporter
+    if err := coreReporter.AddResult(result); err != nil {
+        t.Fatal(err)
+    }
 }
 ```
 
@@ -118,35 +126,27 @@ result := domain.NewTestResult("Test")
 err := fileReporter.AddResult(result)
 ```
 
-### Framework
+### Qase Package
 
-The framework package provides a fluent interface for creating test reports, inspired by Allure:
+The qase package provides high-level testing utilities:
 
-- **Provider Interface**: Test execution management
-- **StepBuilder**: Fluent interface for creating test steps
-- **TestRunner**: Automatic test execution and reporting
-- **Suite Support**: Test suite organization
+- **Test function**: Simplified test execution with metadata
+- **Assert utilities**: Common assertion functions
+- **Reporter integration**: Automatic reporter setup
 
 ```go
-import "github.com/qase-tms/qase-go/pkg/qase-go/framework"
+import "github.com/qase-tms/qase-go/pkg/qase-go/qase"
 
-// Simple test
-framework.Test(t, "My Test", func(t framework.Provider) {
-    t.Title("My Test")
-    
-    step := framework.NewStep("Action").
-        WithExpectedResult("Result").
-        Passed().
-        Build()
-    t.Step(step)
+// Simple test with metadata
+qase.Test(t, qase.TestMetadata{
+    DisplayName: "My Test",
+    Title: "My Test Title",
+    Description: "Test description",
+    IDs: []int64{123},
+}, func() {
+    // Test logic here
+    // Results are automatically reported
 })
-
-// Test with timing
-step := framework.NewStep("Timed Action").
-    Begin().
-    WithExpectedResult("Completed")
-// ... do work ...
-step = step.Finish().Passed()
 ```
 
 ## Configuration
@@ -164,85 +164,86 @@ cfg := &config.Config{
     TestOps: config.TestOpsConfig{
         API: config.APIConfig{
             Token: "your-api-token",
-            BaseURL: "https://api.qase.io",
+            Host: "api.qase.io",
         },
         Project: "your-project-code",
     },
     
     // Report configuration
     Report: config.ReportConfig{
-        Path: "./reports",
-        Format: "json",
+        Driver: "local",
+        Connection: config.ConnectionConfig{
+            Local: config.LocalConfig{
+                Path: "./reports",
+                Format: "json",
+            },
+        },
     },
 }
 ```
 
 ## Examples
 
-### Basic Test with Framework
+### Basic Test with Qase Package
 
 ```go
 func TestLoginFlow(t *testing.T) {
-    framework.Test(t, "Login Flow Test", func(t framework.Provider) {
-        t.Title("User Login Flow")
-        t.Description("Test the complete user login process")
-        
-        // Set metadata
-        t.SetField("environment", "staging")
-        t.SetField("browser", "chrome")
-        
-        // Navigate to login page
-        step1 := framework.NewStep("Navigate to login page").
-            WithExpectedResult("Login page is displayed").
-            Passed().
-            Build()
-        t.Step(step1)
-        
-        // Enter credentials
-        step2 := framework.NewStep("Enter credentials").
-            WithExpectedResult("Credentials are entered").
-            WithData("username: admin, password: secret").
-            Passed().
-            Build()
-        t.Step(step2)
-        
-        // Submit form
-        step3 := framework.NewStep("Submit login form").
-            WithExpectedResult("User is logged in").
-            Passed().
-            Build()
-        t.Step(step3)
+    qase.Test(t, qase.TestMetadata{
+        DisplayName: "Login Flow Test",
+        Title: "User Login Flow",
+        Description: "Test the complete user login process",
+        IDs: []int64{456},
+        Fields: map[string]string{
+            "environment": "staging",
+            "browser": "chrome",
+        },
+    }, func() {
+        // Test logic here
+        // Results are automatically reported
     })
 }
 ```
 
-### Test with Nested Steps
+### Test with Custom Reporter
 
 ```go
-func TestRegistrationFlow(t *testing.T) {
-    framework.Test(t, "Registration Flow", func(t framework.Provider) {
-        t.Title("User Registration")
-        
-        // Parent step
-        parentStep := framework.NewStep("Complete registration").
-            WithExpectedResult("User is registered").
-            Begin()
-        
-        // Child steps
-        child1 := framework.NewStep("Fill form").
-            WithExpectedResult("Form is filled").
-            Passed().
-            Build()
-        
-        child2 := framework.NewStep("Verify email").
-            WithExpectedResult("Email verified").
-            Passed().
-            Build()
-        
-        parentStep = parentStep.WithChild(child1).WithChild(child2)
-        parentStep = parentStep.Finish().Passed()
-        t.Step(parentStep.Build())
-    })
+func TestWithCustomReporter(t *testing.T) {
+    cfg := &config.Config{
+        Mode: "report",
+        Report: config.ReportConfig{
+            Driver: "local",
+            Connection: config.ConnectionConfig{
+                Local: config.LocalConfig{
+                    Path: "./custom-reports",
+                    Format: "json",
+                },
+            },
+        },
+    }
+    
+    reporter, err := reporters.NewCoreReporter(cfg)
+    if err != nil {
+        t.Fatal(err)
+    }
+    
+    ctx := context.Background()
+    if err := reporter.StartTestRun(ctx); err != nil {
+        t.Fatal(err)
+    }
+    defer reporter.CompleteTestRun(ctx)
+    
+    result := domain.NewTestResult("Custom Test")
+    result.Title = "Custom Test Title"
+    
+    step := domain.NewTestStep("Custom Step")
+    step.SetExpectedResult("Step completed")
+    step.SetStatus(domain.StepStatusPassed)
+    
+    result.AddStep(step)
+    
+    if err := reporter.AddResult(result); err != nil {
+        t.Fatal(err)
+    }
 }
 ```
 
@@ -250,9 +251,10 @@ func TestRegistrationFlow(t *testing.T) {
 
 ```go
 func TestWithScreenshots(t *testing.T) {
-    framework.Test(t, "Screenshot Test", func(t framework.Provider) {
-        t.Title("Test with Screenshots")
-        
+    qase.Test(t, qase.TestMetadata{
+        DisplayName: "Screenshot Test",
+        Title: "Test with Screenshots",
+    }, func() {
         // Create attachment
         screenshot := domain.Attachment{
             ID:       "screenshot-1",
@@ -262,54 +264,17 @@ func TestWithScreenshots(t *testing.T) {
             Size:     16,
         }
         
-        t.AddAttachment(screenshot)
-        
-        // Step with attachment
-        step := framework.NewStep("Take screenshot").
-            WithExpectedResult("Screenshot captured").
-            WithAttachment(screenshot).
-            Passed().
-            Build()
-        t.Step(step)
-    })
-}
-```
-
-### Test Suite
-
-```go
-type MyTestSuite struct {
-    framework.BaseSuite
-}
-
-func (s *MyTestSuite) BeforeEach(t framework.Provider) {
-    t.SetField("suite", "MyTestSuite")
-}
-
-func (s *MyTestSuite) TestFeature(t framework.Provider) {
-    t.Title("My Feature")
-    
-    step := framework.NewStep("Test feature").
-        WithExpectedResult("Feature works").
-        Passed().
-        Build()
-    t.Step(step)
-}
-
-func TestMySuite(t *testing.T) {
-    suite := &MyTestSuite{}
-    framework.TestWithSuite(t, "Suite Test", suite, func(t framework.Provider) {
-        suite.TestFeature(t)
+        // Add attachment to result (handled automatically by qase.Test)
     })
 }
 ```
 
 ## Status Mapping
 
-The framework maps test statuses to Qase TestOps statuses:
+The SDK maps test statuses to Qase TestOps statuses:
 
-| Framework Status | Qase Status |
-|------------------|-------------|
+| SDK Status | Qase Status |
+|------------|-------------|
 | `domain.StatusPassed` | "passed" |
 | `domain.StatusFailed` | "failed" |
 | `domain.StatusBlocked` | "blocked" |
@@ -325,8 +290,7 @@ The framework maps test statuses to Qase TestOps statuses:
 4. **Handle Errors**: Always handle errors appropriately
 5. **Use Metadata**: Add relevant metadata for better organization
 6. **Use Attachments**: Add screenshots and logs when helpful
-7. **Use Suites**: Organize related tests into suites
-8. **Configure Fallbacks**: Always configure fallback reporters for reliability
+7. **Configure Fallbacks**: Always configure fallback reporters for reliability
 
 ## Integration with Qase TestOps
 
