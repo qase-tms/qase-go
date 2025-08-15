@@ -25,6 +25,7 @@ func init() {
 		cfg, err := config.Load()
 		if err != nil {
 			// Fallback to unsafe loading if validation fails
+			log.Printf("Warning: Configuration validation failed, using unsafe loading: %v", err)
 			cfg = config.LoadUnsafe()
 		}
 
@@ -38,13 +39,17 @@ func init() {
 
 		r, err := reporters.NewCoreReporter(cfg)
 		if err != nil {
+			log.Printf("Error: Failed to create core reporter: %v", err)
 			return
 		}
 
 		reporter = r
 		if err := reporter.StartTestRun(context.Background()); err != nil {
+			log.Printf("Error: Failed to start test run: %v", err)
 			return
 		}
+
+		log.Printf("Qase test run started successfully")
 	})
 }
 

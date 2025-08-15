@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/qase-tms/qase-go/pkg/qase-go/clients"
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
 )
@@ -110,23 +111,36 @@ func (cr *CoreReporter) initializeFallback() error {
 	return nil
 }
 
+// TestOpsClientAdapter adapts the UnifiedClient to TestOpsClient interface
+type TestOpsClientAdapter struct {
+	client *clients.UnifiedClient
+}
+
+// CreateRun creates a new test run and returns its ID
+func (a *TestOpsClientAdapter) CreateRun(ctx context.Context) (int64, error) {
+	return a.client.CreateRun(ctx)
+}
+
+// CompleteRun completes the test run by ID
+func (a *TestOpsClientAdapter) CompleteRun(ctx context.Context, runID int64) error {
+	return a.client.CompleteRun(ctx, runID)
+}
+
+// UploadResults uploads test results to the specified run
+func (a *TestOpsClientAdapter) UploadResults(ctx context.Context, runID int64, results []*domain.TestResult) error {
+	return a.client.UploadResults(ctx, runID, results)
+}
+
 // createTestOpsClient creates a TestOps client based on configuration
 func (cr *CoreReporter) createTestOpsClient() (TestOpsClient, error) {
-	// This would typically create a client that implements TestOpsClient interface
-	// For now, we'll return an error indicating this needs to be implemented
-	// In a real implementation, this would create a client using the config.TestOps settings
-
-	if cr.config.TestOps.API.Token == "" {
-		return nil, fmt.Errorf("TestOps API token is required")
+	// Use the existing UnifiedClient from the clients package
+	client, err := clients.NewUnifiedClient(cr.config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create unified client: %w", err)
 	}
 
-	if cr.config.TestOps.Project == "" {
-		return nil, fmt.Errorf("TestOps project code is required")
-	}
-
-	// TODO: Implement actual TestOps client creation
-	// This would involve creating a client that can communicate with Qase TestOps API
-	return nil, fmt.Errorf("TestOps client creation not yet implemented")
+	// Create a TestOpsClientAdapter that wraps the UnifiedClient
+	return &TestOpsClientAdapter{client: client}, nil
 }
 
 // StartTestRun starts the test run with the main reporter
