@@ -2,7 +2,9 @@ package qase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"runtime"
 	"sync"
 	"testing"
@@ -24,6 +26,14 @@ func init() {
 		if err != nil {
 			// Fallback to unsafe loading if validation fails
 			cfg = config.LoadUnsafe()
+		}
+
+		// Log configuration as JSON
+		cfgJSON, err := json.MarshalIndent(cfg, "", "  ")
+		if err != nil {
+			log.Printf("Failed to marshal config to JSON: %v", err)
+		} else {
+			log.Printf("Qase configuration loaded:\n%s", string(cfgJSON))
 		}
 
 		r, err := reporters.NewCoreReporter(cfg)
