@@ -20,8 +20,11 @@ var (
 
 func init() {
 	once.Do(func() {
-		cfg := config.NewConfig()
-		cfg.LoadFromEnvironment()
+		cfg, err := config.Load()
+		if err != nil {
+			// Fallback to unsafe loading if validation fails
+			cfg = config.LoadUnsafe()
+		}
 
 		r, err := reporters.NewCoreReporter(cfg)
 		if err != nil {
