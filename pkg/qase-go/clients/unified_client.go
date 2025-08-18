@@ -9,8 +9,8 @@ import (
 
 // UnifiedClient combines v1 and v2 clients for optimal API usage
 type UnifiedClient struct {
-	v1Client    *V1Client  // For run management
-	v2Client    *V2Client  // For result uploading
+	v1Client    *V1Client // For run management
+	v2Client    *V2Client // For result uploading
 	config      *config.Config
 	projectCode string
 }
@@ -19,26 +19,26 @@ type UnifiedClient struct {
 func NewUnifiedClient(cfg *config.Config) (*UnifiedClient, error) {
 	// Create client config from main config
 	clientConfig := ClientConfig{
-		BaseURL:  cfg.TestOps.API.Host,
+		BaseURL:  buildAPIBaseURL(cfg.TestOps.API.Host),
 		APIToken: cfg.TestOps.API.Token,
 		Debug:    cfg.Debug,
 	}
-	
+
 	// Create v1 client for run management
 	v1Client, err := NewV1Client(clientConfig)
 	if err != nil {
 		return nil, err
 	}
-	
-	// Create v2 client for result uploading  
+
+	// Create v2 client for result uploading
 	v2Client, err := NewV2Client(clientConfig)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Update v2 client converter to use v1 client for attachment uploads
 	v2Client.SetConverter(NewV2ConverterWithUploader(v1Client, cfg.TestOps.Project))
-	
+
 	return &UnifiedClient{
 		v1Client:    v1Client,
 		v2Client:    v2Client,
@@ -54,19 +54,19 @@ func (c *UnifiedClient) CreateRun(ctx context.Context) (int64, error) {
 	if title == "" {
 		title = "Automated Test Run"
 	}
-	
+
 	// Get run description from config
 	description := c.config.TestOps.Run.Description
 	if description == "" && c.config.Environment != "" {
 		description = "Test run in " + c.config.Environment + " environment"
 	}
-	
+
 	// Create run using v1 client
 	runInfo, err := c.v1Client.CreateRun(ctx, c.projectCode, title, description)
 	if err != nil {
 		return 0, err
 	}
-	
+
 	return runInfo.ID, nil
 }
 
@@ -80,22 +80,22 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 	if len(results) == 0 {
 		return nil
 	}
-	
+
 	// Get batch size from config
 	batchSize := c.config.TestOps.Batch.Size
 	if batchSize <= 0 {
 		batchSize = 50 // Default batch size
 	}
-	
+
 	// Send results in batches
 	for i := 0; i < len(results); i += batchSize {
 		end := i + batchSize
 		if end > len(results) {
 			end = len(results)
 		}
-		
+
 		batch := results[i:end]
-		
+
 		if len(batch) == 1 {
 			// Send single result
 			err := c.v2Client.SendResult(ctx, c.projectCode, runID, batch[0])
@@ -110,7 +110,7 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 			}
 		}
 	}
-	
+
 	return nil
 }
 

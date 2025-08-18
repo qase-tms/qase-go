@@ -23,12 +23,26 @@ func NewV1Client(config ClientConfig) (*V1Client, error) {
 	cfg := api_v1_client.NewConfiguration()
 
 	if config.BaseURL != "" {
-		// Parse the base URL and set servers
+		// Set the base URL for the API client
 		cfg.Servers = api_v1_client.ServerConfigurations{
 			{
 				URL:         config.BaseURL,
 				Description: "Custom API server",
 			},
+		}
+		if config.Debug {
+			log.Printf("V1Client: Using custom base URL: %s", config.BaseURL)
+		}
+	} else {
+		// Use default Qase.io API URL
+		cfg.Servers = api_v1_client.ServerConfigurations{
+			{
+				URL:         "https://api.qase.io",
+				Description: "Default Qase.io API server",
+			},
+		}
+		if config.Debug {
+			log.Printf("V1Client: Using default base URL: https://api.qase.io")
 		}
 	}
 
