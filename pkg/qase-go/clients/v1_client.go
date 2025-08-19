@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
 	api_v1_client "github.com/qase-tms/qase-go/qase-api-client"
@@ -59,6 +60,10 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	// Create run request
 	runCreate := api_v1_client.NewRunCreate(title)
 	runCreate.SetDescription(description)
+
+	// Set start time in format expected by API v1: "2006-01-02 15:04:05"
+	startTime := time.Now().UTC().Format("2006-01-02 15:04:05")
+	runCreate.SetStartTime(startTime)
 
 	if c.config.Debug {
 		log.Printf("RunCreate object: %+v", runCreate)
