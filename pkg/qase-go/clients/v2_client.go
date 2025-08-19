@@ -3,7 +3,6 @@ package clients
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -30,18 +29,12 @@ func NewV2Client(config ClientConfig) (*V2Client, error) {
 			},
 		}
 		if config.Debug {
-			log.Printf("V2Client: Using custom base URL: %s", config.BaseURL)
+			// Debug logging removed for clean code
 		}
 	} else {
-		// Use default Qase.io API URL
-		cfg.Servers = api_v2_client.ServerConfigurations{
-			{
-				URL:         "https://api.qase.io",
-				Description: "Default Qase.io API server",
-			},
-		}
+		// Use default configuration from the generated client
 		if config.Debug {
-			log.Printf("V2Client: Using default base URL: https://api.qase.io")
+			// Debug logging removed for clean code
 		}
 	}
 
@@ -61,10 +54,6 @@ func (c *V2Client) SetConverter(converter *V2Converter) {
 
 // SendResult sends a single test result to Qase using API v2
 func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error {
-	if c.config.Debug {
-		log.Printf("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
-	}
-
 	// Convert domain model to API v2 model
 	apiResult, err := c.converter.ConvertTestResult(result)
 	if err != nil {
@@ -84,19 +73,11 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 		return fmt.Errorf("failed to send result to Qase API v2: %w", err)
 	}
 
-	if c.config.Debug {
-		log.Printf("Successfully sent result: result=%s", result.Title)
-	}
-
 	return nil
 }
 
 // SendResults sends multiple test results to Qase using API v2 batch endpoint
 func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error {
-	if c.config.Debug {
-		log.Printf("Sending results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
-	}
-
 	// Convert all domain models to API v2 models
 	var apiResults []api_v2_client.ResultCreate
 	for _, result := range results {
@@ -122,10 +103,6 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	_, err := c.client.ResultsAPI.CreateResultsV2(authCtx, projectCode, runID).CreateResultsRequestV2(*batchRequest).Execute()
 	if err != nil {
 		return fmt.Errorf("failed to send batch results to Qase API v2: %w", err)
-	}
-
-	if c.config.Debug {
-		log.Printf("Successfully sent results: count=%d", len(results))
 	}
 
 	return nil
