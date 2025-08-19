@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
-	api_v2_client "github.com/qase-tms/qase-go/qase-api-v2-client"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
+	api_v2_client "github.com/qase-tms/qase-go/qase-api-v2-client"
 )
 
 // AttachmentUploader interface for uploading attachments
@@ -41,60 +42,84 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 
 	// Create execution object
 	execution := api_v2_client.NewResultExecution(string(result.Execution.Status))
-	
+
 	if result.Execution.StartTime != nil {
-		execution.SetStartTime(float64(*result.Execution.StartTime))
+		// Convert milliseconds to seconds if needed
+		startTime := *result.Execution.StartTime
+		if startTime > 1e12 { // If time is in milliseconds (13+ digits)
+			startTime = startTime / 1000
+		}
+
+		// Ensure time is not in the future (API requirement)
+		now := time.Now().Unix()
+		if startTime > now {
+			startTime = now - 1 // Set to 1 second ago
+		}
+
+		execution.SetStartTime(float64(startTime))
 	}
-	
+
 	if result.Execution.EndTime != nil {
-		execution.SetEndTime(float64(*result.Execution.EndTime))
+		// Convert milliseconds to seconds if needed
+		endTime := *result.Execution.EndTime
+		if endTime > 1e12 { // If time is in milliseconds (13+ digits)
+			endTime = endTime / 1000
+		}
+
+		// Ensure time is not in the future (API requirement)
+		now := time.Now().Unix()
+		if endTime > now {
+			endTime = now
+		}
+
+		execution.SetEndTime(float64(endTime))
 	}
-	
+
 	if result.Execution.Duration != nil {
 		execution.SetDuration(*result.Execution.Duration)
 	}
-	
+
 	if result.Execution.Stacktrace != nil {
 		execution.SetStacktrace(*result.Execution.Stacktrace)
 	}
-	
+
 	if result.Execution.Thread != nil {
 		execution.SetThread(*result.Execution.Thread)
 	}
-	
+
 	// Create main result object
 	apiResult := api_v2_client.NewResultCreate(result.Title, *execution)
-	
+
 	// Set optional fields
 	if result.ID != "" {
 		apiResult.SetId(result.ID)
 	}
-	
+
 	if result.Signature != "" {
 		apiResult.SetSignature(result.Signature)
 	}
-	
+
 	// Handle TestopsID (can be single int64, []int64, or nil)
 	if result.TestopsID != nil {
 		if err := c.setTestopsID(apiResult, result.TestopsID); err != nil {
 			return nil, err
 		}
 	}
-	
+
 	// Convert fields
 	if len(result.Fields) > 0 {
 		if err := c.setFields(apiResult, result.Fields); err != nil {
 			return nil, err
 		}
 	}
-	
+
 	// Convert attachments
 	if len(result.Attachments) > 0 {
 		if err := c.setAttachments(context.Background(), apiResult, result.Attachments); err != nil {
 			return nil, fmt.Errorf("failed to set attachments: %w", err)
 		}
 	}
-	
+
 	// Convert steps
 	if len(result.Steps) > 0 {
 		apiSteps, err := c.convertSteps(result.Steps)
@@ -102,36 +127,36 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 			return nil, err
 		}
 		apiResult.SetSteps(apiSteps)
-		
+
 		// Set steps type based on step content
 		if len(apiSteps) > 0 {
 			stepsType := api_v2_client.CLASSIC
 			apiResult.SetStepsType(stepsType)
 		}
 	}
-	
+
 	// Convert params
 	if len(result.Params) > 0 {
 		c.setParams(apiResult, result.Params)
 	}
-	
+
 	// Convert group params (flatten to param_groups format)
 	if len(result.GroupParams) > 0 {
 		c.setParamGroups(apiResult, result.GroupParams)
 	}
-	
+
 	// Convert relations
 	if result.Relations != nil && result.Relations.Suite != nil {
 		if err := c.setRelations(apiResult, result.Relations); err != nil {
 			return nil, err
 		}
 	}
-	
+
 	// Set message
 	if result.Message != nil {
 		apiResult.SetMessage(*result.Message)
 	}
-	
+
 	return apiResult, nil
 }
 
@@ -143,15 +168,15 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 
 	// Create step data
 	stepData := api_v2_client.NewResultStepData(step.Data.Action)
-	
+
 	if step.Data.ExpectedResult != nil {
 		stepData.SetExpectedResult(*step.Data.ExpectedResult)
 	}
-	
+
 	if step.Data.Data != nil {
 		stepData.SetInputData(*step.Data.Data)
 	}
-	
+
 	// Convert attachments for step data
 	if len(step.Attachments) > 0 {
 		attachmentIDs, err := c.processAttachments(context.Background(), step.Attachments)
@@ -160,27 +185,27 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 		}
 		stepData.SetAttachments(attachmentIDs)
 	}
-	
+
 	// Create step execution
 	execution := api_v2_client.NewResultStepExecution(api_v2_client.ResultStepStatus(step.Execution.Status))
-	
+
 	if step.Execution.StartTime != nil {
 		execution.SetStartTime(float64(*step.Execution.StartTime))
 	}
-	
+
 	if step.Execution.EndTime != nil {
 		execution.SetEndTime(float64(*step.Execution.EndTime))
 	}
-	
+
 	if step.Execution.Duration != nil {
 		execution.SetDuration(*step.Execution.Duration)
 	}
-	
+
 	// Create main step object
 	apiStep := api_v2_client.NewResultStep()
 	apiStep.SetData(*stepData)
 	apiStep.SetExecution(*execution)
-	
+
 	// Convert nested steps recursively
 	if len(step.Steps) > 0 {
 		var nestedSteps []map[string]interface{}
@@ -201,7 +226,7 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 		}
 		apiStep.SetSteps(nestedSteps)
 	}
-	
+
 	return apiStep, nil
 }
 
@@ -234,7 +259,7 @@ func (c *V2Converter) setTestopsID(apiResult *api_v2_client.ResultCreate, testop
 // setFields sets result fields based on known field types
 func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields map[string]string) error {
 	resultFields := api_v2_client.NewResultCreateFields()
-	
+
 	for key, value := range fields {
 		switch key {
 		case "description":
@@ -264,7 +289,7 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 		}
 		// Note: Unknown fields are silently ignored to maintain compatibility
 	}
-	
+
 	apiResult.SetFields(*resultFields)
 	return nil
 }
@@ -282,10 +307,10 @@ func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_clie
 // processAttachments processes attachments, uploading files if needed and returning IDs
 func (c *V2Converter) processAttachments(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
 	var attachmentIDs []string
-	
+
 	for _, attachment := range attachments {
 		var attachmentID string
-		
+
 		// If attachment has a file path and uploader is available, upload the file
 		if attachment.HasFilePath() && c.uploader != nil && c.projectCode != "" {
 			file, err := os.Open(attachment.GetFilePath())
@@ -293,21 +318,21 @@ func (c *V2Converter) processAttachments(ctx context.Context, attachments []doma
 				return nil, fmt.Errorf("failed to open attachment file %s: %w", attachment.GetFilePath(), err)
 			}
 			defer file.Close()
-			
+
 			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{file})
 			if err != nil {
 				return nil, fmt.Errorf("failed to upload attachment %s: %w", attachment.GetFilePath(), err)
 			}
-			
+
 			attachmentID = uploadedHash
 		} else {
 			// Use existing ID if no file path or uploader not available
 			attachmentID = attachment.ID
 		}
-		
+
 		attachmentIDs = append(attachmentIDs, attachmentID)
 	}
-	
+
 	return attachmentIDs, nil
 }
 
@@ -349,7 +374,7 @@ func (c *V2Converter) setRelations(apiResult *api_v2_client.ResultCreate, relati
 	}
 
 	apiRelations := api_v2_client.NewResultRelations()
-	
+
 	var suiteItems []api_v2_client.RelationSuiteItem
 	for _, suiteData := range relations.Suite.Data {
 		item := api_v2_client.NewRelationSuiteItem(suiteData.Title)
@@ -358,10 +383,10 @@ func (c *V2Converter) setRelations(apiResult *api_v2_client.ResultCreate, relati
 		}
 		suiteItems = append(suiteItems, *item)
 	}
-	
+
 	suite := api_v2_client.NewRelationSuite(suiteItems)
 	apiRelations.SetSuite(*suite)
 	apiResult.SetRelations(*apiRelations)
-	
+
 	return nil
 }
