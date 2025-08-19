@@ -120,13 +120,29 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			result.Execution.Status = domain.StatusFailed
+			// Panic occurred - set status to invalid and capture stacktrace
+			result.Execution.Status = domain.StatusInvalid
 			msg := fmt.Sprintf("panic: %v", r)
 			result.Message = &msg
+
+			// Capture stacktrace for panic
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
 		} else if t.Failed() {
+			// Test failed due to assertion failure
 			result.Execution.Status = domain.StatusFailed
 			msg := "Test failed due to assertion failure"
 			result.Message = &msg
+
+			// Capture stacktrace for failed test
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
 		} else {
 			result.Execution.Status = domain.StatusPassed
 		}
@@ -167,6 +183,11 @@ func Step(meta StepMetadata, fn func()) {
 	step.Execution.StartTime = &now
 
 	defer func() {
+		if r := recover(); r != nil {
+			// Panic occurred in step - set status to failed
+			step.Execution.Status = domain.StepStatusFailed
+		}
+
 		// End step execution
 		end := time.Now().UnixMilli()
 		step.Execution.EndTime = &end

@@ -28,10 +28,11 @@ type StepTextData struct {
 
 // StepExecution represents step execution details matching JavaScript StepExecution
 type StepExecution struct {
-	StartTime *int64     `json:"start_time"`
-	Status    StepStatus `json:"status"`
-	EndTime   *int64     `json:"end_time"`
-	Duration  *int64     `json:"duration"`
+	StartTime  *int64     `json:"start_time"`
+	Status     StepStatus `json:"status"`
+	EndTime    *int64     `json:"end_time"`
+	Duration   *int64     `json:"duration"`
+	Stacktrace *string    `json:"stacktrace,omitempty"`
 }
 
 // NewTestStep creates a new test step with TEXT type
@@ -46,10 +47,11 @@ func NewTestStep(action string) *TestStep {
 		},
 		ParentID: nil,
 		Execution: StepExecution{
-			Status:    StepStatusPassed,
-			StartTime: nil,
-			EndTime:   nil,
-			Duration:  nil,
+			Status:     StepStatusPassed,
+			StartTime:  nil,
+			EndTime:    nil,
+			Duration:   nil,
+			Stacktrace: nil,
 		},
 		Attachments: make([]Attachment, 0),
 		Steps:       make([]TestStep, 0),
