@@ -172,6 +172,26 @@ qase.True(t, false, "This will fail")
 // result.Execution.ErrorDetails.Line = 42
 ```
 
+#### Enhanced Error Messages
+
+All assertion functions now provide more informative error messages that include the actual values being compared:
+
+```go
+// Before: "Should be true"
+// Now: "Should be true, but got: false"
+
+// Before: "Not equal"
+// Now: "Not equal: expected: expected, actual: actual"
+
+// Before: "Should be empty"
+// Now: "Should be empty, but was [1 2 3]"
+
+// Before: "Elements do not match"
+// Now: "Elements do not match: listA: [1 2 3], listB: [1 2 4]"
+```
+
+This makes debugging much easier as you can immediately see what values caused the assertion to fail.
+
 #### Available Assertion Functions
 
 All assertion functions automatically capture error details:
@@ -357,6 +377,40 @@ func TestWithErrorDetails(t *testing.T) {
         // - ErrorDetails.Actual = "12345"
         // - ErrorDetails.File = "/path/to/test.go"
         // - ErrorDetails.Line = line number where assertion failed
+    })
+}
+```
+
+### Enhanced Error Messages Examples
+
+```go
+func TestEnhancedErrorMessages(t *testing.T) {
+    qase.Test(t, qase.TestMetadata{
+        DisplayName: "Enhanced Error Messages Test",
+        Title: "Test Enhanced Error Messages",
+        Description: "Demonstrates improved error messages with actual values",
+    }, func() {
+        // These assertions will fail with enhanced error messages
+        
+        // Before: "Should be true"
+        // Now: "Should be true, but got: false"
+        qase.True(t, false, "This will fail")
+        
+        // Before: "Should be empty"
+        // Now: "Should be empty, but was [1 2 3]"
+        qase.Empty(t, []int{1, 2, 3}, "This will fail")
+        
+        // Before: "Elements do not match"
+        // Now: "Elements do not match: listA: [1 2 3], listB: [1 2 4]"
+        qase.ElementsMatch(t, []int{1, 2, 3}, []int{1, 2, 4}, "This will fail")
+        
+        // Before: "Should be zero"
+        // Now: "Should be zero, but was 42"
+        qase.Zero(t, 42, "This will fail")
+        
+        // Before: "Should not be empty"
+        // Now: "Should NOT be empty, but was []"
+        qase.NotEmpty(t, []int{}, "This will fail")
     })
 }
 ```

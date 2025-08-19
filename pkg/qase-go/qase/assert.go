@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"math"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +32,7 @@ func True(t *testing.T, value bool, msgAndArgs ...interface{}) {
 			}
 		}
 
-		AddMessage("Should be true")
+		AddMessage(fmt.Sprintf("Should be true, but got: %v", value))
 		t.Fail()
 	}
 }
@@ -54,7 +56,7 @@ func False(t *testing.T, value bool, msgAndArgs ...interface{}) {
 			}
 		}
 
-		AddMessage("Should be false")
+		AddMessage(fmt.Sprintf("Should be false, but got: %v", value))
 		t.Fail()
 	}
 }
@@ -104,7 +106,7 @@ func NotEqual(t *testing.T, expected interface{}, actual interface{}, msgAndArgs
 			}
 		}
 
-		AddMessage(fmt.Sprintf("Should not be: %#v\n", actual))
+		AddMessage(fmt.Sprintf("Should not be equal to %v, but got: %v", expected, actual))
 		t.Fail()
 	}
 }
@@ -154,7 +156,7 @@ func NotEqualValues(t *testing.T, expected interface{}, actual interface{}, msgA
 			}
 		}
 
-		AddMessage(fmt.Sprintf("Should not be: %#v\n", actual))
+		AddMessage(fmt.Sprintf("Should not be equal values, but got: %v", actual))
 		t.Fail()
 	}
 }
@@ -170,7 +172,7 @@ func Error(t *testing.T, err error, msgAndArgs ...interface{}) {
 				"Expected error but got nil",
 				"error",
 				"nil",
-				"An error is expected but got nil",
+				fmt.Sprintf("An error is expected but got nil. Received: %v", err),
 			)
 
 			// Try to capture file and line information
@@ -179,7 +181,7 @@ func Error(t *testing.T, err error, msgAndArgs ...interface{}) {
 			}
 		}
 
-		AddMessage("An error is expected but got nil.")
+		AddMessage(fmt.Sprintf("An error is expected but got nil. Received: %v", err))
 		t.Fail()
 	}
 }
@@ -258,7 +260,16 @@ func ErrorIs(t *testing.T, err error, target error, msgAndArgs ...interface{}) {
 	if !success {
 		AddMessage(fmt.Sprintf("Target error should be in err chain:\n"+
 			"expected: %s\n"+
-			"in chain: %s", targetString, actualString))
+			"in chain: %s\n"+
+			"Target error was not found in the error chain", targetString, actualString))
+		t.Fail()
+	}
+}
+
+func ErrorAs(t *testing.T, err error, target interface{}, msgAndArgs ...interface{}) {
+	success := assert.ErrorAs(t, err, target, msgAndArgs...)
+	if !success {
+		AddMessage(fmt.Sprintf("Error should be of type %T, but was %T", target, err))
 		t.Fail()
 	}
 }
@@ -275,7 +286,7 @@ func Nil(t *testing.T, object interface{}, msgAndArgs ...interface{}) {
 func NotNil(t *testing.T, object interface{}, msgAndArgs ...interface{}) {
 	success := assert.NotNil(t, object, msgAndArgs...)
 	if !success {
-		AddMessage("Expected value not to be nil.")
+		AddMessage(fmt.Sprintf("Expected value not to be nil, but got: %v", object))
 		t.Fail()
 	}
 }
@@ -284,7 +295,7 @@ func NotNil(t *testing.T, object interface{}, msgAndArgs ...interface{}) {
 func Len(t *testing.T, object interface{}, length int, msgAndArgs ...interface{}) {
 	success := assert.Len(t, object, length, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("\"%s\" should have %d item(s)", object, length))
+		AddMessage(fmt.Sprintf("Object should have %d item(s), but has %d", length, getLength(object)))
 		t.Fail()
 	}
 }
@@ -300,7 +311,7 @@ func Contains(t *testing.T, s interface{}, contains interface{}, msgAndArgs ...i
 func NotContains(t *testing.T, s interface{}, contains interface{}, msgAndArgs ...interface{}) {
 	success := assert.NotContains(t, s, contains, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("%#v should not contain %#v", s, contains))
+		AddMessage(fmt.Sprintf("%#v should not contain %#v, but it does", s, contains))
 		t.Fail()
 	}
 }
@@ -308,7 +319,23 @@ func NotContains(t *testing.T, s interface{}, contains interface{}, msgAndArgs .
 func ElementsMatch(t *testing.T, listA interface{}, listB interface{}, msgAndArgs ...interface{}) {
 	success := assert.ElementsMatch(t, listA, listB, msgAndArgs...)
 	if !success {
-		AddMessage("Elements do not match")
+		AddMessage(fmt.Sprintf("Elements do not match:\nlistA: %v\nlistB: %v", listA, listB))
+		t.Fail()
+	}
+}
+
+func Same(t *testing.T, expected, actual interface{}, msgAndArgs ...interface{}) {
+	success := assert.Same(t, expected, actual, msgAndArgs...)
+	if !success {
+		AddMessage(fmt.Sprintf("Expected same pointer, but got different pointers:\nexpected: %p\nactual  : %p", expected, actual))
+		t.Fail()
+	}
+}
+
+func NotSame(t *testing.T, expected, actual interface{}, msgAndArgs ...interface{}) {
+	success := assert.NotSame(t, expected, actual, msgAndArgs...)
+	if !success {
+		AddMessage(fmt.Sprintf("Expected different pointers, but got same pointer: %p", expected))
 		t.Fail()
 	}
 }
@@ -316,7 +343,7 @@ func ElementsMatch(t *testing.T, listA interface{}, listB interface{}, msgAndArg
 func Subset(t *testing.T, list, subset interface{}, msgAndArgs ...interface{}) {
 	success := assert.Subset(t, list, subset, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("%v is not a subset of %v", subset, list))
+		AddMessage(fmt.Sprintf("%v is not a subset of %v. Check if all elements from subset exist in the main list", subset, list))
 		t.Fail()
 	}
 }
@@ -324,7 +351,7 @@ func Subset(t *testing.T, list, subset interface{}, msgAndArgs ...interface{}) {
 func NotSubset(t *testing.T, list, subset interface{}, msgAndArgs ...interface{}) {
 	success := assert.NotSubset(t, list, subset, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("%v should not be a subset of %v", subset, list))
+		AddMessage(fmt.Sprintf("%v should not be a subset of %v, but it is", subset, list))
 		t.Fail()
 	}
 }
@@ -333,7 +360,7 @@ func NotSubset(t *testing.T, list, subset interface{}, msgAndArgs ...interface{}
 func Greater(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interface{}) {
 	success := assert.Greater(t, e1, e2, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("\"%v\" is not greater than \"%v\"", e1, e2))
+		AddMessage(fmt.Sprintf("%v is not greater than %v. %v <= %v", e1, e2, e1, e2))
 		t.Fail()
 	}
 }
@@ -341,7 +368,7 @@ func Greater(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interfa
 func GreaterOrEqual(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interface{}) {
 	success := assert.GreaterOrEqual(t, e1, e2, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("\"%v\" is not greater than or equal to \"%v\"", e1, e2))
+		AddMessage(fmt.Sprintf("%v is not greater than or equal to %v. %v < %v", e1, e2, e1, e2))
 		t.Fail()
 	}
 }
@@ -349,7 +376,7 @@ func GreaterOrEqual(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...
 func Less(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interface{}) {
 	success := assert.Less(t, e1, e2, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("\"%v\" is not less than \"%v\"", e1, e2))
+		AddMessage(fmt.Sprintf("%v is not less than %v. %v >= %v", e1, e2, e1, e2))
 		t.Fail()
 	}
 }
@@ -357,7 +384,7 @@ func Less(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interface{
 func LessOrEqual(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...interface{}) {
 	success := assert.LessOrEqual(t, e1, e2, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("\"%v\" is not less than or equal to \"%v\"", e1, e2))
+		AddMessage(fmt.Sprintf("%v is not less than or equal to %v. %v > %v", e1, e2, e1, e2))
 		t.Fail()
 	}
 }
@@ -365,7 +392,30 @@ func LessOrEqual(t *testing.T, e1 interface{}, e2 interface{}, msgAndArgs ...int
 func InDelta(t *testing.T, expected, actual interface{}, delta float64, msgAndArgs ...interface{}) {
 	success := assert.InDelta(t, expected, actual, delta, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("Difference between %v and %v should be less than %v", expected, actual, delta))
+		// Calculate actual difference for better error message
+		var actualDiff float64
+		switch e := expected.(type) {
+		case float64:
+			if a, ok := actual.(float64); ok {
+				actualDiff = math.Abs(e - a)
+			}
+		case float32:
+			if a, ok := actual.(float32); ok {
+				actualDiff = float64(math.Abs(float64(e - a)))
+			}
+		case int:
+			if a, ok := actual.(int); ok {
+				actualDiff = math.Abs(float64(e - a))
+			}
+		case int64:
+			if a, ok := actual.(int64); ok {
+				actualDiff = math.Abs(float64(e - a))
+			}
+		default:
+			actualDiff = 0
+		}
+
+		AddMessage(fmt.Sprintf("Difference between %v and %v should be less than %v, but was %v", expected, actual, delta, actualDiff))
 		t.Fail()
 	}
 }
@@ -382,7 +432,7 @@ func IsType(t *testing.T, expectedType interface{}, object interface{}, msgAndAr
 func Implements(t *testing.T, interfaceObject interface{}, object interface{}, msgAndArgs ...interface{}) {
 	success := assert.Implements(t, interfaceObject, object, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("%T must implement %v", object, interfaceObject))
+		AddMessage(fmt.Sprintf("%T must implement %v, but does not", object, interfaceObject))
 		t.Fail()
 	}
 }
@@ -424,7 +474,15 @@ func NotZero(t *testing.T, i interface{}, msgAndArgs ...interface{}) {
 func Regexp(t *testing.T, rx interface{}, str interface{}, msgAndArgs ...interface{}) {
 	success := assert.Regexp(t, rx, str, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("Expect \"%v\" to match \"%v\"", str, rx))
+		AddMessage(fmt.Sprintf("String \"%v\" does not match regexp \"%v\"", str, rx))
+		t.Fail()
+	}
+}
+
+func NotRegexp(t *testing.T, rx interface{}, str interface{}, msgAndArgs ...interface{}) {
+	success := assert.NotRegexp(t, rx, str, msgAndArgs...)
+	if !success {
+		AddMessage(fmt.Sprintf("String \"%v\" should not match regexp \"%v\", but it does", str, rx))
 		t.Fail()
 	}
 }
@@ -435,7 +493,8 @@ func JSONEq(t *testing.T, expected, actual string, msgAndArgs ...interface{}) {
 	if !success {
 		AddMessage(fmt.Sprintf("JSONs are not equal:\n"+
 			"expected: %s\n"+
-			"actual  : %s", expected, actual))
+			"actual  : %s\n"+
+			"Please check the differences above", expected, actual))
 		t.Fail()
 	}
 }
@@ -444,7 +503,7 @@ func JSONEq(t *testing.T, expected, actual string, msgAndArgs ...interface{}) {
 func WithinDuration(t *testing.T, expected, actual time.Time, delta time.Duration, msgAndArgs ...interface{}) {
 	success := assert.WithinDuration(t, expected, actual, delta, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("Max difference between %v and %v allowed is %v", expected, actual, delta))
+		AddMessage(fmt.Sprintf("Max difference between %v and %v allowed is %v, but was %v", expected, actual, delta, actual.Sub(expected).Abs()))
 		t.Fail()
 	}
 }
@@ -453,7 +512,15 @@ func WithinDuration(t *testing.T, expected, actual time.Time, delta time.Duratio
 func DirExists(t *testing.T, path string, msgAndArgs ...interface{}) {
 	success := assert.DirExists(t, path, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("Directory \"%v\" does not exist", path))
+		AddMessage(fmt.Sprintf("Directory \"%v\" does not exist or is not a directory", path))
+		t.Fail()
+	}
+}
+
+func FileExists(t *testing.T, path string, msgAndArgs ...interface{}) {
+	success := assert.FileExists(t, path, msgAndArgs...)
+	if !success {
+		AddMessage(fmt.Sprintf("File \"%v\" does not exist or is not a file", path))
 		t.Fail()
 	}
 }
@@ -462,7 +529,7 @@ func DirExists(t *testing.T, path string, msgAndArgs ...interface{}) {
 func Condition(t *testing.T, condition assert.Comparison, msgAndArgs ...interface{}) {
 	success := assert.Condition(t, condition, msgAndArgs...)
 	if !success {
-		AddMessage("Condition failed!")
+		AddMessage("Condition failed! The custom condition returned false.")
 		t.Fail()
 	}
 }
@@ -478,4 +545,15 @@ func getQaseTrace() string {
 	}
 
 	return strings.Join(traces, "\n")
+}
+
+// Helper function to get the length of an object
+func getLength(object interface{}) int {
+	v := reflect.ValueOf(object)
+	switch v.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice, reflect.String:
+		return v.Len()
+	default:
+		return 0
+	}
 }

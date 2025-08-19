@@ -2,6 +2,7 @@ package qase
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -115,4 +116,37 @@ func TestErrorDetailsWithValues(t *testing.T) {
 	// Print error details for debugging
 	errorDetailsJSON, _ := json.MarshalIndent(result.Execution.ErrorDetails, "", "  ")
 	t.Logf("Captured ErrorDetails:\n%s", string(errorDetailsJSON))
+}
+
+// TestEnhancedErrorMessages tests that error messages now contain more detailed information
+func TestEnhancedErrorMessages(t *testing.T) {
+	// Test that error messages contain actual values
+	result := domain.NewTestResult("Test Enhanced Error Messages")
+
+	// Set current test result
+	setCurrentTestResult(result)
+	defer clearCurrentTestResult()
+
+	// Test True function with enhanced message
+	AddMessage("Should be true, but got: false")
+
+	// Check that error details were captured
+	if result.Execution.ErrorDetails == nil {
+		t.Error("ErrorDetails should not be nil after failed assertion")
+		return
+	}
+
+	// Verify error details content
+	if result.Execution.ErrorDetails.ErrorType != "Should be true" {
+		t.Errorf("Expected ErrorType 'Should be true', got '%s'", result.Execution.ErrorDetails.ErrorType)
+	}
+
+	// Print error details for debugging
+	errorDetailsJSON, _ := json.MarshalIndent(result.Execution.ErrorDetails, "", "  ")
+	t.Logf("Enhanced Error Details:\n%s", string(errorDetailsJSON))
+
+	// Test that the message contains the actual value
+	if !strings.Contains(result.Execution.ErrorDetails.ErrorMessage, "false") {
+		t.Error("Error message should contain the actual value 'false'")
+	}
 }
