@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -18,6 +19,9 @@ import (
 var (
 	once     sync.Once
 	reporter *reporters.CoreReporter
+	// Global variable to store current test result for error details
+	currentTestResult *domain.TestResult
+	currentTestMutex  sync.RWMutex
 )
 
 func init() {
@@ -118,7 +122,13 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 	now := time.Now().UnixMilli()
 	result.Execution.StartTime = &now
 
+	// Set current test result for error details capture
+	setCurrentTestResult(result)
+
 	defer func() {
+		// Clear current test result
+		clearCurrentTestResult()
+
 		if r := recover(); r != nil {
 			// Panic occurred - set status to invalid and capture stacktrace
 			result.Execution.Status = domain.StatusInvalid
@@ -134,8 +144,18 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		} else if t.Failed() {
 			// Test failed due to assertion failure
 			result.Execution.Status = domain.StatusFailed
-			msg := "Test failed due to assertion failure"
-			result.Message = &msg
+
+			// Try to get more detailed error information from the test
+			if result.Execution.ErrorDetails == nil {
+				msg := "Test failed due to assertion failure"
+				result.Message = &msg
+			} else {
+				// Use error details for more specific message
+				if result.Execution.ErrorDetails.ErrorType != "" {
+					msg := fmt.Sprintf("Test failed: %s", result.Execution.ErrorDetails.ErrorType)
+					result.Message = &msg
+				}
+			}
 
 			// Capture stacktrace for failed test
 			buf := make([]byte, 4096)
@@ -202,6 +222,21 @@ func Step(meta StepMetadata, fn func()) {
 // AddMessage adds a message to the current test
 func AddMessage(msg string) {
 	fmt.Println("Message:", msg)
+
+	// Try to capture error details from the current test result
+	if currentResult := getCurrentTestResult(); currentResult != nil {
+		// Check if this looks like an assertion error message
+		if isAssertionError(msg) {
+			// Extract error type and set error details
+			errorType := extractErrorType(msg)
+			currentResult.SetErrorDetailsFromString(errorType, msg)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+	}
 }
 
 // AddAttachments adds attachments to the current test
@@ -249,4 +284,109 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+// Helper functions for managing current test result
+
+// setCurrentTestResult sets the current test result for error details capture
+func setCurrentTestResult(result *domain.TestResult) {
+	currentTestMutex.Lock()
+	defer currentTestMutex.Unlock()
+	currentTestResult = result
+}
+
+// clearCurrentTestResult clears the current test result
+func clearCurrentTestResult() {
+	currentTestMutex.Lock()
+	defer currentTestMutex.Unlock()
+	currentTestResult = nil
+}
+
+// getCurrentTestResult gets the current test result
+func getCurrentTestResult() *domain.TestResult {
+	currentTestMutex.RLock()
+	defer currentTestMutex.RUnlock()
+	return currentTestResult
+}
+
+// isAssertionError checks if the message looks like an assertion error
+func isAssertionError(msg string) bool {
+	// Common assertion error patterns
+	errorPatterns := []string{
+		"Should be true",
+		"Should be false",
+		"Not equal",
+		"Should not be",
+		"An error is expected but got nil",
+		"Received unexpected error",
+		"Error message not equal",
+		"Should contain",
+		"Should not contain",
+		"Should be empty",
+		"Should not be empty",
+	}
+
+	for _, pattern := range errorPatterns {
+		if strings.Contains(msg, pattern) {
+			return true
+		}
+	}
+	return false
+}
+
+// extractErrorType extracts the error type from the error message
+func extractErrorType(msg string) string {
+	// Try to extract the main error type
+	if strings.Contains(msg, "Should be true") {
+		return "Should be true"
+	}
+	if strings.Contains(msg, "Should be false") {
+		return "Should be false"
+	}
+	if strings.Contains(msg, "Not equal") {
+		return "Not equal"
+	}
+	if strings.Contains(msg, "Should not be") {
+		return "Should not be"
+	}
+	if strings.Contains(msg, "An error is expected but got nil") {
+		return "Expected error but got nil"
+	}
+	if strings.Contains(msg, "Received unexpected error") {
+		return "Unexpected error"
+	}
+	if strings.Contains(msg, "Error message not equal") {
+		return "Error message not equal"
+	}
+	if strings.Contains(msg, "Should contain") {
+		return "Should contain"
+	}
+	if strings.Contains(msg, "Should not contain") {
+		return "Should not contain"
+	}
+	if strings.Contains(msg, "Should be empty") {
+		return "Should be empty"
+	}
+	if strings.Contains(msg, "Should not be empty") {
+		return "Should not be empty"
+	}
+
+	// Default to first line or first 50 characters
+	if idx := strings.Index(msg, "\n"); idx > 0 {
+		return strings.TrimSpace(msg[:idx])
+	}
+	if len(msg) > 50 {
+		return strings.TrimSpace(msg[:50]) + "..."
+	}
+	return strings.TrimSpace(msg)
+}
+
+// getCallerInfo gets the file and line information of the caller
+func getCallerInfo() (string, int) {
+	// Skip the current function and AddMessage, go to the actual caller
+	_, file, line, ok := runtime.Caller(2)
+	if ok {
+		return file, line
+	}
+	return "", 0
 }

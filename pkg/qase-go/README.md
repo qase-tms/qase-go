@@ -131,8 +131,9 @@ err := fileReporter.AddResult(result)
 The qase package provides high-level testing utilities:
 
 - **Test function**: Simplified test execution with metadata
-- **Assert utilities**: Common assertion functions
+- **Assert utilities**: Common assertion functions with detailed error capture
 - **Reporter integration**: Automatic reporter setup
+- **Error Details**: Comprehensive error information capture for failed assertions
 
 ```go
 import "github.com/qase-tms/qase-go/pkg/qase-go/qase"
@@ -147,6 +148,71 @@ qase.Test(t, qase.TestMetadata{
     // Test logic here
     // Results are automatically reported
 })
+```
+
+#### Enhanced Error Details
+
+The SDK now captures comprehensive error information when assertions fail, including:
+
+- **Error Type**: The type of assertion that failed (e.g., "Should be true", "Not equal")
+- **Expected Value**: What was expected
+- **Actual Value**: What was actually received
+- **Error Message**: Detailed description of the failure
+- **File and Line**: Location where the assertion failed
+
+```go
+// When an assertion fails, detailed error information is automatically captured
+qase.True(t, false, "This will fail")
+
+// The resulting TestResult will contain:
+// result.Execution.ErrorDetails.ErrorType = "Should be true"
+// result.Execution.ErrorDetails.Expected = "true"
+// result.Execution.ErrorDetails.Actual = "false"
+// result.Execution.ErrorDetails.File = "/path/to/test.go"
+// result.Execution.ErrorDetails.Line = 42
+```
+
+#### Available Assertion Functions
+
+All assertion functions automatically capture error details:
+
+```go
+// Basic assertions
+qase.True(t, value, "message")
+qase.False(t, value, "message")
+qase.Equal(t, expected, actual, "message")
+qase.NotEqual(t, expected, actual, "message")
+qase.EqualValues(t, expected, actual, "message")
+qase.NotEqualValues(t, expected, actual, "message")
+
+// Error assertions
+qase.Error(t, err, "message")
+qase.NoError(t, err, "message")
+qase.EqualError(t, err, expectedMessage, "message")
+qase.ErrorIs(t, err, target, "message")
+qase.ErrorAs(t, err, target, "message")
+
+// String assertions
+qase.Contains(t, str, substr, "message")
+qase.NotContains(t, str, substr, "message")
+qase.Regexp(t, rx, str, "message")
+qase.NotRegexp(t, rx, str, "message")
+
+// Numeric assertions
+qase.Greater(t, e1, e2, "message")
+qase.GreaterOrEqual(t, e1, e2, "message")
+qase.Less(t, e1, e2, "message")
+qase.LessOrEqual(t, e1, e2, "message")
+
+// Collection assertions
+qase.Empty(t, object, "message")
+qase.NotEmpty(t, object, "message")
+qase.Len(t, object, length, "message")
+qase.Same(t, expected, actual, "message")
+qase.NotSame(t, expected, actual, "message")
+qase.Subset(t, list, subset, "message")
+qase.NotSubset(t, list, subset, "message")
+qase.ElementsMatch(t, listA, listB, "message")
 ```
 
 ## Configuration
@@ -266,6 +332,56 @@ func TestWithScreenshots(t *testing.T) {
         
         // Add attachment to result (handled automatically by qase.Test)
     })
+}
+```
+
+### Test with Enhanced Error Details
+
+```go
+func TestWithErrorDetails(t *testing.T) {
+    qase.Test(t, qase.TestMetadata{
+        DisplayName: "Error Details Test",
+        Title: "Test Error Details Capture",
+        Description: "Demonstrates enhanced error information capture",
+    }, func() {
+        // This test will fail and capture detailed error information
+        userID := "12345"
+        expectedUserID := "67890"
+        
+        // When this assertion fails, detailed error information is captured
+        qase.Equal(t, expectedUserID, userID, "User ID should match expected value")
+        
+        // The resulting TestResult will contain:
+        // - ErrorDetails.ErrorType = "Not equal"
+        // - ErrorDetails.Expected = "67890"
+        // - ErrorDetails.Actual = "12345"
+        // - ErrorDetails.File = "/path/to/test.go"
+        // - ErrorDetails.Line = line number where assertion failed
+    })
+}
+```
+
+### Accessing Error Details Programmatically
+
+```go
+func TestAccessErrorDetails(t *testing.T) {
+    result := domain.NewTestResult("Error Details Access Test")
+    
+    // Set current test result for error capture
+    qase.setCurrentTestResult(result)
+    defer qase.clearCurrentTestResult()
+    
+    // Simulate a failed assertion
+    qase.True(t, false, "This will fail")
+    
+    // Access captured error details
+    if result.Execution.ErrorDetails != nil {
+        fmt.Printf("Error Type: %s\n", result.Execution.ErrorDetails.ErrorType)
+        fmt.Printf("Expected: %s\n", result.Execution.ErrorDetails.Expected)
+        fmt.Printf("Actual: %s\n", result.Execution.ErrorDetails.Actual)
+        fmt.Printf("File: %s\n", result.Execution.ErrorDetails.File)
+        fmt.Printf("Line: %d\n", result.Execution.ErrorDetails.Line)
+    }
 }
 ```
 

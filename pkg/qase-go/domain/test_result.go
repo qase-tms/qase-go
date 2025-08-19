@@ -2,30 +2,42 @@ package domain
 
 // TestResult represents test execution result matching JavaScript TestResultType
 type TestResult struct {
-	ID          string                 `json:"id"`
-	Title       string                 `json:"title"`
-	Signature   string                 `json:"signature"`
-	RunID       *int64                 `json:"run_id"`
-	TestopsID   interface{}            `json:"testops_id"` // number | number[] | null
-	Execution   TestExecution          `json:"execution"`
-	Fields      map[string]string      `json:"fields"`
-	Attachments []Attachment           `json:"attachments"`
-	Steps       []TestStep             `json:"steps"`
-	Params      map[string]string      `json:"params"`
-	GroupParams map[string]string      `json:"group_params"`
-	Relations   *Relation              `json:"relations"`
-	Muted       bool                   `json:"muted"`
-	Message     *string                `json:"message"`
+	ID          string            `json:"id"`
+	Title       string            `json:"title"`
+	Signature   string            `json:"signature"`
+	RunID       *int64            `json:"run_id"`
+	TestopsID   interface{}       `json:"testops_id"` // number | number[] | null
+	Execution   TestExecution     `json:"execution"`
+	Fields      map[string]string `json:"fields"`
+	Attachments []Attachment      `json:"attachments"`
+	Steps       []TestStep        `json:"steps"`
+	Params      map[string]string `json:"params"`
+	GroupParams map[string]string `json:"group_params"`
+	Relations   *Relation         `json:"relations"`
+	Muted       bool              `json:"muted"`
+	Message     *string           `json:"message"`
 }
 
 // TestExecution represents test execution details
 type TestExecution struct {
-	Status      TestResultStatus `json:"status"`
-	StartTime   *int64           `json:"start_time,omitempty"`   // Unix timestamp
-	EndTime     *int64           `json:"end_time,omitempty"`     // Unix timestamp
-	Duration    *int64           `json:"duration,omitempty"`     // Duration in milliseconds
-	Stacktrace  *string          `json:"stacktrace,omitempty"`
-	Thread      *string          `json:"thread,omitempty"`
+	Status     TestResultStatus `json:"status"`
+	StartTime  *int64           `json:"start_time,omitempty"` // Unix timestamp
+	EndTime    *int64           `json:"end_time,omitempty"`   // Unix timestamp
+	Duration   *int64           `json:"duration,omitempty"`   // Duration in milliseconds
+	Stacktrace *string          `json:"stacktrace,omitempty"`
+	Thread     *string          `json:"thread,omitempty"`
+	// Additional fields for detailed error information
+	ErrorDetails *ErrorDetails `json:"error_details,omitempty"`
+}
+
+// ErrorDetails represents detailed error information from test assertions
+type ErrorDetails struct {
+	ErrorType    string `json:"error_type,omitempty"`    // Type of assertion error (e.g., "Should be true", "Not equal")
+	Expected     string `json:"expected,omitempty"`      // Expected value
+	Actual       string `json:"actual,omitempty"`        // Actual value
+	ErrorMessage string `json:"error_message,omitempty"` // Detailed error message
+	File         string `json:"file,omitempty"`          // File where error occurred
+	Line         int    `json:"line,omitempty"`          // Line number where error occurred
 }
 
 // Relation represents test relations
@@ -134,4 +146,36 @@ func (tr *TestResult) AddSuiteData(title string, publicID *int64) {
 		Title:    title,
 		PublicID: publicID,
 	})
+}
+
+// SetErrorDetails sets the error details
+func (tr *TestResult) SetErrorDetails(errorDetails *ErrorDetails) {
+	tr.Execution.ErrorDetails = errorDetails
+}
+
+// SetErrorDetailsFromString creates and sets error details from a simple error message
+func (tr *TestResult) SetErrorDetailsFromString(errorType, errorMessage string) {
+	tr.Execution.ErrorDetails = &ErrorDetails{
+		ErrorType:    errorType,
+		ErrorMessage: errorMessage,
+	}
+}
+
+// SetErrorDetailsWithValues creates and sets error details with expected/actual values
+func (tr *TestResult) SetErrorDetailsWithValues(errorType, expected, actual, errorMessage string) {
+	tr.Execution.ErrorDetails = &ErrorDetails{
+		ErrorType:    errorType,
+		Expected:     expected,
+		Actual:       actual,
+		ErrorMessage: errorMessage,
+	}
+}
+
+// SetErrorLocation sets the file and line information for the error
+func (tr *TestResult) SetErrorLocation(file string, line int) {
+	if tr.Execution.ErrorDetails == nil {
+		tr.Execution.ErrorDetails = &ErrorDetails{}
+	}
+	tr.Execution.ErrorDetails.File = file
+	tr.Execution.ErrorDetails.Line = line
 }

@@ -14,6 +14,22 @@ import (
 func True(t *testing.T, value bool, msgAndArgs ...interface{}) {
 	success := assert.True(t, value, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Should be true",
+				"true",
+				fmt.Sprintf("%v", value),
+				"Value should be true but was false",
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage("Should be true")
 		t.Fail()
 	}
@@ -22,6 +38,22 @@ func True(t *testing.T, value bool, msgAndArgs ...interface{}) {
 func False(t *testing.T, value bool, msgAndArgs ...interface{}) {
 	success := assert.False(t, value, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Should be false",
+				"false",
+				fmt.Sprintf("%v", value),
+				"Value should be false but was true",
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage("Should be false")
 		t.Fail()
 	}
@@ -30,6 +62,22 @@ func False(t *testing.T, value bool, msgAndArgs ...interface{}) {
 func Equal(t *testing.T, expected interface{}, actual interface{}, msgAndArgs ...interface{}) {
 	success := assert.Equal(t, expected, actual, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Not equal",
+				fmt.Sprintf("%v", expected),
+				fmt.Sprintf("%v", actual),
+				fmt.Sprintf("Expected %v but got %v", expected, actual),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Not equal: \n"+
 			"expected: %s\n"+
 			"actual  : %s", expected, actual))
@@ -40,6 +88,22 @@ func Equal(t *testing.T, expected interface{}, actual interface{}, msgAndArgs ..
 func NotEqual(t *testing.T, expected interface{}, actual interface{}, msgAndArgs ...interface{}) {
 	success := assert.NotEqual(t, expected, actual, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Should not be",
+				fmt.Sprintf("not %v", expected),
+				fmt.Sprintf("%v", actual),
+				fmt.Sprintf("Value should not be %v", expected),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Should not be: %#v\n", actual))
 		t.Fail()
 	}
@@ -48,6 +112,22 @@ func NotEqual(t *testing.T, expected interface{}, actual interface{}, msgAndArgs
 func EqualValues(t *testing.T, expected interface{}, actual interface{}, msgAndArgs ...interface{}) {
 	success := assert.EqualValues(t, expected, actual, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Not equal values",
+				fmt.Sprintf("%v", expected),
+				fmt.Sprintf("%v", actual),
+				fmt.Sprintf("Expected values %v but got %v", expected, actual),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Not equal: \n"+
 			"expected: %s\n"+
 			"actual  : %s", expected, actual))
@@ -58,6 +138,22 @@ func EqualValues(t *testing.T, expected interface{}, actual interface{}, msgAndA
 func NotEqualValues(t *testing.T, expected interface{}, actual interface{}, msgAndArgs ...interface{}) {
 	success := assert.NotEqualValues(t, expected, actual, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Should not be equal values",
+				fmt.Sprintf("not %v", expected),
+				fmt.Sprintf("%v", actual),
+				fmt.Sprintf("Values should not be equal to %v", expected),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Should not be: %#v\n", actual))
 		t.Fail()
 	}
@@ -67,6 +163,22 @@ func NotEqualValues(t *testing.T, expected interface{}, actual interface{}, msgA
 func Error(t *testing.T, err error, msgAndArgs ...interface{}) {
 	success := assert.Error(t, err, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Expected error but got nil",
+				"error",
+				"nil",
+				"An error is expected but got nil",
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage("An error is expected but got nil.")
 		t.Fail()
 	}
@@ -75,6 +187,22 @@ func Error(t *testing.T, err error, msgAndArgs ...interface{}) {
 func NoError(t *testing.T, err error, msgAndArgs ...interface{}) {
 	success := assert.NoError(t, err, msgAndArgs...)
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Unexpected error",
+				"nil",
+				fmt.Sprintf("%v", err),
+				fmt.Sprintf("Received unexpected error: %v", err),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Received unexpected error:\n%+v", err))
 		t.Fail()
 	}
@@ -89,6 +217,22 @@ func EqualError(t *testing.T, theError error, errString string, msgAndArgs ...in
 	success := assert.EqualError(t, theError, errString, msgAndArgs...)
 
 	if !success {
+		// Try to capture detailed error information
+		if currentResult := getCurrentTestResult(); currentResult != nil {
+			// Set error details with expected/actual values
+			currentResult.SetErrorDetailsWithValues(
+				"Error message not equal",
+				errString,
+				actualString,
+				fmt.Sprintf("Expected error message '%s' but got '%s'", errString, actualString),
+			)
+
+			// Try to capture file and line information
+			if file, line := getCallerInfo(); file != "" && line > 0 {
+				currentResult.SetErrorLocation(file, line)
+			}
+		}
+
 		AddMessage(fmt.Sprintf("Error message not equal:\n"+
 			"expected: %q\n"+
 			"actual  : %q", errString, actualString))
