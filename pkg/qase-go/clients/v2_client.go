@@ -2,6 +2,7 @@ package clients
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -49,6 +50,39 @@ func NewV2Client(config ClientConfig) (*V2Client, error) {
 	}, nil
 }
 
+// logResultPretty logs a result in a readable JSON format
+func (c *V2Client) logResultPretty(prefix string, result *api_v2_client.ResultCreate) {
+	if !c.config.Debug {
+		return
+	}
+
+	execution := result.GetExecution()
+
+	// Create a simplified structure for logging
+	logData := map[string]interface{}{
+		"title":  result.GetTitle(),
+		"status": execution.GetStatus(),
+	}
+
+	// Add time values if they exist
+	if execution.StartTime.IsSet() {
+		logData["start_time"] = execution.GetStartTime()
+	}
+	if execution.EndTime.IsSet() {
+		logData["end_time"] = execution.GetEndTime()
+	}
+	if execution.Duration.IsSet() {
+		logData["duration_ms"] = execution.GetDuration()
+	}
+
+	// Convert to JSON for pretty printing
+	if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
+		log.Printf("%s: %s", prefix, string(jsonData))
+	} else {
+		log.Printf("%s: %+v", prefix, logData)
+	}
+}
+
 // SetConverter sets a custom converter for the V2Client
 func (c *V2Client) SetConverter(converter *V2Converter) {
 	c.converter = converter
@@ -68,7 +102,7 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 	}
 
 	if c.config.Debug {
-		log.Printf("Converted API result: %#v", apiResult)
+		c.logResultPretty("Converted API result", apiResult)
 	}
 
 	// Set API token in context
@@ -121,7 +155,10 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	}
 
 	if c.config.Debug {
-		log.Printf("Converted API results: %#v", apiResults)
+		log.Printf("Converted API results count: %d", len(apiResults))
+		for i, result := range apiResults {
+			c.logResultPretty(fmt.Sprintf("Result %d", i), &result)
+		}
 	}
 
 	// Create batch request
