@@ -3,6 +3,8 @@ package clients
 import (
 	"context"
 	"fmt"
+	"io"
+	"log"
 	"os"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -54,10 +56,19 @@ func (c *V2Client) SetConverter(converter *V2Converter) {
 
 // SendResult sends a single test result to Qase using API v2
 func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error {
+	if c.config.Debug {
+		log.Printf("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
+		log.Printf("Domain result: %+v", result)
+	}
+
 	// Convert domain model to API v2 model
 	apiResult, err := c.converter.ConvertTestResult(result)
 	if err != nil {
 		return fmt.Errorf("failed to convert domain model: %w", err)
+	}
+
+	if c.config.Debug {
+		log.Printf("Converted API result: %+v", apiResult)
 	}
 
 	// Set API token in context
@@ -68,9 +79,23 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 	})
 
 	// Send result to API
-	_, err = c.client.ResultsAPI.CreateResultV2(authCtx, projectCode, runID).ResultCreate(*apiResult).Execute()
+	httpResp, err := c.client.ResultsAPI.CreateResultV2(authCtx, projectCode, runID).ResultCreate(*apiResult).Execute()
 	if err != nil {
+		if c.config.Debug {
+			log.Printf("API request failed with error: %v", err)
+			if httpResp != nil {
+				log.Printf("HTTP response status: %s", httpResp.Status)
+				log.Printf("HTTP response headers: %v", httpResp.Header)
+				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
+					log.Printf("HTTP response body: %s", string(body))
+				}
+			}
+		}
 		return fmt.Errorf("failed to send result to Qase API v2: %w", err)
+	}
+
+	if c.config.Debug {
+		log.Printf("Successfully sent result: HTTP status=%s", httpResp.Status)
 	}
 
 	return nil
@@ -78,6 +103,13 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 
 // SendResults sends multiple test results to Qase using API v2 batch endpoint
 func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error {
+	if c.config.Debug {
+		log.Printf("Sending batch results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
+		for i, result := range results {
+			log.Printf("Result %d: %+v", i, result)
+		}
+	}
+
 	// Convert all domain models to API v2 models
 	var apiResults []api_v2_client.ResultCreate
 	for _, result := range results {
@@ -88,9 +120,17 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 		apiResults = append(apiResults, *apiResult)
 	}
 
+	if c.config.Debug {
+		log.Printf("Converted API results: %+v", apiResults)
+	}
+
 	// Create batch request
 	batchRequest := api_v2_client.NewCreateResultsRequestV2()
 	batchRequest.SetResults(apiResults)
+
+	if c.config.Debug {
+		log.Printf("Batch request: %+v", batchRequest)
+	}
 
 	// Set API token in context
 	authCtx := context.WithValue(ctx, api_v2_client.ContextAPIKeys, map[string]api_v2_client.APIKey{
@@ -100,9 +140,23 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	})
 
 	// Send batch results to API
-	_, err := c.client.ResultsAPI.CreateResultsV2(authCtx, projectCode, runID).CreateResultsRequestV2(*batchRequest).Execute()
+	httpResp, err := c.client.ResultsAPI.CreateResultsV2(authCtx, projectCode, runID).CreateResultsRequestV2(*batchRequest).Execute()
 	if err != nil {
+		if c.config.Debug {
+			log.Printf("API request failed with error: %v", err)
+			if httpResp != nil {
+				log.Printf("HTTP response status: %s", httpResp.Status)
+				log.Printf("HTTP response headers: %v", httpResp.Header)
+				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
+					log.Printf("HTTP response body: %s", string(body))
+				}
+			}
+		}
 		return fmt.Errorf("failed to send batch results to Qase API v2: %w", err)
+	}
+
+	if c.config.Debug {
+		log.Printf("Successfully sent batch results: HTTP status=%s", httpResp.Status)
 	}
 
 	return nil

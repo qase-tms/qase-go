@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -51,9 +52,17 @@ func (c *V1Client) SendResults(ctx context.Context, projectCode string, runID in
 
 // CreateRun creates a new test run using API v1
 func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, description string) (*RunInfo, error) {
+	if c.config.Debug {
+		log.Printf("Creating test run: project=%s, title=%s, description=%s", projectCode, title, description)
+	}
+
 	// Create run request
 	runCreate := api_v1_client.NewRunCreate(title)
 	runCreate.SetDescription(description)
+
+	if c.config.Debug {
+		log.Printf("RunCreate object: %+v", runCreate)
+	}
 
 	// Set API token in context
 	authCtx := context.WithValue(ctx, api_v1_client.ContextAPIKeys, map[string]api_v1_client.APIKey{
@@ -63,8 +72,18 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	})
 
 	// Create run via API
-	response, _, err := c.client.RunsAPI.CreateRun(authCtx, projectCode).RunCreate(*runCreate).Execute()
+	response, httpResp, err := c.client.RunsAPI.CreateRun(authCtx, projectCode).RunCreate(*runCreate).Execute()
 	if err != nil {
+		if c.config.Debug {
+			log.Printf("API request failed with error: %v", err)
+			if httpResp != nil {
+				log.Printf("HTTP response status: %s", httpResp.Status)
+				log.Printf("HTTP response headers: %v", httpResp.Header)
+				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
+					log.Printf("HTTP response body: %s", string(body))
+				}
+			}
+		}
 		return nil, fmt.Errorf("failed to create test run: %w", err)
 	}
 
@@ -75,11 +94,19 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 		URL:         fmt.Sprintf("https://app.qase.io/run/%s/dashboard/%d", projectCode, response.Result.GetId()),
 	}
 
+	if c.config.Debug {
+		log.Printf("Successfully created test run: id=%d, url=%s", runInfo.ID, runInfo.URL)
+	}
+
 	return runInfo, nil
 }
 
 // CompleteRun marks a test run as completed using API v1
 func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID int64) error {
+	if c.config.Debug {
+		log.Printf("Completing test run: project=%s, run=%d", projectCode, runID)
+	}
+
 	// Set API token in context
 	authCtx := context.WithValue(ctx, api_v1_client.ContextAPIKeys, map[string]api_v1_client.APIKey{
 		"TokenAuth": {
@@ -88,9 +115,23 @@ func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID in
 	})
 
 	// Complete run via API
-	_, _, err := c.client.RunsAPI.CompleteRun(authCtx, projectCode, int32(runID)).Execute()
+	_, httpResp, err := c.client.RunsAPI.CompleteRun(authCtx, projectCode, int32(runID)).Execute()
 	if err != nil {
+		if c.config.Debug {
+			log.Printf("API request failed with error: %v", err)
+			if httpResp != nil {
+				log.Printf("HTTP response status: %s", httpResp.Status)
+				log.Printf("HTTP response headers: %v", httpResp.Header)
+				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
+					log.Printf("HTTP response body: %s", string(body))
+				}
+			}
+		}
 		return fmt.Errorf("failed to complete test run: %w", err)
+	}
+
+	if c.config.Debug {
+		log.Printf("Successfully completed test run: run=%d", runID)
 	}
 
 	return nil
