@@ -62,7 +62,8 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	runCreate.SetDescription(description)
 
 	// Set start time in format expected by API v1: "2006-01-02 15:04:05"
-	startTime := time.Now().UTC().Format("2006-01-02 15:04:05")
+	// Subtract 7 seconds to ensure time is in the past
+	startTime := time.Now().UTC().Add(-7 * time.Second).Format("2006-01-02 15:04:05")
 	runCreate.SetStartTime(startTime)
 
 	if c.config.Debug {
