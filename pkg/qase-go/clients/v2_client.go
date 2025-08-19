@@ -58,7 +58,7 @@ func (c *V2Client) SetConverter(converter *V2Converter) {
 func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error {
 	if c.config.Debug {
 		log.Printf("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
-		log.Printf("Domain result: %+v", result)
+		log.Printf("Domain result: %#v", result)
 	}
 
 	// Convert domain model to API v2 model
@@ -68,7 +68,7 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 	}
 
 	if c.config.Debug {
-		log.Printf("Converted API result: %+v", apiResult)
+		log.Printf("Converted API result: %#v", apiResult)
 	}
 
 	// Set API token in context
@@ -106,7 +106,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	if c.config.Debug {
 		log.Printf("Sending batch results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
 		for i, result := range results {
-			log.Printf("Result %d: %+v", i, result)
+			log.Printf("Result %d: %#v", i, result)
 		}
 	}
 
@@ -121,7 +121,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	}
 
 	if c.config.Debug {
-		log.Printf("Converted API results: %+v", apiResults)
+		log.Printf("Converted API results: %#v", apiResults)
 	}
 
 	// Create batch request
