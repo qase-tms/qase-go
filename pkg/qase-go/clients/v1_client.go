@@ -34,15 +34,9 @@ func NewV1Client(config ClientConfig) (*V1Client, error) {
 			log.Printf("V1Client: Using custom base URL: %s", config.BaseURL)
 		}
 	} else {
-		// Use default Qase.io API URL
-		cfg.Servers = api_v1_client.ServerConfigurations{
-			{
-				URL:         "https://api.qase.io",
-				Description: "Default Qase.io API server",
-			},
-		}
+		// Use default configuration from the generated client
 		if config.Debug {
-			log.Printf("V1Client: Using default base URL: https://api.qase.io")
+			log.Printf("V1Client: Using default configuration from generated client")
 		}
 	}
 
@@ -67,7 +61,11 @@ func (c *V1Client) getBaseURL() string {
 	if c.config.BaseURL != "" {
 		return c.config.BaseURL
 	}
-	return "https://api.qase.io"
+	// Return the default server URL from the generated client
+	if len(c.client.GetConfig().Servers) > 0 {
+		return c.client.GetConfig().Servers[0].URL
+	}
+	return "default"
 }
 
 // SendResult is not supported in API v1 client
@@ -145,6 +143,7 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID int64) error {
 	if c.config.Debug {
 		log.Printf("Completing test run: project=%s, run=%d", projectCode, runID)
+		log.Printf("API endpoint: %s/v1/run/%s/%d/complete", c.getBaseURL(), projectCode, runID)
 	}
 
 	// Set API token in context
@@ -187,6 +186,7 @@ func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, fil
 
 	if c.config.Debug {
 		log.Printf("[%s] uploading attachment: projectCode=%s, file=%s", op, projectCode, file[0].Name())
+		log.Printf("[%s] API endpoint: %s/v1/attachment/%s", op, c.getBaseURL(), projectCode)
 	}
 
 	// Set API token in context
@@ -215,7 +215,7 @@ func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, fil
 		return "", NewQaseApiError(err.Error(), extractBody(r))
 	}
 
-	if resp.Result == nil || len(resp.Result) == 0 {
+	if len(resp.Result) == 0 {
 		return "", fmt.Errorf("no attachment hash returned from API")
 	}
 
