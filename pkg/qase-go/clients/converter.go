@@ -76,6 +76,7 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 	}
 
 	if result.Execution.Duration != nil {
+		// Duration should remain in milliseconds
 		execution.SetDuration(*result.Execution.Duration)
 	}
 
@@ -190,14 +191,17 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 	execution := api_v2_client.NewResultStepExecution(api_v2_client.ResultStepStatus(step.Execution.Status))
 
 	if step.Execution.StartTime != nil {
-		execution.SetStartTime(float64(*step.Execution.StartTime))
+		// Convert milliseconds to seconds
+		execution.SetStartTime(float64(*step.Execution.StartTime) / 1000.0)
 	}
 
 	if step.Execution.EndTime != nil {
-		execution.SetEndTime(float64(*step.Execution.EndTime))
+		// Convert milliseconds to seconds
+		execution.SetEndTime(float64(*step.Execution.EndTime) / 1000.0)
 	}
 
 	if step.Execution.Duration != nil {
+		// Duration should remain in milliseconds
 		execution.SetDuration(*step.Execution.Duration)
 	}
 
