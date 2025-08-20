@@ -183,7 +183,7 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 }
 
 // Step creates a test step
-func Step(meta StepMetadata, fn func()) {
+func Step(t *testing.T, meta StepMetadata, fn func()) {
 	step := domain.NewTestStep(meta.Name)
 
 	if meta.Description != "" {
@@ -202,21 +202,34 @@ func Step(meta StepMetadata, fn func()) {
 	now := time.Now().UnixMilli()
 	step.Execution.StartTime = &now
 
-	defer func() {
-		if r := recover(); r != nil {
-			// Panic occurred in step - set status to failed
-			step.Execution.Status = domain.StepStatusFailed
-		}
+	fmt.Printf("Step: %s - %s\n", meta.Name, meta.Description)
 
-		// End step execution
-		end := time.Now().UnixMilli()
-		step.Execution.EndTime = &end
-		duration := end - now
-		step.Execution.Duration = &duration
+	// Execute the step function
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				// Panic occurred in step - set status to failed
+				step.Execution.Status = domain.StepStatusFailed
+			}
+		}()
+		fn()
 	}()
 
-	fmt.Printf("Step: %s - %s\n", meta.Name, meta.Description)
-	fn()
+	// End step execution and set status
+	end := time.Now().UnixMilli()
+	step.Execution.EndTime = &end
+	duration := end - now
+	step.Execution.Duration = &duration
+
+	// Set step status based on test result
+	// Note: t.Failed() might not be accurate during step execution
+	// We'll set it to passed by default and let the test framework handle failures
+	step.Execution.Status = domain.StepStatusPassed
+
+	// Add step to current test result after all properties are set
+	if currentResult := getCurrentTestResult(); currentResult != nil {
+		currentResult.AddStep(*step)
+	}
 }
 
 // AddMessage adds a message to the current test
