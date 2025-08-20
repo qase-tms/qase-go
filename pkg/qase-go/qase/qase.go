@@ -22,6 +22,9 @@ var (
 	// Global variable to store current test result for error details
 	currentTestResult *domain.TestResult
 	currentTestMutex  sync.RWMutex
+	// Stack to track nested steps
+	currentStepStack []*domain.TestStep
+	stepStackMutex   sync.RWMutex
 )
 
 func init() {
@@ -204,6 +207,9 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 
 	fmt.Printf("Step: %s - %s\n", meta.Name, meta.Description)
 
+	// Push this step onto the stack
+	pushStep(step)
+
 	// Execute the step function
 	func() {
 		defer func() {
@@ -226,9 +232,18 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 	// We'll set it to passed by default and let the test framework handle failures
 	step.Execution.Status = domain.StepStatusPassed
 
-	// Add step to current test result after all properties are set
+	// Pop this step from the stack
+	popStep()
+
+	// Add step to the appropriate parent
 	if currentResult := getCurrentTestResult(); currentResult != nil {
-		currentResult.AddStep(*step)
+		if currentStep := getCurrentStep(); currentStep != nil {
+			// This is a nested step, add it to the current step
+			currentStep.Steps = append(currentStep.Steps, *step)
+		} else {
+			// This is a top-level step, add it to the test result
+			currentResult.AddStep(*step)
+		}
 	}
 }
 
@@ -320,6 +335,42 @@ func getCurrentTestResult() *domain.TestResult {
 	currentTestMutex.RLock()
 	defer currentTestMutex.RUnlock()
 	return currentTestResult
+}
+
+// Helper functions for managing step stack
+
+// pushStep pushes a step onto the stack
+func pushStep(step *domain.TestStep) {
+	stepStackMutex.Lock()
+	defer stepStackMutex.Unlock()
+	currentStepStack = append(currentStepStack, step)
+}
+
+// popStep pops a step from the stack
+func popStep() *domain.TestStep {
+	stepStackMutex.Lock()
+	defer stepStackMutex.Unlock()
+
+	if len(currentStepStack) == 0 {
+		return nil
+	}
+
+	lastIndex := len(currentStepStack) - 1
+	step := currentStepStack[lastIndex]
+	currentStepStack = currentStepStack[:lastIndex]
+	return step
+}
+
+// getCurrentStep gets the current step from the stack
+func getCurrentStep() *domain.TestStep {
+	stepStackMutex.RLock()
+	defer stepStackMutex.RUnlock()
+
+	if len(currentStepStack) == 0 {
+		return nil
+	}
+
+	return currentStepStack[len(currentStepStack)-1]
 }
 
 // isAssertionError checks if the message looks like an assertion error

@@ -249,3 +249,75 @@ func TestStepFailure(t *testing.T) {
 	stepJSON, _ := json.MarshalIndent(step, "", "  ")
 	t.Logf("Failed Step:\n%s", string(stepJSON))
 }
+
+// TestNestedSteps tests that nested steps are properly created and added to parent steps
+func TestNestedSteps(t *testing.T) {
+	// Create a test result manually to test nested step functionality
+	result := domain.NewTestResult("Test Nested Steps")
+
+	// Set current test result
+	setCurrentTestResult(result)
+	defer clearCurrentTestResult()
+
+	// Execute a main step with nested steps
+	Step(t, StepMetadata{
+		Name:        "Main Step",
+		Description: "Main step containing nested steps",
+	}, func() {
+		AddMessage("Starting main step")
+
+		// First nested step
+		Step(t, StepMetadata{
+			Name:        "Sub Step 1",
+			Description: "First nested step",
+		}, func() {
+			AddMessage("Executing sub step 1")
+			True(t, true)
+		})
+
+		// Second nested step
+		Step(t, StepMetadata{
+			Name:        "Sub Step 2",
+			Description: "Second nested step",
+		}, func() {
+			AddMessage("Executing sub step 2")
+			Equal(t, 3+2, 5)
+		})
+
+		AddMessage("Main step completed")
+	})
+
+	// Check that main step was added to the result
+	if len(result.Steps) == 0 {
+		t.Error("Main step should be added to test result")
+		return
+	}
+
+	// Verify main step content
+	mainStep := result.Steps[0]
+	if mainStep.Data.Action != "Main Step" {
+		t.Errorf("Expected main step action 'Main Step', got '%s'", mainStep.Data.Action)
+	}
+
+	// Check that main step has nested steps
+	if len(mainStep.Steps) != 2 {
+		t.Errorf("Expected 2 nested steps, got %d", len(mainStep.Steps))
+		return
+	}
+
+	// Verify first nested step
+	subStep1 := mainStep.Steps[0]
+	if subStep1.Data.Action != "Sub Step 1" {
+		t.Errorf("Expected first nested step action 'Sub Step 1', got '%s'", subStep1.Data.Action)
+	}
+
+	// Verify second nested step
+	subStep2 := mainStep.Steps[1]
+	if subStep2.Data.Action != "Sub Step 2" {
+		t.Errorf("Expected second nested step action 'Sub Step 2', got '%s'", subStep2.Data.Action)
+	}
+
+	// Print step structure for debugging
+	mainStepJSON, _ := json.MarshalIndent(mainStep, "", "  ")
+	t.Logf("Main Step with Nested Steps:\n%s", string(mainStepJSON))
+}
