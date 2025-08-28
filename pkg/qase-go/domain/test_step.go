@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"fmt"
+	"strings"
+)
+
 // StepType represents the type of test step
 type StepType string
 
@@ -138,4 +143,89 @@ func (ts *TestStep) IsSuccess() bool {
 // IsFailure returns true if the step failed
 func (ts *TestStep) IsFailure() bool {
 	return ts.Execution.Status.IsFailure()
+}
+
+// String implements the Stringer interface for TestStep
+func (ts *TestStep) String() string {
+	var parts []string
+
+	// Basic info
+	if ts.ID != "" {
+		parts = append(parts, fmt.Sprintf("ID: %q", ts.ID))
+	}
+	parts = append(parts, fmt.Sprintf("StepType: %q", ts.StepType))
+
+	// Data
+	parts = append(parts, fmt.Sprintf("Data: %s", ts.Data.String()))
+
+	// Parent ID
+	if ts.ParentID != nil {
+		parts = append(parts, fmt.Sprintf("ParentID: %q", *ts.ParentID))
+	}
+
+	// Execution
+	parts = append(parts, fmt.Sprintf("Execution: %s", ts.Execution.String()))
+
+	// Attachments
+	if len(ts.Attachments) > 0 {
+		attachmentsStr := make([]string, 0, len(ts.Attachments))
+		for i, att := range ts.Attachments {
+			attachmentsStr = append(attachmentsStr, fmt.Sprintf("[%d]: %s", i, att.String()))
+		}
+		parts = append(parts, fmt.Sprintf("Attachments: [%s]", strings.Join(attachmentsStr, ", ")))
+	}
+
+	// Nested Steps
+	if len(ts.Steps) > 0 {
+		stepsStr := make([]string, 0, len(ts.Steps))
+		for i, step := range ts.Steps {
+			stepsStr = append(stepsStr, fmt.Sprintf("[%d]: %s", i, step.String()))
+		}
+		parts = append(parts, fmt.Sprintf("Steps: [%s]", strings.Join(stepsStr, ", ")))
+	}
+
+	return fmt.Sprintf("TestStep{%s}", strings.Join(parts, ", "))
+}
+
+// String implements the Stringer interface for StepTextData
+func (std *StepTextData) String() string {
+	var parts []string
+
+	if std.Action != "" {
+		parts = append(parts, fmt.Sprintf("Action: %q", std.Action))
+	}
+	if std.ExpectedResult != nil {
+		parts = append(parts, fmt.Sprintf("ExpectedResult: %q", *std.ExpectedResult))
+	}
+	if std.Data != nil {
+		parts = append(parts, fmt.Sprintf("Data: %q", *std.Data))
+	}
+
+	return fmt.Sprintf("StepTextData{%s}", strings.Join(parts, ", "))
+}
+
+// String implements the Stringer interface for StepExecution
+func (se *StepExecution) String() string {
+	var parts []string
+
+	// Status
+	parts = append(parts, fmt.Sprintf("Status: %q", se.Status))
+
+	// Timing
+	if se.StartTime != nil {
+		parts = append(parts, fmt.Sprintf("StartTime: %d", *se.StartTime))
+	}
+	if se.EndTime != nil {
+		parts = append(parts, fmt.Sprintf("EndTime: %d", *se.EndTime))
+	}
+	if se.Duration != nil {
+		parts = append(parts, fmt.Sprintf("Duration: %d", *se.Duration))
+	}
+
+	// Stacktrace
+	if se.Stacktrace != nil {
+		parts = append(parts, fmt.Sprintf("Stacktrace: %q", *se.Stacktrace))
+	}
+
+	return fmt.Sprintf("StepExecution{%s}", strings.Join(parts, ", "))
 }

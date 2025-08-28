@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"fmt"
+	"strings"
+)
+
 // TestResult represents test execution result matching JavaScript TestResultType
 type TestResult struct {
 	ID          string            `json:"id"`
@@ -30,6 +35,42 @@ type TestExecution struct {
 	ErrorDetails *ErrorDetails `json:"error_details,omitempty"`
 }
 
+// String implements the Stringer interface for TestExecution
+func (te *TestExecution) String() string {
+	var parts []string
+
+	// Status
+	parts = append(parts, fmt.Sprintf("Status: %q", te.Status))
+
+	// Timing
+	if te.StartTime != nil {
+		parts = append(parts, fmt.Sprintf("StartTime: %d", *te.StartTime))
+	}
+	if te.EndTime != nil {
+		parts = append(parts, fmt.Sprintf("EndTime: %d", *te.EndTime))
+	}
+	if te.Duration != nil {
+		parts = append(parts, fmt.Sprintf("Duration: %d", *te.Duration))
+	}
+
+	// Stacktrace
+	if te.Stacktrace != nil {
+		parts = append(parts, fmt.Sprintf("Stacktrace: %q", *te.Stacktrace))
+	}
+
+	// Thread
+	if te.Thread != nil {
+		parts = append(parts, fmt.Sprintf("Thread: %q", *te.Thread))
+	}
+
+	// Error Details
+	if te.ErrorDetails != nil {
+		parts = append(parts, fmt.Sprintf("ErrorDetails: %s", te.ErrorDetails.String()))
+	}
+
+	return fmt.Sprintf("TestExecution{%s}", strings.Join(parts, ", "))
+}
+
 // ErrorDetails represents detailed error information from test assertions
 type ErrorDetails struct {
 	ErrorType    string `json:"error_type,omitempty"`    // Type of assertion error (e.g., "Should be true", "Not equal")
@@ -38,6 +79,32 @@ type ErrorDetails struct {
 	ErrorMessage string `json:"error_message,omitempty"` // Detailed error message
 	File         string `json:"file,omitempty"`          // File where error occurred
 	Line         int    `json:"line,omitempty"`          // Line number where error occurred
+}
+
+// String implements the Stringer interface for ErrorDetails
+func (ed *ErrorDetails) String() string {
+	var parts []string
+
+	if ed.ErrorType != "" {
+		parts = append(parts, fmt.Sprintf("ErrorType: %q", ed.ErrorType))
+	}
+	if ed.Expected != "" {
+		parts = append(parts, fmt.Sprintf("Expected: %q", ed.Expected))
+	}
+	if ed.Actual != "" {
+		parts = append(parts, fmt.Sprintf("Actual: %q", ed.Actual))
+	}
+	if ed.ErrorMessage != "" {
+		parts = append(parts, fmt.Sprintf("ErrorMessage: %q", ed.ErrorMessage))
+	}
+	if ed.File != "" {
+		parts = append(parts, fmt.Sprintf("File: %q", ed.File))
+	}
+	if ed.Line != 0 {
+		parts = append(parts, fmt.Sprintf("Line: %d", ed.Line))
+	}
+
+	return fmt.Sprintf("ErrorDetails{%s}", strings.Join(parts, ", "))
 }
 
 // Relation represents test relations
@@ -54,6 +121,42 @@ type Suite struct {
 type SuiteData struct {
 	Title    string `json:"title"`
 	PublicID *int64 `json:"public_id"`
+}
+
+// String implements the Stringer interface for SuiteData
+func (sd *SuiteData) String() string {
+	var parts []string
+
+	if sd.Title != "" {
+		parts = append(parts, fmt.Sprintf("Title: %q", sd.Title))
+	}
+	if sd.PublicID != nil {
+		parts = append(parts, fmt.Sprintf("PublicID: %d", *sd.PublicID))
+	}
+
+	return fmt.Sprintf("SuiteData{%s}", strings.Join(parts, ", "))
+}
+
+// String implements the Stringer interface for Suite
+func (s *Suite) String() string {
+	if len(s.Data) == 0 {
+		return "Suite{}"
+	}
+
+	dataStr := make([]string, 0, len(s.Data))
+	for i, data := range s.Data {
+		dataStr = append(dataStr, fmt.Sprintf("[%d]: %s", i, data.String()))
+	}
+
+	return fmt.Sprintf("Suite{Data: [%s]}", strings.Join(dataStr, ", "))
+}
+
+// String implements the Stringer interface for Relation
+func (r *Relation) String() string {
+	if r.Suite == nil {
+		return "Relation{}"
+	}
+	return fmt.Sprintf("Relation{Suite: %s}", r.Suite.String())
 }
 
 // NewTestResult creates a new test result with the given title
@@ -178,4 +281,100 @@ func (tr *TestResult) SetErrorLocation(file string, line int) {
 	}
 	tr.Execution.ErrorDetails.File = file
 	tr.Execution.ErrorDetails.Line = line
+}
+
+// String implements the Stringer interface for better logging
+func (tr *TestResult) String() string {
+	var parts []string
+
+	// Basic info
+	if tr.ID != "" {
+		parts = append(parts, fmt.Sprintf("ID: %q", tr.ID))
+	}
+	if tr.Title != "" {
+		parts = append(parts, fmt.Sprintf("Title: %q", tr.Title))
+	}
+	if tr.Signature != "" {
+		parts = append(parts, fmt.Sprintf("Signature: %q", tr.Signature))
+	}
+
+	// Run ID
+	if tr.RunID != nil {
+		parts = append(parts, fmt.Sprintf("RunID: %d", *tr.RunID))
+	}
+
+	// Testops ID
+	if tr.TestopsID != nil {
+		switch v := tr.TestopsID.(type) {
+		case int64:
+			parts = append(parts, fmt.Sprintf("TestopsID: %d", v))
+		case []int64:
+			parts = append(parts, fmt.Sprintf("TestopsID: %v", v))
+		default:
+			parts = append(parts, fmt.Sprintf("TestopsID: %v", v))
+		}
+	}
+
+	// Execution
+	parts = append(parts, fmt.Sprintf("Execution: %s", tr.Execution.String()))
+
+	// Fields
+	if len(tr.Fields) > 0 {
+		fieldsStr := make([]string, 0, len(tr.Fields))
+		for k, v := range tr.Fields {
+			fieldsStr = append(fieldsStr, fmt.Sprintf("%q: %q", k, v))
+		}
+		parts = append(parts, fmt.Sprintf("Fields: {%s}", strings.Join(fieldsStr, ", ")))
+	}
+
+	// Attachments
+	if len(tr.Attachments) > 0 {
+		attachmentsStr := make([]string, 0, len(tr.Attachments))
+		for i, att := range tr.Attachments {
+			attachmentsStr = append(attachmentsStr, fmt.Sprintf("[%d]: %s", i, att.String()))
+		}
+		parts = append(parts, fmt.Sprintf("Attachments: [%s]", strings.Join(attachmentsStr, ", ")))
+	}
+
+	// Steps
+	if len(tr.Steps) > 0 {
+		stepsStr := make([]string, 0, len(tr.Steps))
+		for i, step := range tr.Steps {
+			stepsStr = append(stepsStr, fmt.Sprintf("[%d]: %s", i, step.String()))
+		}
+		parts = append(parts, fmt.Sprintf("Steps: [%s]", strings.Join(stepsStr, ", ")))
+	}
+
+	// Params
+	if len(tr.Params) > 0 {
+		paramsStr := make([]string, 0, len(tr.Params))
+		for k, v := range tr.Params {
+			paramsStr = append(paramsStr, fmt.Sprintf("%q: %q", k, v))
+		}
+		parts = append(parts, fmt.Sprintf("Params: {%s}", strings.Join(paramsStr, ", ")))
+	}
+
+	// Group Params
+	if len(tr.GroupParams) > 0 {
+		groupParamsStr := make([]string, 0, len(tr.GroupParams))
+		for k, v := range tr.GroupParams {
+			groupParamsStr = append(groupParamsStr, fmt.Sprintf("%q: %q", k, v))
+		}
+		parts = append(parts, fmt.Sprintf("GroupParams: {%s}", strings.Join(groupParamsStr, ", ")))
+	}
+
+	// Relations
+	if tr.Relations != nil {
+		parts = append(parts, fmt.Sprintf("Relations: %s", tr.Relations.String()))
+	}
+
+	// Muted
+	parts = append(parts, fmt.Sprintf("Muted: %t", tr.Muted))
+
+	// Message
+	if tr.Message != nil {
+		parts = append(parts, fmt.Sprintf("Message: %q", *tr.Message))
+	}
+
+	return fmt.Sprintf("TestResult{%s}", strings.Join(parts, ", "))
 }

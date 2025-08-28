@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Attachment represents a file attachment matching the JavaScript interface
 type Attachment struct {
 	ID       string  `json:"id"`
@@ -38,4 +43,28 @@ func (a *Attachment) GetFilePath() string {
 // HasFilePath returns true if file path is set
 func (a *Attachment) HasFilePath() bool {
 	return a.FilePath != nil
+}
+
+// String implements the Stringer interface for Attachment
+func (a *Attachment) String() string {
+	var parts []string
+
+	if a.ID != "" {
+		parts = append(parts, fmt.Sprintf("ID: %q", a.ID))
+	}
+	if a.FileName != "" {
+		parts = append(parts, fmt.Sprintf("FileName: %q", a.FileName))
+	}
+	if a.MimeType != "" {
+		parts = append(parts, fmt.Sprintf("MimeType: %q", a.MimeType))
+	}
+	if a.FilePath != nil {
+		parts = append(parts, fmt.Sprintf("FilePath: %q", *a.FilePath))
+	}
+	if len(a.Content) > 0 {
+		parts = append(parts, fmt.Sprintf("Content: %d bytes", len(a.Content)))
+	}
+	parts = append(parts, fmt.Sprintf("Size: %d", a.Size))
+
+	return fmt.Sprintf("Attachment{%s}", strings.Join(parts, ", "))
 }
