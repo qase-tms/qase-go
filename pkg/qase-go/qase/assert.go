@@ -205,7 +205,7 @@ func NoError(t *testing.T, err error, msgAndArgs ...interface{}) {
 			}
 		}
 
-		AddMessage(fmt.Sprintf("Received unexpected error:\n%+v", err))
+		AddMessage(fmt.Sprintf("Received unexpected error:\n%s", err.Error()))
 		t.Fail()
 	}
 }
@@ -278,7 +278,7 @@ func ErrorAs(t *testing.T, err error, target interface{}, msgAndArgs ...interfac
 func Nil(t *testing.T, object interface{}, msgAndArgs ...interface{}) {
 	success := assert.Nil(t, object, msgAndArgs...)
 	if !success {
-		AddMessage(fmt.Sprintf("Expected nil, but got: %#v", object))
+		AddMessage(fmt.Sprintf("Expected nil, but got: %v", object))
 		t.Fail()
 	}
 }

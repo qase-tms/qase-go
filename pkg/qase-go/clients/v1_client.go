@@ -2,6 +2,7 @@ package clients
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -67,7 +68,19 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	runCreate.SetStartTime(startTime)
 
 	if c.config.Debug {
-		log.Printf("RunCreate object: %+v", runCreate)
+		// Create a simplified structure for logging
+		logData := map[string]interface{}{
+			"title":       runCreate.GetTitle(),
+			"description": runCreate.GetDescription(),
+			"start_time":  runCreate.GetStartTime(),
+		}
+
+		// Convert to JSON for pretty printing
+		if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
+			log.Printf("RunCreate object: %s", string(jsonData))
+		} else {
+			log.Printf("RunCreate object: %+v", logData)
+		}
 	}
 
 	// Set API token in context

@@ -83,6 +83,60 @@ func (c *V2Client) logResultPretty(prefix string, result *api_v2_client.ResultCr
 	}
 }
 
+// logBatchRequestPretty logs a batch request in a readable format
+func (c *V2Client) logBatchRequestPretty(batchRequest *api_v2_client.CreateResultsRequestV2) {
+	if !c.config.Debug {
+		return
+	}
+
+	results := batchRequest.GetResults()
+	log.Printf("Batch request: %d results", len(results))
+
+	for i, result := range results {
+		execution := result.GetExecution()
+
+		// Create a simplified structure for logging
+		logData := map[string]interface{}{
+			"index":  i,
+			"title":  result.GetTitle(),
+			"status": execution.GetStatus(),
+		}
+
+		// Add time values if they exist
+		if execution.StartTime.IsSet() {
+			logData["start_time"] = execution.GetStartTime()
+		}
+		if execution.EndTime.IsSet() {
+			logData["end_time"] = execution.GetEndTime()
+		}
+		if execution.Duration.IsSet() {
+			logData["duration_ms"] = execution.GetDuration()
+		}
+
+		// Add steps count if available
+		if result.StepsType.IsSet() {
+			logData["steps_type"] = result.GetStepsType()
+		}
+
+		// Add params if available
+		if result.GetParams() != nil {
+			logData["params"] = result.GetParams()
+		}
+
+		// Add message if available
+		if result.Message.IsSet() {
+			logData["message"] = result.GetMessage()
+		}
+
+		// Convert to JSON for pretty printing
+		if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
+			log.Printf("  Result %d: %s", i, string(jsonData))
+		} else {
+			log.Printf("  Result %d: %+v", i, logData)
+		}
+	}
+}
+
 // SetConverter sets a custom converter for the V2Client
 func (c *V2Client) SetConverter(converter *V2Converter) {
 	c.converter = converter
@@ -92,7 +146,7 @@ func (c *V2Client) SetConverter(converter *V2Converter) {
 func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error {
 	if c.config.Debug {
 		log.Printf("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
-		log.Printf("Domain result: %#v", result)
+		log.Printf("Domain result: %s", result.String())
 	}
 
 	// Convert domain model to API v2 model
@@ -140,7 +194,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	if c.config.Debug {
 		log.Printf("Sending batch results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
 		for i, result := range results {
-			log.Printf("Result %d: %#v", i, result)
+			log.Printf("Result %d: %s", i, result.String())
 		}
 	}
 
@@ -166,7 +220,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	batchRequest.SetResults(apiResults)
 
 	if c.config.Debug {
-		log.Printf("Batch request: %+v", batchRequest)
+		c.logBatchRequestPretty(batchRequest)
 	}
 
 	// Set API token in context
