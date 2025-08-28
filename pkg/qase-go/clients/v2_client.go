@@ -90,50 +90,150 @@ func (c *V2Client) logBatchRequestPretty(batchRequest *api_v2_client.CreateResul
 	}
 
 	results := batchRequest.GetResults()
-	log.Printf("Batch request: %d results", len(results))
+
+	// Create structure for the entire batch request
+	batchLogData := map[string]interface{}{
+		"total_results": len(results),
+		"results":       make([]map[string]interface{}, 0, len(results)),
+	}
 
 	for i, result := range results {
 		execution := result.GetExecution()
 
-		// Create a simplified structure for logging
-		logData := map[string]interface{}{
+		// Create detailed structure for each result
+		resultData := map[string]interface{}{
 			"index":  i,
 			"title":  result.GetTitle(),
 			"status": execution.GetStatus(),
 		}
 
-		// Add time values if they exist
+		// Add all available fields
+		if result.HasId() {
+			resultData["id"] = result.GetId()
+		}
+		if result.HasSignature() {
+			resultData["signature"] = result.GetSignature()
+		}
+		if result.TestopsId.IsSet() {
+			resultData["testops_id"] = result.GetTestopsId()
+		}
+		if len(result.GetTestopsIds()) > 0 {
+			resultData["testops_ids"] = result.GetTestopsIds()
+		}
+
+		// Execution time
 		if execution.StartTime.IsSet() {
-			logData["start_time"] = execution.GetStartTime()
+			resultData["start_time"] = execution.GetStartTime()
 		}
 		if execution.EndTime.IsSet() {
-			logData["end_time"] = execution.GetEndTime()
+			resultData["end_time"] = execution.GetEndTime()
 		}
 		if execution.Duration.IsSet() {
-			logData["duration_ms"] = execution.GetDuration()
+			resultData["duration_ms"] = execution.GetDuration()
+		}
+		if execution.Stacktrace.IsSet() {
+			resultData["stacktrace"] = execution.GetStacktrace()
+		}
+		if execution.Thread.IsSet() {
+			resultData["thread"] = execution.GetThread()
 		}
 
-		// Add steps count if available
+		// Steps
+		if len(result.GetSteps()) > 0 {
+			stepsData := make([]map[string]interface{}, 0, len(result.GetSteps()))
+			for j, step := range result.GetSteps() {
+				stepData := map[string]interface{}{
+					"step_index": j,
+				}
+
+				// Step data
+				if step.Data != nil {
+					stepData["data"] = step.Data
+				}
+
+				// Step execution
+				if step.Execution != nil {
+					exec := step.Execution
+					stepExec := map[string]interface{}{}
+
+					if exec.StartTime.IsSet() {
+						stepExec["start_time"] = exec.GetStartTime()
+					}
+					if exec.EndTime.IsSet() {
+						stepExec["end_time"] = exec.GetEndTime()
+					}
+					if exec.Duration.IsSet() {
+						stepExec["duration_ms"] = exec.GetDuration()
+					}
+					stepExec["status"] = exec.GetStatus()
+					if exec.HasComment() {
+						stepExec["comment"] = exec.GetComment()
+					}
+					if len(exec.GetAttachments()) > 0 {
+						stepExec["attachments"] = exec.GetAttachments()
+					}
+
+					stepData["execution"] = stepExec
+				}
+
+				// Nested steps
+				if len(step.GetSteps()) > 0 {
+					stepData["nested_steps"] = step.GetSteps()
+				}
+
+				stepsData = append(stepsData, stepData)
+			}
+			resultData["steps"] = stepsData
+		}
+
+		// Steps type
 		if result.StepsType.IsSet() {
-			logData["steps_type"] = result.GetStepsType()
+			resultData["steps_type"] = result.GetStepsType()
 		}
 
-		// Add params if available
+		// Parameters
 		if result.GetParams() != nil {
-			logData["params"] = result.GetParams()
+			resultData["params"] = result.GetParams()
 		}
 
-		// Add message if available
+		// Parameter groups
+		if len(result.GetParamGroups()) > 0 {
+			resultData["param_groups"] = result.GetParamGroups()
+		}
+
+		// Relations
+		if result.Relations.IsSet() {
+			resultData["relations"] = result.GetRelations()
+		}
+
+		// Message
 		if result.Message.IsSet() {
-			logData["message"] = result.GetMessage()
+			resultData["message"] = result.GetMessage()
 		}
 
-		// Convert to JSON for pretty printing
-		if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
-			log.Printf("  Result %d: %s", i, string(jsonData))
-		} else {
-			log.Printf("  Result %d: %+v", i, logData)
+		// Defect
+		if result.HasDefect() {
+			resultData["defect"] = result.GetDefect()
 		}
+
+		// Fields
+		if result.HasFields() {
+			resultData["fields"] = result.GetFields()
+		}
+
+		// Attachments
+		if len(result.GetAttachments()) > 0 {
+			resultData["attachments"] = result.GetAttachments()
+		}
+
+		batchLogData["results"] = append(batchLogData["results"].([]map[string]interface{}), resultData)
+	}
+
+	// Output the entire batch request in one JSON
+	if jsonData, err := json.MarshalIndent(batchLogData, "", "  "); err == nil {
+		log.Printf("Batch request:\n%s", string(jsonData))
+	} else {
+		log.Printf("Batch request: %+v", batchLogData)
 	}
 }
 
