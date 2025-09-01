@@ -298,18 +298,32 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 		}
 	}
 
-	// Convert all domain models to API v2 models
+	// Convert all domain models to API v2 models, skipping problematic ones
 	var apiResults []api_v2_client.ResultCreate
+	var skippedResults []string
+
 	for _, result := range results {
 		apiResult, err := c.converter.ConvertTestResult(result)
 		if err != nil {
-			return fmt.Errorf("failed to convert domain model for result '%s': %w", result.Title, err)
+			log.Printf("Warning: Skipping result '%s' due to conversion error: %v", result.Title, err)
+			skippedResults = append(skippedResults, result.Title)
+			continue // Skip this result and continue with others
 		}
 		apiResults = append(apiResults, *apiResult)
 	}
 
+	// Log summary of conversion results
+	if len(skippedResults) > 0 {
+		log.Printf("Warning: Skipped %d results due to conversion errors: %v", len(skippedResults), skippedResults)
+	}
+
+	if len(apiResults) == 0 {
+		log.Printf("Warning: No results could be converted, skipping batch upload")
+		return nil
+	}
+
 	if c.config.Debug {
-		log.Printf("Converted API results count: %d", len(apiResults))
+		log.Printf("Converted API results count: %d (skipped: %d)", len(apiResults), len(skippedResults))
 		for i, result := range apiResults {
 			c.logResultPretty(fmt.Sprintf("Result %d", i), &result)
 		}
