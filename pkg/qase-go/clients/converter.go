@@ -3,6 +3,7 @@ package clients
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -300,10 +301,14 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 
 // setAttachments converts domain attachments to API format
 func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_client.ResultCreate, attachments []domain.Attachment) error {
+	log.Printf("Converting %d attachments", len(attachments))
+
 	attachmentIDs, err := c.processAttachments(ctx, attachments)
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Processed attachments, got %d IDs: %v", len(attachmentIDs), attachmentIDs)
 	apiResult.SetAttachments(attachmentIDs)
 	return nil
 }
@@ -312,11 +317,18 @@ func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_clie
 func (c *V2Converter) processAttachments(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
 	var attachmentIDs []string
 
+	log.Printf("Processing %d attachments", len(attachments))
+	log.Printf("Uploader available: %v, project code: %s", c.uploader != nil, c.projectCode)
+
 	for _, attachment := range attachments {
 		var attachmentID string
 
+		log.Printf("Processing attachment: %s, has file path: %v", attachment.String(), attachment.HasFilePath())
+
 		// If attachment has a file path and uploader is available, upload the file
 		if attachment.HasFilePath() && c.uploader != nil && c.projectCode != "" {
+			log.Printf("Uploading attachment file: %s", attachment.GetFilePath())
+
 			file, err := os.Open(attachment.GetFilePath())
 			if err != nil {
 				return nil, fmt.Errorf("failed to open attachment file %s: %w", attachment.GetFilePath(), err)
@@ -329,14 +341,46 @@ func (c *V2Converter) processAttachments(ctx context.Context, attachments []doma
 			}
 
 			attachmentID = uploadedHash
+			log.Printf("Successfully uploaded attachment, got hash: %s", uploadedHash)
+		} else if len(attachment.Content) > 0 && c.uploader != nil && c.projectCode != "" {
+			// Handle content attachments - create temporary file
+			log.Printf("Creating temporary file for content attachment: %s", attachment.FileName)
+
+			tmpFile, err := os.CreateTemp("", attachment.FileName+"_*")
+			if err != nil {
+				return nil, fmt.Errorf("failed to create temporary file for content attachment: %w", err)
+			}
+			defer os.Remove(tmpFile.Name()) // Clean up
+			defer tmpFile.Close()
+
+			// Write content to temporary file
+			if _, err := tmpFile.Write(attachment.Content); err != nil {
+				return nil, fmt.Errorf("failed to write content to temporary file: %w", err)
+			}
+
+			// Reset file pointer to beginning
+			if _, err := tmpFile.Seek(0, 0); err != nil {
+				return nil, fmt.Errorf("failed to seek temporary file: %w", err)
+			}
+
+			// Upload temporary file
+			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{tmpFile})
+			if err != nil {
+				return nil, fmt.Errorf("failed to upload content attachment %s: %w", attachment.FileName, err)
+			}
+
+			attachmentID = uploadedHash
+			log.Printf("Successfully uploaded content attachment, got hash: %s", uploadedHash)
 		} else {
 			// Use existing ID if no file path or uploader not available
 			attachmentID = attachment.ID
+			log.Printf("Using existing attachment ID: %s (no upload)", attachmentID)
 		}
 
 		attachmentIDs = append(attachmentIDs, attachmentID)
 	}
 
+	log.Printf("Final attachment IDs: %v", attachmentIDs)
 	return attachmentIDs, nil
 }
 

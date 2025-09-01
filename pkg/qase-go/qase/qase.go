@@ -269,17 +269,71 @@ func AddMessage(msg string) {
 
 // AddAttachments adds attachments to the current test
 func AddAttachments(path string) {
-	fmt.Println("Attachment:", path)
+	// Get current test result
+	result := getCurrentTestResult()
+	if result == nil {
+		log.Printf("Warning: No current test result available for attachment %s", path)
+		return
+	}
+
+	// Create attachment from file path
+	attachment := domain.NewAttachment("", path, "", nil)
+	attachment.SetFilePath(path)
+
+	// Add to result attachments
+	result.Attachments = append(result.Attachments, *attachment)
+
+	// Log for debugging
+	if reporter != nil && reporter.GetConfig().Debug {
+		log.Printf("Added attachment: %s to test: %s", path, result.Title)
+	}
 }
 
 // AttachFile attaches a file with specific content type
 func AttachFile(name, filePath, contentType string) {
-	fmt.Printf("File Attachment: %s (%s) - %s\n", name, contentType, filePath)
+	// Get current test result
+	result := getCurrentTestResult()
+	if result == nil {
+		log.Printf("Warning: No current test result available for attachment %s (%s)", name, filePath)
+		return
+	}
+
+	// Create attachment from file path
+	attachment := domain.NewAttachment("", name, contentType, nil)
+	attachment.SetFilePath(filePath)
+
+	// Add to result attachments
+	result.Attachments = append(result.Attachments, *attachment)
+
+	// Log for debugging
+	if reporter != nil && reporter.GetConfig().Debug {
+		log.Printf("Added file attachment: %s (%s) - %s to test: %s", name, contentType, filePath, result.Title)
+	}
 }
 
 // AttachContent attaches content with specific content type
 func AttachContent(name, content, contentType string) {
-	fmt.Printf("Content Attachment: %s (%s) - %s\n", name, contentType, content[:min(len(content), 50)])
+	// Get current test result
+	result := getCurrentTestResult()
+	if result == nil {
+		log.Printf("Warning: No current test result available for content attachment %s", name)
+		return
+	}
+
+	// Create attachment with content
+	attachment := domain.NewAttachment("", name, contentType, []byte(content))
+
+	// Add to result attachments
+	result.Attachments = append(result.Attachments, *attachment)
+
+	// Log for debugging
+	if reporter != nil && reporter.GetConfig().Debug {
+		contentPreview := content
+		if len(content) > 50 {
+			contentPreview = content[:50] + "..."
+		}
+		log.Printf("Added content attachment: %s (%s) - %s to test: %s", name, contentType, contentPreview, result.Title)
+	}
 }
 
 // CompleteTestRun completes the test run
