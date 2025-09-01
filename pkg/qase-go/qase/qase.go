@@ -25,6 +25,11 @@ var (
 	// Stack to track nested steps
 	currentStepStack []*domain.TestStep
 	stepStackMutex   sync.RWMutex
+	// Add this for automatic test run completion
+	completeTestRunOnce sync.Once
+	// Add test counter for automatic completion
+	testCounter      int64
+	testCounterMutex sync.RWMutex
 )
 
 func init() {
@@ -56,24 +61,17 @@ func init() {
 			return
 		}
 
-		// Set finalizer to automatically complete test run when reporter is garbage collected
-		runtime.SetFinalizer(reporter, func(r *reporters.CoreReporter) {
-			if r != nil {
-				log.Printf("Auto-completing test run via finalizer")
-				if err := r.CompleteTestRun(context.Background()); err != nil {
-					log.Printf("Warning: Failed to auto-complete test run via finalizer: %v", err)
-				} else {
-					log.Printf("Test run auto-completed successfully via finalizer")
-				}
-			}
-		})
-
-		log.Printf("Qase test run started successfully with auto-completion enabled")
+		log.Printf("Qase test run started successfully")
 	})
 }
 
 // Test is the main test function
 func Test(t *testing.T, meta TestMetadata, fn func()) {
+	// Increment test counter
+	testCounterMutex.Lock()
+	testCounter++
+	testCounterMutex.Unlock()
+
 	// Skip test if ignore is set
 	if meta.Ignore {
 		t.Skip("Test ignored by Qase metadata")
@@ -191,6 +189,18 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		// Add result to reporter
 		if reporter != nil {
 			_ = reporter.AddResult(result)
+		}
+
+		// Decrement test counter and check if this was the last test
+		testCounterMutex.Lock()
+		testCounter--
+		remainingTests := testCounter
+		testCounterMutex.Unlock()
+
+		// If this was the last test, automatically complete the test run
+		if remainingTests == 0 && reporter != nil {
+			log.Printf("All tests completed, auto-completing test run")
+			_ = CompleteTestRun()
 		}
 	}()
 
@@ -348,14 +358,23 @@ func AttachContent(name, content, contentType string) {
 	}
 }
 
-// CompleteTestRun completes the test run manually (optional)
-// Note: Test run will be automatically completed when the reporter is garbage collected
+// CompleteTestRun completes the test run only once
+// Note: Test run will be automatically completed after all tests finish
 // This function can still be called manually if immediate completion is needed
 func CompleteTestRun() error {
-	if reporter != nil {
-		return reporter.CompleteTestRun(context.Background())
-	}
-	return nil
+	var err error
+	completeTestRunOnce.Do(func() {
+		if reporter != nil {
+			log.Printf("Completing test run (will only happen once)")
+			err = reporter.CompleteTestRun(context.Background())
+			if err != nil {
+				log.Printf("Error completing test run: %v", err)
+			} else {
+				log.Printf("Test run completed successfully")
+			}
+		}
+	})
+	return err
 }
 
 // Helper functions
