@@ -3,10 +3,10 @@ package clients
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
+	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 )
 
 // UnifiedClient combines v1 and v2 clients for optimal API usage
@@ -107,7 +107,7 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 			// Send single result
 			err := c.v2Client.SendResult(ctx, c.projectCode, runID, batch[0])
 			if err != nil {
-				log.Printf("Warning: Failed to send single result '%s': %v", batch[0].Title, err)
+				logging.Warn("Warning: Failed to send single result '%s': %v", batch[0].Title, err)
 				failedUploads++
 				lastError = err
 			} else {
@@ -117,7 +117,7 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 			// Send batch of results
 			err := c.v2Client.SendResults(ctx, c.projectCode, runID, batch)
 			if err != nil {
-				log.Printf("Warning: Failed to send batch of %d results: %v", len(batch), err)
+				logging.Warn("Warning: Failed to send batch of %d results: %v", len(batch), err)
 				failedUploads += len(batch)
 				lastError = err
 			} else {
@@ -128,13 +128,13 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 
 	// Log summary
 	if failedUploads > 0 {
-		log.Printf("Upload summary: %d successful, %d failed", successfulUploads, failedUploads)
+		logging.Info("Upload summary: %d successful, %d failed", successfulUploads, failedUploads)
 		if successfulUploads == 0 {
 			// If no results were uploaded at all, return error
 			return fmt.Errorf("failed to upload any results: %w", lastError)
 		}
 		// If some results were uploaded successfully, log warning but don't fail
-		log.Printf("Warning: Some results failed to upload, but test run will continue")
+		logging.Warn("Warning: Some results failed to upload, but test run will continue")
 	}
 
 	return nil

@@ -3,12 +3,12 @@ package reporters
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/clients"
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
+	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 )
 
 // Reporter defines the interface that all reporters must implement
@@ -69,7 +69,7 @@ func (cr *CoreReporter) initializeReporter() error {
 		if err != nil {
 			// If TestOps client creation fails and we have fallback, use it
 			if cr.fallback != nil {
-				log.Printf("Warning: TestOps client creation failed, using fallback: %v", err)
+				logging.Warn("Warning: TestOps client creation failed, using fallback: %v", err)
 				cr.reporter = cr.fallback
 				cr.fallback = nil // Clear fallback since we're using it as main reporter
 				return nil
@@ -157,10 +157,10 @@ func (cr *CoreReporter) StartTestRun(ctx context.Context) error {
 
 	// Start test run with main reporter
 	if err := cr.reporter.StartTestRun(ctx); err != nil {
-		log.Printf("Warning: Failed to start test run: %v", err)
+		logging.Warn("Warning: Failed to start test run: %v", err)
 		// Try fallback if available
 		if cr.fallback != nil {
-			log.Printf("Trying fallback reporter")
+			logging.Info("Trying fallback reporter")
 			if fallbackErr := cr.fallback.StartTestRun(ctx); fallbackErr != nil {
 				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
 			}
@@ -193,10 +193,10 @@ func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
 
 	// Add to main reporter
 	if err := cr.reporter.AddResult(result); err != nil {
-		log.Printf("Warning: Failed to add result: %v", err)
+		logging.Warn("Warning: Failed to add result: %v", err)
 		// Try fallback if available
 		if cr.fallback != nil {
-			log.Printf("Trying fallback reporter")
+			logging.Info("Trying fallback reporter")
 			if fallbackErr := cr.fallback.AddResult(result); fallbackErr != nil {
 				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
 			}
@@ -221,10 +221,10 @@ func (cr *CoreReporter) CompleteTestRun(ctx context.Context) error {
 
 	// Complete test run with main reporter
 	if err := cr.reporter.CompleteTestRun(ctx); err != nil {
-		log.Printf("Warning: Failed to complete test run: %v", err)
+		logging.Warn("Warning: Failed to complete test run: %v", err)
 		// Try fallback if available
 		if cr.fallback != nil {
-			log.Printf("Trying fallback reporter")
+			logging.Info("Trying fallback reporter")
 			if fallbackErr := cr.fallback.CompleteTestRun(ctx); fallbackErr != nil {
 				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
 			}

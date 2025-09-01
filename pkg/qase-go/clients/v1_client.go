@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
+	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 	api_v1_client "github.com/qase-tms/qase-go/qase-api-client"
 )
 
@@ -54,9 +54,7 @@ func (c *V1Client) SendResults(ctx context.Context, projectCode string, runID in
 
 // CreateRun creates a new test run using API v1
 func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, description string) (*RunInfo, error) {
-	if c.config.Debug {
-		log.Printf("Creating test run: project=%s, title=%s, description=%s", projectCode, title, description)
-	}
+	logging.Info("Creating test run: project=%s, title=%s, description=%s", projectCode, title, description)
 
 	// Create run request
 	runCreate := api_v1_client.NewRunCreate(title)
@@ -77,9 +75,9 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 
 		// Convert to JSON for pretty printing
 		if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
-			log.Printf("RunCreate object: %s", string(jsonData))
+			logging.Info("RunCreate object: %s", string(jsonData))
 		} else {
-			log.Printf("RunCreate object: %+v", logData)
+			logging.Info("RunCreate object: %+v", logData)
 		}
 	}
 
@@ -94,12 +92,12 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	response, httpResp, err := c.client.RunsAPI.CreateRun(authCtx, projectCode).RunCreate(*runCreate).Execute()
 	if err != nil {
 		if c.config.Debug {
-			log.Printf("API request failed with error: %v", err)
+			logging.Error("API request failed with error: %v", err)
 			if httpResp != nil {
-				log.Printf("HTTP response status: %s", httpResp.Status)
-				log.Printf("HTTP response headers: %v", httpResp.Header)
+				logging.Info("HTTP response status: %s", httpResp.Status)
+				logging.Info("HTTP response headers: %v", httpResp.Header)
 				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					log.Printf("HTTP response body: %s", string(body))
+					logging.Info("HTTP response body: %s", string(body))
 				}
 			}
 		}
@@ -114,7 +112,7 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 	}
 
 	if c.config.Debug {
-		log.Printf("Successfully created test run: id=%d, url=%s", runInfo.ID, runInfo.URL)
+		logging.Info("Successfully created test run: id=%d, url=%s", runInfo.ID, runInfo.URL)
 	}
 
 	return runInfo, nil
@@ -122,9 +120,7 @@ func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, des
 
 // CompleteRun marks a test run as completed using API v1
 func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID int64) error {
-	if c.config.Debug {
-		log.Printf("Completing test run: project=%s, run=%d", projectCode, runID)
-	}
+	logging.Info("Completing test run: project=%s, run=%d", projectCode, runID)
 
 	// Set API token in context
 	authCtx := context.WithValue(ctx, api_v1_client.ContextAPIKeys, map[string]api_v1_client.APIKey{
@@ -137,12 +133,12 @@ func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID in
 	_, httpResp, err := c.client.RunsAPI.CompleteRun(authCtx, projectCode, int32(runID)).Execute()
 	if err != nil {
 		if c.config.Debug {
-			log.Printf("API request failed with error: %v", err)
+			logging.Error("API request failed with error: %v", err)
 			if httpResp != nil {
-				log.Printf("HTTP response status: %s", httpResp.Status)
-				log.Printf("HTTP response headers: %v", httpResp.Header)
+				logging.Info("HTTP response status: %s", httpResp.Status)
+				logging.Info("HTTP response headers: %v", httpResp.Header)
 				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					log.Printf("HTTP response body: %s", string(body))
+					logging.Info("HTTP response body: %s", string(body))
 				}
 			}
 		}
@@ -150,7 +146,7 @@ func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID in
 	}
 
 	if c.config.Debug {
-		log.Printf("Successfully completed test run: run=%d", runID)
+		logging.Info("Successfully completed test run: run=%d", runID)
 	}
 
 	return nil

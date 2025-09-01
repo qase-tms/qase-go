@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 	"strings"
@@ -36,14 +35,14 @@ func init() {
 		cfg, err := config.Load()
 		if err != nil {
 			// Fallback to unsafe loading if validation fails
-			log.Printf("Warning: Configuration validation failed, using unsafe loading: %v", err)
+			logging.Warn("Warning: Configuration validation failed, using unsafe loading: %v", err)
 			cfg = config.LoadUnsafe()
 		}
 
 		// Initialize logging system
 		loggingConfig := &logging.Config{Debug: cfg.Debug}
 		if err := logging.InitFromConfig(loggingConfig); err != nil {
-			log.Printf("Warning: Failed to initialize logging system: %v", err)
+			logging.Warn("Warning: Failed to initialize logging system: %v", err)
 		} else {
 			logging.Info("Logging system initialized successfully")
 		}
@@ -284,7 +283,7 @@ func AddAttachments(path string) {
 	// Get current test result
 	result := getCurrentTestResult()
 	if result == nil {
-		log.Printf("Warning: No current test result available for attachment %s", path)
+		logging.Warn("Warning: No current test result available for attachment %s", path)
 		return
 	}
 
@@ -297,7 +296,7 @@ func AddAttachments(path string) {
 
 	// Log for debugging
 	if reporter != nil && reporter.GetConfig().Debug {
-		log.Printf("Added attachment: %s to test: %s", path, result.Title)
+		logging.Info("Added attachment: %s to test: %s", path, result.Title)
 	}
 }
 
@@ -306,7 +305,7 @@ func AttachFile(name, filePath, contentType string) {
 	// Get current test result
 	result := getCurrentTestResult()
 	if result == nil {
-		log.Printf("Warning: No current test result available for attachment %s (%s)", name, filePath)
+		logging.Warn("Warning: No current test result available for attachment %s (%s)", name, filePath)
 		return
 	}
 
@@ -319,7 +318,7 @@ func AttachFile(name, filePath, contentType string) {
 
 	// Log for debugging
 	if reporter != nil && reporter.GetConfig().Debug {
-		log.Printf("Added file attachment: %s (%s) - %s to test: %s", name, contentType, filePath, result.Title)
+		logging.Info("Added file attachment: %s (%s) - %s to test: %s", name, contentType, filePath, result.Title)
 	}
 }
 
@@ -328,7 +327,7 @@ func AttachContent(name, content, contentType string) {
 	// Get current test result
 	result := getCurrentTestResult()
 	if result == nil {
-		log.Printf("Warning: No current test result available for content attachment %s", name)
+		logging.Warn("Warning: No current test result available for content attachment %s", name)
 		return
 	}
 
@@ -344,7 +343,7 @@ func AttachContent(name, content, contentType string) {
 		if len(content) > 50 {
 			contentPreview = content[:50] + "..."
 		}
-		log.Printf("Added content attachment: %s (%s) - %s to test: %s", name, contentType, contentPreview, result.Title)
+		logging.Info("Added content attachment: %s (%s) - %s to test: %s", name, contentType, contentPreview, result.Title)
 	}
 }
 
@@ -355,12 +354,12 @@ func CompleteTestRun() error {
 	var err error
 	completeTestRunOnce.Do(func() {
 		if reporter != nil {
-			log.Printf("Completing test run (will only happen once)")
+			logging.Info("Completing test run (will only happen once)")
 			err = reporter.CompleteTestRun(context.Background())
 			if err != nil {
-				log.Printf("Error completing test run: %v", err)
+				logging.Error("Error completing test run: %v", err)
 			} else {
-				log.Printf("Test run completed successfully")
+				logging.Info("Test run completed successfully")
 			}
 		}
 	})
@@ -379,9 +378,9 @@ func TestMain(m *testing.M) {
 
 	// Complete test run automatically after all tests finish
 	if reporter != nil {
-		log.Printf("All tests completed, auto-completing test run")
+		logging.Info("All tests completed, auto-completing test run")
 		if err := CompleteTestRun(); err != nil {
-			log.Printf("Warning: Failed to auto-complete test run: %v", err)
+			logging.Warn("Warning: Failed to auto-complete test run: %v", err)
 		}
 	}
 
