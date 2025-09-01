@@ -109,7 +109,7 @@ func TestV2Converter_ProcessAttachments_WithFileUpload(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test.txt")
 	content := "test file content"
-	
+
 	err := os.WriteFile(tmpFile, []byte(content), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
@@ -183,3 +183,32 @@ func TestV2Converter_ProcessAttachments_NonexistentFile(t *testing.T) {
 	}
 }
 
+func TestV2Converter_ProcessAttachments_ContentAttachmentPreservesExtension(t *testing.T) {
+	uploader := &MockAttachmentUploader{ReturnHash: "content-uploaded-hash"}
+	converter := &V2Converter{
+		uploader:    uploader,
+		projectCode: "TEST",
+	}
+
+	attachments := []domain.Attachment{
+		{
+			ID:       "content-id",
+			FileName: "log.txt",
+			MimeType: "text/plain",
+			Content:  []byte("test log content"),
+		},
+	}
+
+	result, err := converter.processAttachments(context.Background(), attachments)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if len(result) != 1 {
+		t.Fatalf("Expected 1 attachment, got %d", len(result))
+	}
+
+	if result[0] != "content-uploaded-hash" {
+		t.Errorf("Expected uploaded hash 'content-uploaded-hash', got '%s'", result[0])
+	}
+}

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -346,7 +348,12 @@ func (c *V2Converter) processAttachments(ctx context.Context, attachments []doma
 			// Handle content attachments - create temporary file
 			log.Printf("Creating temporary file for content attachment: %s", attachment.FileName)
 
-			tmpFile, err := os.CreateTemp("", attachment.FileName+"_*")
+			// Extract file extension to preserve it
+			ext := filepath.Ext(attachment.FileName)
+			baseName := strings.TrimSuffix(attachment.FileName, ext)
+
+			// Create temp file with preserved extension
+			tmpFile, err := os.CreateTemp("", baseName+"_*"+ext)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create temporary file for content attachment: %w", err)
 			}
