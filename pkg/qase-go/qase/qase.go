@@ -14,6 +14,7 @@ import (
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
+	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 	"github.com/qase-tms/qase-go/pkg/qase-go/reporters"
 )
 
@@ -39,27 +40,35 @@ func init() {
 			cfg = config.LoadUnsafe()
 		}
 
+		// Initialize logging system
+		loggingConfig := &logging.Config{Debug: cfg.Debug}
+		if err := logging.InitFromConfig(loggingConfig); err != nil {
+			log.Printf("Warning: Failed to initialize logging system: %v", err)
+		} else {
+			logging.Info("Logging system initialized successfully")
+		}
+
 		// Log configuration as JSON
 		cfgJSON, err := json.MarshalIndent(cfg, "", "  ")
 		if err != nil {
-			log.Printf("Failed to marshal config to JSON: %v", err)
+			logging.Error("Failed to marshal config to JSON: %v", err)
 		} else {
-			log.Printf("Qase configuration loaded:\n%s", string(cfgJSON))
+			logging.Info("Qase configuration loaded:\n%s", string(cfgJSON))
 		}
 
 		r, err := reporters.NewCoreReporter(cfg)
 		if err != nil {
-			log.Printf("Error: Failed to create core reporter: %v", err)
+			logging.Error("Failed to create core reporter: %v", err)
 			return
 		}
 
 		reporter = r
 		if err := reporter.StartTestRun(context.Background()); err != nil {
-			log.Printf("Error: Failed to start test run: %v", err)
+			logging.Error("Failed to start test run: %v", err)
 			return
 		}
 
-		log.Printf("Qase test run started successfully")
+		logging.Info("Qase test run started successfully")
 	})
 }
 

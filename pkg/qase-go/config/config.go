@@ -10,13 +10,13 @@ import (
 
 // Config represents the main configuration structure
 type Config struct {
-	Mode         string        `json:"mode"`
-	Fallback     string        `json:"fallback"`
-	Debug        bool          `json:"debug"`
-	Environment  string        `json:"environment"`
-	CaptureLogs  bool          `json:"captureLogs"`
-	Report       ReportConfig  `json:"report"`
-	TestOps      TestOpsConfig `json:"testops"`
+	Mode        string        `json:"mode"`
+	Fallback    string        `json:"fallback"`
+	Debug       bool          `json:"debug"`
+	Environment string        `json:"environment"`
+	CaptureLogs bool          `json:"captureLogs"`
+	Report      ReportConfig  `json:"report"`
+	TestOps     TestOpsConfig `json:"testops"`
 }
 
 // ReportConfig represents report configuration
@@ -38,11 +38,11 @@ type LocalConfig struct {
 
 // TestOpsConfig represents TestOps configuration
 type TestOpsConfig struct {
-	API           APIConfig           `json:"api"`
-	Run           RunConfig           `json:"run"`
-	Defect        bool                `json:"defect"`
-	Project       string              `json:"project"`
-	Batch         BatchConfig         `json:"batch"`
+	API     APIConfig   `json:"api"`
+	Run     RunConfig   `json:"run"`
+	Defect  bool        `json:"defect"`
+	Project string      `json:"project"`
+	Batch   BatchConfig `json:"batch"`
 }
 
 // APIConfig represents API configuration
@@ -53,17 +53,17 @@ type APIConfig struct {
 
 // RunConfig represents test run configuration
 type RunConfig struct {
-	Title          string              `json:"title"`
-	Description    string              `json:"description"`
-	Complete       bool                `json:"complete"`
-	Tags           []string            `json:"tags"`
-	Configurations ConfigurationsData  `json:"configurations"`
+	Title          string             `json:"title"`
+	Description    string             `json:"description"`
+	Complete       bool               `json:"complete"`
+	Tags           []string           `json:"tags"`
+	Configurations ConfigurationsData `json:"configurations"`
 }
 
 // ConfigurationsData represents run configurations
 type ConfigurationsData struct {
-	Values           []ConfigurationValue `json:"values"`
-	CreateIfNotExists bool                `json:"createIfNotExists"`
+	Values            []ConfigurationValue `json:"values"`
+	CreateIfNotExists bool                 `json:"createIfNotExists"`
 }
 
 // ConfigurationValue represents a single configuration value
@@ -77,6 +77,8 @@ type BatchConfig struct {
 	Size int `json:"size"`
 }
 
+// LoggingConfig is no longer needed - logging is always enabled
+
 // NewConfig creates a new configuration with default values
 func NewConfig() *Config {
 	return &Config{
@@ -85,6 +87,7 @@ func NewConfig() *Config {
 		Debug:       false,
 		Environment: "local",
 		CaptureLogs: false,
+		// Logging is always enabled - no configuration needed
 		Report: ReportConfig{
 			Driver: "local",
 			Connection: ConnectionConfig{
@@ -105,7 +108,7 @@ func NewConfig() *Config {
 				Complete:    true,
 				Tags:        []string{},
 				Configurations: ConfigurationsData{
-					Values:           []ConfigurationValue{},
+					Values:            []ConfigurationValue{},
 					CreateIfNotExists: true,
 				},
 			},
@@ -137,6 +140,8 @@ func (c *Config) LoadFromEnvironment() {
 	if captureLogs := os.Getenv("QASE_CAPTURE_LOGS"); captureLogs != "" {
 		c.CaptureLogs = strings.ToLower(captureLogs) == "true"
 	}
+
+	// Logging configuration - always enabled to both console and file
 
 	// Report configuration
 	if driver := os.Getenv("QASE_REPORT_DRIVER"); driver != "" {
