@@ -252,7 +252,27 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 	// Convert domain model to API v2 model
 	apiResult, err := c.converter.ConvertTestResult(result)
 	if err != nil {
-		return fmt.Errorf("failed to convert domain model: %w", err)
+		// Log warning but don't fail - try to send with partial data
+		log.Printf("Warning: Result '%s' had conversion issues: %v, attempting to send with partial data", result.Title, err)
+
+		// Try to create a minimal result with basic information
+		if apiResult == nil {
+			// Create a minimal result with just title and status
+			execution := api_v2_client.NewResultExecution(string(result.Execution.Status))
+			minimalResult := api_v2_client.NewResultCreate(result.Title, *execution)
+			if result.ID != "" {
+				minimalResult.SetId(result.ID)
+			}
+			if result.Signature != "" {
+				minimalResult.SetSignature(result.Signature)
+			}
+			apiResult = minimalResult
+		}
+
+		// If we still don't have a result, return error
+		if apiResult == nil {
+			return fmt.Errorf("failed to convert domain model and could not create minimal result: %w", err)
+		}
 	}
 
 	if c.config.Debug {
@@ -298,32 +318,49 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 		}
 	}
 
-	// Convert all domain models to API v2 models, skipping problematic ones
+	// Convert all domain models to API v2 models, attempting to convert all results
 	var apiResults []api_v2_client.ResultCreate
-	var skippedResults []string
+	var conversionWarnings []string
 
 	for _, result := range results {
 		apiResult, err := c.converter.ConvertTestResult(result)
 		if err != nil {
-			log.Printf("Warning: Skipping result '%s' due to conversion error: %v", result.Title, err)
-			skippedResults = append(skippedResults, result.Title)
-			continue // Skip this result and continue with others
+			// Log warning but don't skip the result - try to send with partial data
+			log.Printf("Warning: Result '%s' had conversion issues: %v, attempting to send with partial data", result.Title, err)
+			conversionWarnings = append(conversionWarnings, fmt.Sprintf("'%s': %v", result.Title, err))
+
+			// Try to create a minimal result with basic information
+			if apiResult == nil {
+				// Create a minimal result with just title and status
+				execution := api_v2_client.NewResultExecution(string(result.Execution.Status))
+				minimalResult := api_v2_client.NewResultCreate(result.Title, *execution)
+				if result.ID != "" {
+					minimalResult.SetId(result.ID)
+				}
+				if result.Signature != "" {
+					minimalResult.SetSignature(result.Signature)
+				}
+				apiResult = minimalResult
+			}
 		}
-		apiResults = append(apiResults, *apiResult)
+
+		if apiResult != nil {
+			apiResults = append(apiResults, *apiResult)
+		}
 	}
 
 	// Log summary of conversion results
-	if len(skippedResults) > 0 {
-		log.Printf("Warning: Skipped %d results due to conversion errors: %v", len(skippedResults), skippedResults)
+	if len(conversionWarnings) > 0 {
+		log.Printf("Warning: %d results had conversion issues: %v", len(conversionWarnings), conversionWarnings)
 	}
 
 	if len(apiResults) == 0 {
-		log.Printf("Warning: No results could be converted, skipping batch upload")
+		log.Printf("Warning: No results could be converted at all, skipping batch upload")
 		return nil
 	}
 
 	if c.config.Debug {
-		log.Printf("Converted API results count: %d (skipped: %d)", len(apiResults), len(skippedResults))
+		log.Printf("Converted API results count: %d (warnings: %d)", len(apiResults), len(conversionWarnings))
 		for i, result := range apiResults {
 			c.logResultPretty(fmt.Sprintf("Result %d", i), &result)
 		}

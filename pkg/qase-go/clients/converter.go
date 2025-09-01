@@ -106,21 +106,27 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 	// Handle TestopsID (can be single int64, []int64, or nil)
 	if result.TestopsID != nil {
 		if err := c.setTestopsID(apiResult, result.TestopsID); err != nil {
-			return nil, err
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to set TestopsID: %v, continuing without TestopsID", err)
+			// Continue without TestopsID instead of failing
 		}
 	}
 
 	// Convert fields
 	if len(result.Fields) > 0 {
 		if err := c.setFields(apiResult, result.Fields); err != nil {
-			return nil, err
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to set fields: %v, continuing without fields", err)
+			// Continue without fields instead of failing
 		}
 	}
 
 	// Convert attachments
 	if len(result.Attachments) > 0 {
 		if err := c.setAttachments(context.Background(), apiResult, result.Attachments); err != nil {
-			return nil, fmt.Errorf("failed to set attachments: %w", err)
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to set attachments: %v, continuing without attachments", err)
+			// Continue without attachments instead of failing
 		}
 	}
 
@@ -128,14 +134,17 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 	if len(result.Steps) > 0 {
 		apiSteps, err := c.convertSteps(result.Steps)
 		if err != nil {
-			return nil, err
-		}
-		apiResult.SetSteps(apiSteps)
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to convert steps: %v, continuing without steps", err)
+			// Continue without steps instead of failing
+		} else {
+			apiResult.SetSteps(apiSteps)
 
-		// Set steps type based on step content
-		if len(apiSteps) > 0 {
-			stepsType := api_v2_client.CLASSIC
-			apiResult.SetStepsType(stepsType)
+			// Set steps type based on step content
+			if len(apiSteps) > 0 {
+				stepsType := api_v2_client.CLASSIC
+				apiResult.SetStepsType(stepsType)
+			}
 		}
 	}
 
@@ -152,7 +161,9 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 	// Convert relations
 	if result.Relations != nil && result.Relations.Suite != nil {
 		if err := c.setRelations(apiResult, result.Relations); err != nil {
-			return nil, err
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to set relations: %v, continuing without relations", err)
+			// Continue without relations instead of failing
 		}
 	}
 
@@ -183,11 +194,16 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 
 	// Convert attachments for step data
 	if len(step.Attachments) > 0 {
-		attachmentIDs, err := c.processAttachments(context.Background(), step.Attachments)
+		attachmentIDs, err := c.processAttachmentsGracefully(context.Background(), step.Attachments)
 		if err != nil {
-			return nil, fmt.Errorf("failed to process step attachments: %w", err)
+			// Log warning but don't fail the entire step
+			log.Printf("Warning: Some step attachments failed to process: %v", err)
+			// Continue with available attachments
 		}
-		stepData.SetAttachments(attachmentIDs)
+
+		if len(attachmentIDs) > 0 {
+			stepData.SetAttachments(attachmentIDs)
+		}
 	}
 
 	// Create step execution
@@ -216,10 +232,15 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 	// Convert nested steps recursively
 	if len(step.Steps) > 0 {
 		var nestedSteps []map[string]interface{}
-		for _, nestedStep := range step.Steps {
+		var nestedStepErrors []string
+
+		for i, nestedStep := range step.Steps {
 			nestedApiStep, err := c.ConvertTestStep(&nestedStep)
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert nested step: %w", err)
+				// Log warning but don't fail the entire step
+				log.Printf("Warning: Failed to convert nested step %d '%s': %v, skipping nested step", i, nestedStep.Data.Action, err)
+				nestedStepErrors = append(nestedStepErrors, fmt.Sprintf("nested step %d '%s': %v", i, nestedStep.Data.Action, err))
+				continue // Skip this nested step and continue with others
 			}
 			// Convert to map[string]interface{} as required by API
 			stepMap := map[string]interface{}{
@@ -231,7 +252,16 @@ func (c *V2Converter) ConvertTestStep(step *domain.TestStep) (*api_v2_client.Res
 			}
 			nestedSteps = append(nestedSteps, stepMap)
 		}
-		apiStep.SetSteps(nestedSteps)
+
+		// Log summary of nested step conversion results
+		if len(nestedStepErrors) > 0 {
+			log.Printf("Warning: %d nested steps had conversion errors and were skipped: %v", len(nestedStepErrors), nestedStepErrors)
+		}
+
+		// Set nested steps only if we have any successful conversions
+		if len(nestedSteps) > 0 {
+			apiStep.SetSteps(nestedSteps)
+		}
 	}
 
 	return apiStep, nil
@@ -305,21 +335,29 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_client.ResultCreate, attachments []domain.Attachment) error {
 	log.Printf("Converting %d attachments", len(attachments))
 
-	attachmentIDs, err := c.processAttachments(ctx, attachments)
+	attachmentIDs, err := c.processAttachmentsGracefully(ctx, attachments)
 	if err != nil {
-		return err
+		// Log warning but don't fail the entire result
+		log.Printf("Warning: Some attachments failed to process: %v", err)
+		// Continue with available attachments
 	}
 
-	log.Printf("Processed attachments, got %d IDs: %v", len(attachmentIDs), attachmentIDs)
-	apiResult.SetAttachments(attachmentIDs)
-	return nil
+	if len(attachmentIDs) > 0 {
+		log.Printf("Processed attachments, got %d IDs: %v", len(attachmentIDs), attachmentIDs)
+		apiResult.SetAttachments(attachmentIDs)
+	} else {
+		log.Printf("No attachments could be processed, continuing without attachments")
+	}
+
+	return nil // Don't fail the entire result due to attachment issues
 }
 
-// processAttachments processes attachments, uploading files if needed and returning IDs
-func (c *V2Converter) processAttachments(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
+// processAttachmentsGracefully processes attachments, skipping problematic ones instead of failing
+func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
 	var attachmentIDs []string
+	var errors []string
 
-	log.Printf("Processing %d attachments", len(attachments))
+	log.Printf("Processing %d attachments gracefully", len(attachments))
 	log.Printf("Uploader available: %v, project code: %s", c.uploader != nil, c.projectCode)
 
 	for _, attachment := range attachments {
@@ -333,13 +371,18 @@ func (c *V2Converter) processAttachments(ctx context.Context, attachments []doma
 
 			file, err := os.Open(attachment.GetFilePath())
 			if err != nil {
-				return nil, fmt.Errorf("failed to open attachment file %s: %w", attachment.GetFilePath(), err)
+				log.Printf("Warning: Failed to open attachment file %s: %v, skipping", attachment.GetFilePath(), err)
+				errors = append(errors, fmt.Sprintf("file open failed for %s: %v", attachment.GetFilePath(), err))
+				continue // Skip this attachment and continue with others
 			}
-			defer file.Close()
 
 			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{file})
+			file.Close() // Always close the file
+
 			if err != nil {
-				return nil, fmt.Errorf("failed to upload attachment %s: %w", attachment.GetFilePath(), err)
+				log.Printf("Warning: Failed to upload attachment %s: %v, skipping", attachment.GetFilePath(), err)
+				errors = append(errors, fmt.Sprintf("upload failed for %s: %v", attachment.GetFilePath(), err))
+				continue // Skip this attachment and continue with others
 			}
 
 			attachmentID = uploadedHash
@@ -355,52 +398,99 @@ func (c *V2Converter) processAttachments(ctx context.Context, attachments []doma
 			// Create temp file with preserved extension
 			tmpFile, err := os.CreateTemp("", baseName+"_*"+ext)
 			if err != nil {
-				return nil, fmt.Errorf("failed to create temporary file for content attachment: %w", err)
+				log.Printf("Warning: Failed to create temporary file for content attachment %s: %v, skipping", attachment.FileName, err)
+				errors = append(errors, fmt.Sprintf("temp file creation failed for %s: %v", attachment.FileName, err))
+				continue // Skip this attachment and continue with others
 			}
-			defer os.Remove(tmpFile.Name()) // Clean up
-			defer tmpFile.Close()
 
 			// Write content to temporary file
 			if _, err := tmpFile.Write(attachment.Content); err != nil {
-				return nil, fmt.Errorf("failed to write content to temporary file: %w", err)
+				log.Printf("Warning: Failed to write content to temporary file for %s: %v, skipping", attachment.FileName, err)
+				os.Remove(tmpFile.Name()) // Clean up
+				tmpFile.Close()
+				errors = append(errors, fmt.Sprintf("content write failed for %s: %v", attachment.FileName, err))
+				continue // Skip this attachment and continue with others
 			}
 
 			// Reset file pointer to beginning
 			if _, err := tmpFile.Seek(0, 0); err != nil {
-				return nil, fmt.Errorf("failed to seek temporary file: %w", err)
+				log.Printf("Warning: Failed to seek temporary file for %s: %v, skipping", attachment.FileName, err)
+				os.Remove(tmpFile.Name()) // Clean up
+				tmpFile.Close()
+				errors = append(errors, fmt.Sprintf("file seek failed for %s: %v", attachment.FileName, err))
+				continue // Skip this attachment and continue with others
 			}
 
 			// Upload temporary file
 			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{tmpFile})
+			os.Remove(tmpFile.Name()) // Clean up
+			tmpFile.Close()
+
 			if err != nil {
-				return nil, fmt.Errorf("failed to upload content attachment %s: %w", attachment.FileName, err)
+				log.Printf("Warning: Failed to upload content attachment %s: %v, skipping", attachment.FileName, err)
+				errors = append(errors, fmt.Sprintf("content upload failed for %s: %v", attachment.FileName, err))
+				continue // Skip this attachment and continue with others
 			}
 
 			attachmentID = uploadedHash
 			log.Printf("Successfully uploaded content attachment, got hash: %s", uploadedHash)
 		} else {
 			// Use existing ID if no file path or uploader not available
-			attachmentID = attachment.ID
-			log.Printf("Using existing attachment ID: %s (no upload)", attachmentID)
+			if attachment.ID != "" {
+				attachmentID = attachment.ID
+				log.Printf("Using existing attachment ID: %s (no upload)", attachmentID)
+			} else {
+				// No ID available and no uploader - skip this attachment
+				log.Printf("Warning: Attachment '%s' has no ID and no uploader available, skipping", attachment.FileName)
+				errors = append(errors, fmt.Sprintf("no ID and no uploader for %s", attachment.FileName))
+				continue
+			}
 		}
 
 		attachmentIDs = append(attachmentIDs, attachmentID)
 	}
 
-	log.Printf("Final attachment IDs: %v", attachmentIDs)
+	// Log summary
+	if len(errors) > 0 {
+		log.Printf("Warning: %d attachments had errors and were skipped: %v", len(errors), errors)
+	}
+
+	log.Printf("Final attachment IDs: %v (processed: %d, skipped: %d)", attachmentIDs, len(attachmentIDs), len(errors))
+
+	// Return error only if no attachments could be processed at all
+	if len(attachmentIDs) == 0 && len(errors) > 0 {
+		return nil, fmt.Errorf("all attachments failed to process: %v", errors)
+	}
+
 	return attachmentIDs, nil
 }
 
 // convertSteps converts all steps from domain to API format
 func (c *V2Converter) convertSteps(steps []domain.TestStep) ([]api_v2_client.ResultStep, error) {
 	var apiSteps []api_v2_client.ResultStep
-	for _, step := range steps {
+	var stepErrors []string
+
+	for i, step := range steps {
 		apiStep, err := c.ConvertTestStep(&step)
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert step: %w", err)
+			// Log warning but don't fail the entire result
+			log.Printf("Warning: Failed to convert step %d '%s': %v, skipping step", i, step.Data.Action, err)
+			stepErrors = append(stepErrors, fmt.Sprintf("step %d '%s': %v", i, step.Data.Action, err))
+			continue // Skip this step and continue with others
 		}
 		apiSteps = append(apiSteps, *apiStep)
 	}
+
+	// Log summary of step conversion results
+	if len(stepErrors) > 0 {
+		log.Printf("Warning: %d steps had conversion errors and were skipped: %v", len(stepErrors), stepErrors)
+	}
+
+	// Return error only if no steps could be converted at all
+	if len(apiSteps) == 0 && len(stepErrors) > 0 {
+		return nil, fmt.Errorf("all steps failed to convert: %v", stepErrors)
+	}
+
 	return apiSteps, nil
 }
 

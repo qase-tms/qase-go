@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -76,7 +77,7 @@ func TestV2Converter_ProcessAttachments(t *testing.T) {
 				projectCode: tt.projectCode,
 			}
 
-			result, err := converter.processAttachments(context.Background(), tt.attachments)
+			result, err := converter.processAttachmentsGracefully(context.Background(), tt.attachments)
 
 			if tt.expectError {
 				if err == nil {
@@ -129,7 +130,7 @@ func TestV2Converter_ProcessAttachments_WithFileUpload(t *testing.T) {
 		},
 	}
 
-	result, err := converter.processAttachments(context.Background(), attachments)
+	result, err := converter.processAttachmentsGracefully(context.Background(), attachments)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -173,13 +174,13 @@ func TestV2Converter_ProcessAttachments_NonexistentFile(t *testing.T) {
 		},
 	}
 
-	_, err := converter.processAttachments(context.Background(), attachments)
+	_, err := converter.processAttachmentsGracefully(context.Background(), attachments)
 	if err == nil {
-		t.Error("Expected error for nonexistent file, but got none")
+		t.Error("Expected error for all attachments failing, but got none")
 	}
 
-	if !os.IsNotExist(err) && err.Error() != fmt.Sprintf("failed to open attachment file %s: open %s: no such file or directory", nonexistentFile, nonexistentFile) {
-		t.Errorf("Expected file not found error, got: %v", err)
+	if !strings.Contains(err.Error(), "all attachments failed to process") {
+		t.Errorf("Expected 'all attachments failed to process' error, got: %v", err)
 	}
 }
 
@@ -199,7 +200,7 @@ func TestV2Converter_ProcessAttachments_ContentAttachmentPreservesExtension(t *t
 		},
 	}
 
-	result, err := converter.processAttachments(context.Background(), attachments)
+	result, err := converter.processAttachmentsGracefully(context.Background(), attachments)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
