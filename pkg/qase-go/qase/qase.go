@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
@@ -27,9 +28,6 @@ var (
 	stepStackMutex   sync.RWMutex
 	// Add this for automatic test run completion
 	completeTestRunOnce sync.Once
-	// Add test counter for automatic completion
-	testCounter      int64
-	testCounterMutex sync.RWMutex
 )
 
 func init() {
@@ -67,11 +65,6 @@ func init() {
 
 // Test is the main test function
 func Test(t *testing.T, meta TestMetadata, fn func()) {
-	// Increment test counter
-	testCounterMutex.Lock()
-	testCounter++
-	testCounterMutex.Unlock()
-
 	// Skip test if ignore is set
 	if meta.Ignore {
 		t.Skip("Test ignored by Qase metadata")
@@ -189,18 +182,6 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		// Add result to reporter
 		if reporter != nil {
 			_ = reporter.AddResult(result)
-		}
-
-		// Decrement test counter and check if this was the last test
-		testCounterMutex.Lock()
-		testCounter--
-		remainingTests := testCounter
-		testCounterMutex.Unlock()
-
-		// If this was the last test, automatically complete the test run
-		if remainingTests == 0 && reporter != nil {
-			log.Printf("All tests completed, auto-completing test run")
-			_ = CompleteTestRun()
 		}
 	}()
 
@@ -375,6 +356,27 @@ func CompleteTestRun() error {
 		}
 	})
 	return err
+}
+
+// TestMain should be called in the main test file for automatic test run completion
+// Example usage in your test file:
+//
+//	func TestMain(m *testing.M) {
+//	    qase.TestMain(m)
+//	}
+func TestMain(m *testing.M) {
+	// Run tests
+	exitCode := m.Run()
+
+	// Complete test run automatically after all tests finish
+	if reporter != nil {
+		log.Printf("All tests completed, auto-completing test run")
+		if err := CompleteTestRun(); err != nil {
+			log.Printf("Warning: Failed to auto-complete test run: %v", err)
+		}
+	}
+
+	os.Exit(exitCode)
 }
 
 // Helper functions
