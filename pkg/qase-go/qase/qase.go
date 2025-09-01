@@ -56,7 +56,19 @@ func init() {
 			return
 		}
 
-		log.Printf("Qase test run started successfully")
+		// Set finalizer to automatically complete test run when reporter is garbage collected
+		runtime.SetFinalizer(reporter, func(r *reporters.CoreReporter) {
+			if r != nil {
+				log.Printf("Auto-completing test run via finalizer")
+				if err := r.CompleteTestRun(context.Background()); err != nil {
+					log.Printf("Warning: Failed to auto-complete test run via finalizer: %v", err)
+				} else {
+					log.Printf("Test run auto-completed successfully via finalizer")
+				}
+			}
+		})
+
+		log.Printf("Qase test run started successfully with auto-completion enabled")
 	})
 }
 
@@ -336,7 +348,9 @@ func AttachContent(name, content, contentType string) {
 	}
 }
 
-// CompleteTestRun completes the test run
+// CompleteTestRun completes the test run manually (optional)
+// Note: Test run will be automatically completed when the reporter is garbage collected
+// This function can still be called manually if immediate completion is needed
 func CompleteTestRun() error {
 	if reporter != nil {
 		return reporter.CompleteTestRun(context.Background())
