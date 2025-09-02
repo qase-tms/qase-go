@@ -142,6 +142,16 @@ func (b *TestStepBuilder) AddStepWithData(action string, status domain.StepStatu
 	b.result.AddStep(*step)
 }
 
+// AddMessage adds a message to the current test result
+func AddMessage(message string) {
+	if reporter == nil {
+		return
+	}
+	// For now, we'll just log the message
+	// In a more complex implementation, this could be stored in the current test result
+	logging.Info("Test message: %s", message)
+}
+
 // GetReporter returns the current reporter instance
 func GetReporter() *reporters.CoreReporter {
 	return reporter
