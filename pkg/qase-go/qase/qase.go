@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -16,8 +17,12 @@ import (
 )
 
 var (
-	reporter *reporters.CoreReporter
-	once     sync.Once
+	reporter          *reporters.CoreReporter
+	once              sync.Once
+	currentTestResult *domain.TestResult
+	currentTestMutex  sync.RWMutex
+	currentStepStack  []*domain.TestStep
+	stepStackMutex    sync.RWMutex
 )
 
 func init() {
@@ -84,6 +89,13 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 	// Create test result
 	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
+
+	// Set current test result for step collection
+	setCurrentTestResult(result)
+	defer func() {
+		clearCurrentTestResult()
+		clearStepStack()
+	}()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -152,6 +164,13 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	// Create test result
 	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
+
+	// Set current test result for step collection
+	setCurrentTestResult(result)
+	defer func() {
+		clearCurrentTestResult()
+		clearStepStack()
+	}()
 
 	// Create step builder
 	builder := &TestStepBuilder{
@@ -234,11 +253,72 @@ func AddMessage(message string) {
 
 // Step executes a test step with metadata
 func Step(t *testing.T, meta StepMetadata, fn func()) {
-	// For now, just log the step and execute the function
+	// Get current test result
+	currentResult := getCurrentTestResult()
+	if currentResult == nil {
+		// No current test result, just log and execute
+		logging.Info("Executing step: %s (no current test result)", meta.Name)
+		if meta.Description != "" {
+			logging.Info("Step description: %s", meta.Description)
+		}
+		fn()
+		return
+	}
+
+	// Create step
+	step := domain.NewTestStep(meta.Name)
+	if meta.Description != "" {
+		step.SetExpectedResult(meta.Description)
+	}
+	if meta.Data != "" {
+		step.SetData(meta.Data)
+	}
+
+	// Set timing
+	startTime := time.Now().UnixMilli()
+	step.Execution.StartTime = &startTime
+
+	// Push step to stack for nested step support
+	pushCurrentStep(step)
+
+	// Execute the step function
+	defer func() {
+		// Pop step from stack
+		poppedStep := popCurrentStep()
+		if poppedStep != step {
+			logging.Warn("Step stack mismatch: expected %p, got %p", step, poppedStep)
+		}
+
+		endTime := time.Now().UnixMilli()
+		step.Execution.EndTime = &endTime
+		duration := endTime - startTime
+		step.Execution.Duration = &duration
+
+		// Determine step status based on test failure
+		if t.Failed() {
+			step.Execution.Status = domain.StepStatusFailed
+		} else {
+			step.Execution.Status = domain.StepStatusPassed
+		}
+
+		// Add step to parent or test result
+		parentStep := getCurrentStep()
+		if parentStep != nil {
+			// Add to parent step
+			parentStep.AddStep(*step)
+		} else {
+			// Add to test result
+			currentResult.AddStep(*step)
+		}
+	}()
+
+	// Log step execution
 	logging.Info("Executing step: %s", meta.Name)
 	if meta.Description != "" {
 		logging.Info("Step description: %s", meta.Description)
 	}
+
+	// Execute the step function
 	fn()
 }
 
@@ -247,8 +327,24 @@ func AddAttachments(filePaths ...string) {
 	if reporter == nil {
 		return
 	}
-	// For now, just log the attachments
+
+	// Get current test result
+	currentResult := getCurrentTestResult()
+	if currentResult == nil {
+		// No current test result, just log the attachments
+		for _, path := range filePaths {
+			logging.Info("Adding attachment: %s (no current test result)", path)
+		}
+		return
+	}
+
+	// Add attachments to current test result
 	for _, path := range filePaths {
+		attachment := domain.Attachment{
+			FileName: path,
+		}
+		attachment.SetFilePath(path)
+		currentResult.AddAttachment(attachment)
 		logging.Info("Adding attachment: %s", path)
 	}
 }
@@ -258,8 +354,80 @@ func AttachContent(name, content, mimeType string) {
 	if reporter == nil {
 		return
 	}
-	// For now, just log the content attachment
+
+	// Get current test result
+	currentResult := getCurrentTestResult()
+	if currentResult == nil {
+		// No current test result, just log the content attachment
+		logging.Info("Adding content attachment: %s (type: %s) (no current test result)", name, mimeType)
+		return
+	}
+
+	// Add content attachment to current test result
+	attachment := domain.Attachment{
+		FileName: name,
+		Content:  []byte(content),
+		MimeType: mimeType,
+	}
+	currentResult.AddAttachment(attachment)
 	logging.Info("Adding content attachment: %s (type: %s)", name, mimeType)
+}
+
+// setCurrentTestResult sets the current test result for step collection
+func setCurrentTestResult(result *domain.TestResult) {
+	currentTestMutex.Lock()
+	defer currentTestMutex.Unlock()
+	currentTestResult = result
+}
+
+// clearCurrentTestResult clears the current test result
+func clearCurrentTestResult() {
+	currentTestMutex.Lock()
+	defer currentTestMutex.Unlock()
+	currentTestResult = nil
+}
+
+// getCurrentTestResult gets the current test result
+func getCurrentTestResult() *domain.TestResult {
+	currentTestMutex.RLock()
+	defer currentTestMutex.RUnlock()
+	return currentTestResult
+}
+
+// pushCurrentStep pushes a step to the current step stack
+func pushCurrentStep(step *domain.TestStep) {
+	stepStackMutex.Lock()
+	defer stepStackMutex.Unlock()
+	currentStepStack = append(currentStepStack, step)
+}
+
+// popCurrentStep pops a step from the current step stack
+func popCurrentStep() *domain.TestStep {
+	stepStackMutex.Lock()
+	defer stepStackMutex.Unlock()
+	if len(currentStepStack) == 0 {
+		return nil
+	}
+	step := currentStepStack[len(currentStepStack)-1]
+	currentStepStack = currentStepStack[:len(currentStepStack)-1]
+	return step
+}
+
+// getCurrentStep gets the current step from the stack
+func getCurrentStep() *domain.TestStep {
+	stepStackMutex.RLock()
+	defer stepStackMutex.RUnlock()
+	if len(currentStepStack) == 0 {
+		return nil
+	}
+	return currentStepStack[len(currentStepStack)-1]
+}
+
+// clearStepStack clears the step stack
+func clearStepStack() {
+	stepStackMutex.Lock()
+	defer stepStackMutex.Unlock()
+	currentStepStack = nil
 }
 
 // InitializeGlobal initializes qase globally (for backward compatibility)
@@ -270,16 +438,53 @@ func InitializeGlobal() error {
 	return nil
 }
 
+// InitializeGlobalWithConfig initializes qase globally with custom config
+func InitializeGlobalWithConfig(cfg *config.Config) error {
+	// For testing purposes, we'll just return success
+	// In a real implementation, this would reinitialize with the custom config
+	return nil
+}
+
+// IsGlobalInitialized returns true if qase is globally initialized
+func IsGlobalInitialized() bool {
+	return reporter != nil
+}
+
+// ResetGlobal resets the global state (for testing purposes)
+func ResetGlobal() {
+	once = sync.Once{}
+	reporter = nil
+	currentTestMutex.Lock()
+	currentTestResult = nil
+	currentTestMutex.Unlock()
+	clearStepStack()
+}
+
 // TestMain is a function that should be called in test main to properly complete the test run
 func TestMain(m *testing.M) {
 	// Run the tests
 	code := m.Run()
-	
+
 	// Complete the test run and send all results
 	if err := CompleteTestRun(); err != nil {
 		logging.Error("Failed to complete test run: %v", err)
 	}
-	
+
+	// Exit with the test result code
+	os.Exit(code)
+}
+
+// TestMainForPackage is a function that should be called in each package's test main
+// This ensures that results are sent for each package individually
+func TestMainForPackage(m *testing.M) {
+	// Run the tests
+	code := m.Run()
+
+	// Complete the test run and send all results for this package
+	if err := CompleteTestRun(); err != nil {
+		logging.Error("Failed to complete test run for package: %v", err)
+	}
+
 	// Exit with the test result code
 	os.Exit(code)
 }

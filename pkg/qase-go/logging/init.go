@@ -2,7 +2,10 @@ package logging
 
 import (
 	"fmt"
+	"path/filepath"
 	"time"
+
+	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 )
 
 // Config represents a simplified configuration structure for logging
@@ -23,10 +26,14 @@ func InitFromConfig(cfg *Config) error {
 	timestamp := time.Now().Format("2006-01-02_15-04-05")
 	filename := fmt.Sprintf("logs_%s.log", timestamp)
 
+	// Find project root directory (where qase.config.json is located)
+	projectRoot := config.FindProjectRootWithParentSearch()
+	logDir := filepath.Join(projectRoot, "logs")
+
 	loggerConfig := LoggerConfig{
 		LogToConsole: true,     // Always enabled
 		LogToFile:    true,     // Always enabled
-		LogDir:       "./logs", // Fixed directory
+		LogDir:       logDir,   // Use project root logs directory
 		LogFileName:  filename, // Generated filename with timestamp
 		LogLevel:     logLevel,
 	}
@@ -49,10 +56,14 @@ func GetLoggerFromConfig(cfg *Config) (*Logger, error) {
 	timestamp := time.Now().Format("2006-01-02_15-04-05")
 	filename := fmt.Sprintf("logs_%s.log", timestamp)
 
+	// Find project root directory (where qase.config.json is located)
+	projectRoot := config.FindProjectRootWithParentSearch()
+	logDir := filepath.Join(projectRoot, "logs")
+
 	loggerConfig := LoggerConfig{
 		LogToConsole: true,     // Always enabled
 		LogToFile:    true,     // Always enabled
-		LogDir:       "./logs", // Fixed directory
+		LogDir:       logDir,   // Use project root logs directory
 		LogFileName:  filename, // Generated filename with timestamp
 		LogLevel:     logLevel,
 	}

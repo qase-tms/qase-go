@@ -218,13 +218,16 @@ func TestStepFailure(t *testing.T) {
 	setCurrentTestResult(result)
 	defer clearCurrentTestResult()
 
+	// Create a separate testing.T to avoid affecting the main test
+	testT := &testing.T{}
+
 	// Execute a step that will fail
-	Step(t, StepMetadata{
+	Step(testT, StepMetadata{
 		Name:        "Failing Step",
 		Description: "This step should fail",
 	}, func() {
 		// This assertion will fail
-		True(t, false, "This step should fail")
+		True(testT, false, "This step should fail")
 	})
 
 	// Check that step was added to the result
@@ -239,10 +242,9 @@ func TestStepFailure(t *testing.T) {
 		t.Errorf("Expected step action 'Failing Step', got '%s'", step.Data.Action)
 	}
 
-	// Note: Step status is set to passed by default during execution
-	// The actual failure status will be determined by the test framework
-	if step.Execution.Status != domain.StepStatusPassed {
-		t.Errorf("Expected step status '%s', got '%s'", domain.StepStatusPassed, step.Execution.Status)
+	// Check that step status is set to failed (since assertion failed)
+	if step.Execution.Status != domain.StepStatusFailed {
+		t.Errorf("Expected step status '%s', got '%s'", domain.StepStatusFailed, step.Execution.Status)
 	}
 
 	// Print step details for debugging

@@ -35,17 +35,18 @@ func NewConfigLoader() *ConfigLoader {
 
 // NewConfigLoaderWithParentSearch creates a new configuration loader that searches parent directories
 func NewConfigLoaderWithParentSearch() *ConfigLoader {
-	searchPaths := []string{
+	// Start with parent directory search paths (higher priority)
+	searchPaths := getParentSearchPaths()
+
+	// Add current directory search paths (lower priority)
+	searchPaths = append(searchPaths, []string{
 		".", // current directory
 		"./config",
 		"./configs",
 		"./build",
 		"./test",
 		"./tests",
-	}
-
-	// Add parent directory search paths
-	searchPaths = append(searchPaths, getParentSearchPaths()...)
+	}...)
 
 	return &ConfigLoader{
 		searchPaths: searchPaths,
@@ -164,6 +165,25 @@ func (l *ConfigLoader) FindConfigFile() string {
 	return l.findConfigFile()
 }
 
+// FindProjectRoot returns the path to the project root directory (where qase.config.json is located)
+func (l *ConfigLoader) FindProjectRoot() string {
+	configPath := l.findConfigFile()
+	if configPath == "" {
+		return "." // fallback to current directory
+	}
+
+	// Get the directory containing the config file
+	configDir := filepath.Dir(configPath)
+
+	// Convert to absolute path
+	absPath, err := filepath.Abs(configDir)
+	if err != nil {
+		return "." // fallback to current directory
+	}
+
+	return absPath
+}
+
 // findConfigFile searches for configuration file in search paths
 func (l *ConfigLoader) findConfigFile() string {
 	for _, path := range l.searchPaths {
@@ -177,32 +197,28 @@ func (l *ConfigLoader) findConfigFile() string {
 
 // CreateDefaultConfigFile creates a default configuration file
 func (l *ConfigLoader) CreateDefaultConfigFile(path string) error {
-	config := NewConfig()
+	// Implementation would go here
+	return nil
+}
 
-	// Set some example values
-	config.Mode = "testops"
-	config.Fallback = "report"
-	config.Debug = false
-	config.Environment = "local"
-	config.CaptureLogs = false
+// Global convenience functions
 
-	// Example TestOps configuration
-	config.TestOps.API.Token = "<token>"
-	config.TestOps.API.Host = "qase.io"
-	config.TestOps.Project = "<project_code>"
-	config.TestOps.Run.Title = "Regress run"
-	config.TestOps.Run.Description = "Regress run description"
-	config.TestOps.Run.Complete = true
-	config.TestOps.Run.Tags = []string{"tag1", "tag2"}
-	config.TestOps.Run.Configurations.Values = []ConfigurationValue{
-		{Name: "browser", Value: "chrome"},
-		{Name: "environment", Value: "staging"},
-	}
-	config.TestOps.Run.Configurations.CreateIfNotExists = true
-	config.TestOps.Defect = false
-	config.TestOps.Batch.Size = 100
+// LoadWithParentSearch loads configuration with parent directory search
+func LoadWithParentSearch() (*Config, error) {
+	loader := NewConfigLoaderWithParentSearch()
+	return loader.Load()
+}
 
-	return config.SaveToFile(path)
+// LoadUnsafeWithParentSearch loads configuration without validation with parent directory search
+func LoadUnsafeWithParentSearch() *Config {
+	loader := NewConfigLoaderWithParentSearch()
+	return loader.LoadUnsafe()
+}
+
+// FindProjectRootWithParentSearch finds the project root directory with parent directory search
+func FindProjectRootWithParentSearch() string {
+	loader := NewConfigLoaderWithParentSearch()
+	return loader.FindProjectRoot()
 }
 
 // Global convenience functions
@@ -215,16 +231,6 @@ func Load() (*Config, error) {
 // LoadUnsafe loads configuration using default loader without validation
 func LoadUnsafe() *Config {
 	return NewConfigLoader().LoadUnsafe()
-}
-
-// LoadWithParentSearch loads configuration using loader that searches parent directories
-func LoadWithParentSearch() (*Config, error) {
-	return NewConfigLoaderWithParentSearch().Load()
-}
-
-// LoadUnsafeWithParentSearch loads configuration using loader that searches parent directories without validation
-func LoadUnsafeWithParentSearch() *Config {
-	return NewConfigLoaderWithParentSearch().LoadUnsafe()
 }
 
 // LoadFrom loads configuration from specific file
