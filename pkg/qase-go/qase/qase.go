@@ -135,8 +135,8 @@ func (b *TestStepBuilder) AddStepWithData(action string, status domain.StepStatu
 	step.Execution.Status = status
 	// Convert map to StepTextData if needed
 	if data != nil {
-		step.Data = &domain.StepTextData{
-			Text: data["text"].(string),
+		if text, ok := data["text"].(string); ok {
+			step.Data.Data = &text
 		}
 	}
 	b.result.AddStep(*step)

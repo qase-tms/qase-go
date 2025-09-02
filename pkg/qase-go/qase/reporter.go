@@ -20,13 +20,7 @@ func NewReporter(coreReporter *reporters.CoreReporter) *Reporter {
 	}
 }
 
-// StartTestRun starts the test run
-func (r *Reporter) StartTestRun(ctx context.Context) error {
-	if r.coreReporter == nil {
-		return fmt.Errorf("core reporter is not initialized")
-	}
-	return r.coreReporter.StartTestRun(ctx)
-}
+
 
 // AddResult adds a test result
 func (r *Reporter) AddResult(result *domain.TestResult) error {
@@ -36,13 +30,7 @@ func (r *Reporter) AddResult(result *domain.TestResult) error {
 	return r.coreReporter.AddResult(result)
 }
 
-// CompleteTestRun completes the test run
-func (r *Reporter) CompleteTestRun(ctx context.Context) error {
-	if r.coreReporter == nil {
-		return fmt.Errorf("core reporter is not initialized")
-	}
-	return r.coreReporter.CompleteTestRun(ctx)
-}
+
 
 // GetCoreReporter returns the underlying core reporter
 func (r *Reporter) GetCoreReporter() *reporters.CoreReporter {
