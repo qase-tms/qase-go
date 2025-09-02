@@ -28,10 +28,22 @@ var (
 	stepStackMutex   sync.RWMutex
 	// Add this for automatic test run completion
 	completeTestRunOnce sync.Once
+	// Global initialization control
+	globalInitialized bool
+	globalMutex       sync.RWMutex
 )
 
 func init() {
 	once.Do(func() {
+		// Check if global initialization has already been done
+		globalMutex.RLock()
+		if globalInitialized {
+			globalMutex.RUnlock()
+			return // Already initialized globally
+		}
+		globalMutex.RUnlock()
+
+		// Fallback to local initialization if global wasn't called
 		cfg, err := config.Load()
 		if err != nil {
 			// Fallback to unsafe loading if validation fails
@@ -67,7 +79,7 @@ func init() {
 			return
 		}
 
-		logging.Info("Qase test run started successfully")
+		logging.Info("Qase test run started successfully (local initialization)")
 	})
 }
 
@@ -385,6 +397,119 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(exitCode)
+}
+
+// Global initialization functions
+
+// InitializeGlobal initializes qase globally with configuration that searches parent directories
+// This should be called once at the beginning of your test suite, typically in a TestMain function
+// or in the root package's init function
+func InitializeGlobal() error {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+
+	if globalInitialized {
+		return nil // Already initialized
+	}
+
+	// Use parent search to find config in root directory
+	cfg, err := config.LoadWithParentSearch()
+	if err != nil {
+		// Fallback to unsafe loading if validation fails
+		logging.Warn("Warning: Configuration validation failed, using unsafe loading: %v", err)
+		cfg = config.LoadUnsafeWithParentSearch()
+	}
+
+	// Initialize logging system
+	loggingConfig := &logging.Config{Debug: cfg.Debug}
+	if err := logging.InitFromConfig(loggingConfig); err != nil {
+		logging.Warn("Warning: Failed to initialize logging system: %v", err)
+	} else {
+		logging.Info("Logging system initialized successfully")
+	}
+
+	// Log configuration as JSON
+	cfgJSON, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		logging.Error("Failed to marshal config to JSON: %v", err)
+	} else {
+		logging.Info("Qase configuration loaded:\n%s", string(cfgJSON))
+	}
+
+	r, err := reporters.NewCoreReporter(cfg)
+	if err != nil {
+		logging.Error("Failed to create core reporter: %v", err)
+		return err
+	}
+
+	reporter = r
+	if err := reporter.StartTestRun(context.Background()); err != nil {
+		logging.Error("Failed to start test run: %v", err)
+		return err
+	}
+
+	globalInitialized = true
+	logging.Info("Qase test run started successfully (global initialization)")
+	return nil
+}
+
+// InitializeGlobalWithConfig initializes qase globally with a specific configuration
+// This allows you to provide your own configuration instead of loading from file
+func InitializeGlobalWithConfig(cfg *config.Config) error {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+
+	if globalInitialized {
+		return nil // Already initialized
+	}
+
+	// Initialize logging system
+	loggingConfig := &logging.Config{Debug: cfg.Debug}
+	if err := logging.InitFromConfig(loggingConfig); err != nil {
+		logging.Warn("Warning: Failed to initialize logging system: %v", err)
+	} else {
+		logging.Info("Logging system initialized successfully")
+	}
+
+	// Log configuration as JSON
+	cfgJSON, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		logging.Error("Failed to marshal config to JSON: %v", err)
+	} else {
+		logging.Info("Qase configuration loaded:\n%s", string(cfgJSON))
+	}
+
+	r, err := reporters.NewCoreReporter(cfg)
+	if err != nil {
+		logging.Error("Failed to create core reporter: %v", err)
+		return err
+	}
+
+	reporter = r
+	if err := reporter.StartTestRun(context.Background()); err != nil {
+		logging.Error("Failed to start test run: %v", err)
+		return err
+	}
+
+	globalInitialized = true
+	logging.Info("Qase test run started successfully (global initialization with custom config)")
+	return nil
+}
+
+// IsGlobalInitialized returns true if qase has been globally initialized
+func IsGlobalInitialized() bool {
+	globalMutex.RLock()
+	defer globalMutex.RUnlock()
+	return globalInitialized
+}
+
+// ResetGlobal resets the global initialization state (useful for testing)
+func ResetGlobal() {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+	globalInitialized = false
+	reporter = nil
+	once = sync.Once{}
 }
 
 // Helper functions

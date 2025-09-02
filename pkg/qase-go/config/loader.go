@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -30,6 +31,39 @@ func NewConfigLoader() *ConfigLoader {
 		},
 		fileName: DefaultConfigFileName,
 	}
+}
+
+// NewConfigLoaderWithParentSearch creates a new configuration loader that searches parent directories
+func NewConfigLoaderWithParentSearch() *ConfigLoader {
+	searchPaths := []string{
+		".", // current directory
+		"./config",
+		"./configs",
+		"./build",
+		"./test",
+		"./tests",
+	}
+
+	// Add parent directory search paths
+	searchPaths = append(searchPaths, getParentSearchPaths()...)
+
+	return &ConfigLoader{
+		searchPaths: searchPaths,
+		fileName:    DefaultConfigFileName,
+	}
+}
+
+// getParentSearchPaths generates search paths for parent directories
+func getParentSearchPaths() []string {
+	var paths []string
+	// Search up to 5 parent directories
+	for i := 1; i <= 5; i++ {
+		parentPath := strings.Repeat("../", i)
+		paths = append(paths, parentPath)
+		paths = append(paths, parentPath+"config")
+		paths = append(paths, parentPath+"configs")
+	}
+	return paths
 }
 
 // WithSearchPaths sets custom search paths for configuration file
@@ -144,14 +178,14 @@ func (l *ConfigLoader) findConfigFile() string {
 // CreateDefaultConfigFile creates a default configuration file
 func (l *ConfigLoader) CreateDefaultConfigFile(path string) error {
 	config := NewConfig()
-	
+
 	// Set some example values
 	config.Mode = "testops"
 	config.Fallback = "report"
 	config.Debug = false
 	config.Environment = "local"
 	config.CaptureLogs = false
-	
+
 	// Example TestOps configuration
 	config.TestOps.API.Token = "<token>"
 	config.TestOps.API.Host = "qase.io"
@@ -181,6 +215,16 @@ func Load() (*Config, error) {
 // LoadUnsafe loads configuration using default loader without validation
 func LoadUnsafe() *Config {
 	return NewConfigLoader().LoadUnsafe()
+}
+
+// LoadWithParentSearch loads configuration using loader that searches parent directories
+func LoadWithParentSearch() (*Config, error) {
+	return NewConfigLoaderWithParentSearch().Load()
+}
+
+// LoadUnsafeWithParentSearch loads configuration using loader that searches parent directories without validation
+func LoadUnsafeWithParentSearch() *Config {
+	return NewConfigLoaderWithParentSearch().LoadUnsafe()
 }
 
 // LoadFrom loads configuration from specific file
