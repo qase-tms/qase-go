@@ -1,7 +1,6 @@
 package qase
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
