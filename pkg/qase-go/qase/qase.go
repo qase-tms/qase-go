@@ -403,7 +403,7 @@ func InitializeGlobal() error {
 	globalMutex.Lock()
 	defer globalMutex.Unlock()
 
-	if globalInitialized {
+	if IsGlobalInitialized() {
 		return nil // Already initialized
 	}
 
@@ -456,7 +456,7 @@ func InitializeGlobalWithConfig(cfg *config.Config) error {
 	globalMutex.Lock()
 	defer globalMutex.Unlock()
 
-	if globalInitialized {
+	if IsGlobalInitialized() {
 		return nil // Already initialized
 	}
 
@@ -507,8 +507,9 @@ func ResetGlobal() {
 // getActiveReporter returns the active reporter (global or local)
 func getActiveReporter() *reporters.CoreReporter {
 	// First check if global reporter is available
-	if GetGlobalReporter() != nil {
-		return GetGlobalReporter()
+	globalReporter := GetGlobalReporter()
+	if globalReporter != nil {
+		return globalReporter
 	}
 	// Fallback to local reporter
 	return reporter
