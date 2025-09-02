@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -77,11 +79,8 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		return
 	}
 
-	// Use DisplayName as title, fallback to Title if DisplayName is empty
-	title := meta.DisplayName
-	if title == "" {
-		title = meta.Title
-	}
+	// Use Title as title, fallback to test name if Title is empty
+	title := meta.Title
 	if title == "" {
 		title = t.Name() // Use test name as fallback
 	}
@@ -89,6 +88,13 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 	// Create test result
 	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
+
+	// Set test start time
+	startTime := time.Now().UnixMilli()
+	result.Execution.StartTime = &startTime
+
+	// Apply metadata from TestMetadata to TestResult
+	applyTestMetadata(result, meta)
 
 	// Set current test result for step collection
 	setCurrentTestResult(result)
@@ -98,11 +104,19 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 	}()
 
 	defer func() {
+		// Set test end time and duration
+		endTime := time.Now().UnixMilli()
+		result.Execution.EndTime = &endTime
+		if result.Execution.StartTime != nil {
+			duration := endTime - *result.Execution.StartTime
+			result.Execution.Duration = &duration
+		}
+
 		if r := recover(); r != nil {
 			// Panic occurred - set status to invalid and capture stacktrace
 			result.Execution.Status = domain.StatusInvalid
 			msg := fmt.Sprintf("panic: %v", r)
-			result.Message = &msg
+			result.AddSystemMessage(msg)
 
 			// Capture stacktrace for panic
 			buf := make([]byte, 4096)
@@ -114,7 +128,7 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 			// Test failed due to assertion failure
 			result.Execution.Status = domain.StatusFailed
 			msg := "Test failed due to assertion failure"
-			result.Message = &msg
+			result.AddSystemMessage(msg)
 
 			// Capture stacktrace for failed test
 			buf := make([]byte, 4096)
@@ -152,11 +166,8 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 		return
 	}
 
-	// Use DisplayName as title, fallback to Title if DisplayName is empty
-	title := meta.DisplayName
-	if title == "" {
-		title = meta.Title
-	}
+	// Use Title as title, fallback to test name if Title is empty
+	title := meta.Title
 	if title == "" {
 		title = t.Name() // Use test name as fallback
 	}
@@ -164,6 +175,13 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	// Create test result
 	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
+
+	// Set test start time
+	startTime := time.Now().UnixMilli()
+	result.Execution.StartTime = &startTime
+
+	// Apply metadata from TestMetadata to TestResult
+	applyTestMetadata(result, meta)
 
 	// Set current test result for step collection
 	setCurrentTestResult(result)
@@ -178,11 +196,18 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	}
 
 	defer func() {
+		// Set test end time and duration
+		endTime := time.Now().UnixMilli()
+		result.Execution.EndTime = &endTime
+		if result.Execution.StartTime != nil {
+			duration := endTime - *result.Execution.StartTime
+			result.Execution.Duration = &duration
+		}
 		if r := recover(); r != nil {
 			// Panic occurred - set status to invalid and capture stacktrace
 			result.Execution.Status = domain.StatusInvalid
 			msg := fmt.Sprintf("panic: %v", r)
-			result.Message = &msg
+			result.AddSystemMessage(msg)
 
 			// Capture stacktrace for panic
 			buf := make([]byte, 4096)
@@ -194,7 +219,7 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 			// Test failed due to assertion failure
 			result.Execution.Status = domain.StatusFailed
 			msg := "Test failed due to assertion failure"
-			result.Message = &msg
+			result.AddSystemMessage(msg)
 
 			// Capture stacktrace for failed test
 			buf := make([]byte, 4096)
@@ -246,8 +271,17 @@ func AddMessage(message string) {
 	if reporter == nil {
 		return
 	}
-	// For now, we'll just log the message
-	// In a more complex implementation, this could be stored in the current test result
+
+	// Get current test result
+	currentResult := getCurrentTestResult()
+	if currentResult == nil {
+		// No current test result, just log the message
+		logging.Info("Test message: %s (no current test result)", message)
+		return
+	}
+
+	// Add message to current test result
+	currentResult.AddMessage(message)
 	logging.Info("Test message: %s", message)
 }
 
@@ -258,8 +292,8 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 	if currentResult == nil {
 		// No current test result, just log and execute
 		logging.Info("Executing step: %s (no current test result)", meta.Name)
-		if meta.Description != "" {
-			logging.Info("Step description: %s", meta.Description)
+		if meta.ExpectedResult != "" {
+			logging.Info("Step expected result: %s", meta.ExpectedResult)
 		}
 		fn()
 		return
@@ -267,8 +301,8 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 
 	// Create step
 	step := domain.NewTestStep(meta.Name)
-	if meta.Description != "" {
-		step.SetExpectedResult(meta.Description)
+	if meta.ExpectedResult != "" {
+		step.SetExpectedResult(meta.ExpectedResult)
 	}
 	if meta.Data != "" {
 		step.SetData(meta.Data)
@@ -314,8 +348,8 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 
 	// Log step execution
 	logging.Info("Executing step: %s", meta.Name)
-	if meta.Description != "" {
-		logging.Info("Step description: %s", meta.Description)
+	if meta.ExpectedResult != "" {
+		logging.Info("Step expected result: %s", meta.ExpectedResult)
 	}
 
 	// Execute the step function
@@ -500,4 +534,157 @@ func CompleteTestRun() error {
 // GetReporter returns the current reporter instance
 func GetReporter() *reporters.CoreReporter {
 	return reporter
+}
+
+// findProjectRoot finds the project root by looking for go.mod file
+func findProjectRoot(filePath string) string {
+	dir := filepath.Dir(filePath)
+
+	for {
+		// Check if go.mod exists in current directory
+		goModPath := filepath.Join(dir, "go.mod")
+		if _, err := os.Stat(goModPath); err == nil {
+			return dir
+		}
+
+		// Move up one directory
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			// Reached root directory
+			break
+		}
+		dir = parent
+	}
+
+	// Fallback to current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		return "."
+	}
+	return wd
+}
+
+// GetTestFileInfo extracts file path information from the call stack
+func GetTestFileInfo() (string, string) {
+	// Get more frames to find the test file
+	pc := make([]uintptr, 30)
+	n := runtime.Callers(0, pc)
+	frames := runtime.CallersFrames(pc[:n])
+
+	for {
+		frame, more := frames.Next()
+		if !more {
+			break
+		}
+
+		// Look for test files (files ending with _test.go)
+		// Skip frames from qase package itself, but allow test files in qase package
+		if strings.HasSuffix(frame.File, "_test.go") && !strings.Contains(frame.File, "/qase/qase.go") {
+			// Try to find the project root by looking for go.mod
+			projectRoot := findProjectRoot(frame.File)
+
+			// Get relative path from project root
+			relPath, err := filepath.Rel(projectRoot, frame.File)
+			if err != nil {
+				// Fallback to current working directory
+				wd, err := os.Getwd()
+				if err != nil {
+					wd = "."
+				}
+				relPath, err = filepath.Rel(wd, frame.File)
+				if err != nil {
+					relPath = frame.File
+				}
+			}
+
+			// Extract directory and filename
+			dir := filepath.Dir(relPath)
+			filename := filepath.Base(relPath)
+
+			// Remove _test.go suffix
+			suiteName := strings.TrimSuffix(filename, "_test.go")
+
+			return dir, suiteName
+		}
+	}
+	return ".", "unknown"
+}
+
+// applyTestMetadata applies metadata from TestMetadata to TestResult
+func applyTestMetadata(result *domain.TestResult, meta TestMetadata) {
+	// Set description
+	if meta.Description != "" {
+		result.SetField("description", meta.Description)
+	}
+
+	// Set comment
+	if meta.Comment != "" {
+		result.AddMessage(meta.Comment)
+	}
+
+	// Set fields
+	if meta.Fields != nil {
+		for key, value := range meta.Fields {
+			result.SetField(key, value)
+		}
+	}
+
+	// Set parameters
+	if meta.Parameters != nil {
+		for key, value := range meta.Parameters {
+			result.SetParam(key, value)
+		}
+	}
+
+	// Set group parameters
+	if meta.GroupParameters != nil {
+		for key, value := range meta.GroupParameters {
+			result.SetGroupParam(key, value)
+		}
+	}
+
+	// Set suite
+	var suiteData []domain.SuiteData
+
+	if meta.Suite != "" {
+		// Parse nested suites (e.g., "Parent Suite > Child Suite > Grandchild Suite")
+		suiteTitles := strings.Split(meta.Suite, " > ")
+		suiteData = make([]domain.SuiteData, len(suiteTitles))
+		for i, title := range suiteTitles {
+			suiteData[i] = domain.SuiteData{
+				Title: strings.TrimSpace(title),
+			}
+		}
+	} else {
+		// Auto-detect suite from file path
+		dir, filename := GetTestFileInfo()
+
+		// Create suite hierarchy from directory path
+		var suiteTitles []string
+
+		// Add directory components as suite hierarchy
+		if dir != "." && dir != "" {
+			dirParts := strings.Split(dir, string(filepath.Separator))
+			for _, part := range dirParts {
+				if part != "" && part != "." {
+					suiteTitles = append(suiteTitles, part)
+				}
+			}
+		}
+
+		// Add filename as the final suite
+		suiteTitles = append(suiteTitles, filename)
+
+		// Create suite data
+		suiteData = make([]domain.SuiteData, len(suiteTitles))
+		for i, title := range suiteTitles {
+			suiteData[i] = domain.SuiteData{
+				Title: title,
+			}
+		}
+	}
+
+	if len(suiteData) > 0 {
+		result.SetSuite(suiteData)
+	}
 }

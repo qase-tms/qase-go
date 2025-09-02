@@ -60,20 +60,29 @@ func (c *V2Client) logResultPretty(prefix string, result *api_v2_client.ResultCr
 
 	// Create a simplified structure for logging
 	logData := map[string]interface{}{
-		"title":  result.GetTitle(),
-		"status": execution.GetStatus(),
+		"title": result.GetTitle(),
 	}
 
-	// Add time values if they exist
+	// Add execution object
+	executionData := map[string]interface{}{
+		"status": execution.GetStatus(),
+	}
 	if execution.StartTime.IsSet() {
-		logData["start_time"] = execution.GetStartTime()
+		executionData["start_time"] = execution.GetStartTime()
 	}
 	if execution.EndTime.IsSet() {
-		logData["end_time"] = execution.GetEndTime()
+		executionData["end_time"] = execution.GetEndTime()
 	}
 	if execution.Duration.IsSet() {
-		logData["duration_ms"] = execution.GetDuration()
+		executionData["duration_ms"] = execution.GetDuration()
 	}
+	if execution.Stacktrace.IsSet() {
+		executionData["stacktrace"] = execution.GetStacktrace()
+	}
+	if execution.Thread.IsSet() {
+		executionData["thread"] = execution.GetThread()
+	}
+	logData["execution"] = executionData
 
 	// Convert to JSON for pretty printing
 	if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
@@ -102,9 +111,8 @@ func (c *V2Client) logBatchRequestPretty(batchRequest *api_v2_client.CreateResul
 
 		// Create detailed structure for each result
 		resultData := map[string]interface{}{
-			"index":  i,
-			"title":  result.GetTitle(),
-			"status": execution.GetStatus(),
+			"index": i,
+			"title": result.GetTitle(),
 		}
 
 		// Add all available fields
@@ -121,22 +129,26 @@ func (c *V2Client) logBatchRequestPretty(batchRequest *api_v2_client.CreateResul
 			resultData["testops_ids"] = result.GetTestopsIds()
 		}
 
-		// Execution time
+		// Add execution object
+		executionData := map[string]interface{}{
+			"status": execution.GetStatus(),
+		}
 		if execution.StartTime.IsSet() {
-			resultData["start_time"] = execution.GetStartTime()
+			executionData["start_time"] = execution.GetStartTime()
 		}
 		if execution.EndTime.IsSet() {
-			resultData["end_time"] = execution.GetEndTime()
+			executionData["end_time"] = execution.GetEndTime()
 		}
 		if execution.Duration.IsSet() {
-			resultData["duration_ms"] = execution.GetDuration()
+			executionData["duration_ms"] = execution.GetDuration()
 		}
 		if execution.Stacktrace.IsSet() {
-			resultData["stacktrace"] = execution.GetStacktrace()
+			executionData["stacktrace"] = execution.GetStacktrace()
 		}
 		if execution.Thread.IsSet() {
-			resultData["thread"] = execution.GetThread()
+			executionData["thread"] = execution.GetThread()
 		}
+		resultData["execution"] = executionData
 
 		// Steps
 		if len(result.GetSteps()) > 0 {

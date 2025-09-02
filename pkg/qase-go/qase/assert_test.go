@@ -11,7 +11,6 @@ import (
 func TestAssertErrorCapture(t *testing.T) {
 	// Test that error details are captured when assertions fail
 	Test(t, TestMetadata{
-		DisplayName: "Test Assert Error Capture",
 		Title:       "Test Assert Error Capture",
 		Description: "Test that error details are captured when assertions fail",
 	}, func() {
@@ -23,7 +22,6 @@ func TestAssertErrorCapture(t *testing.T) {
 func TestAssertErrorCaptureWithValues(t *testing.T) {
 	// Test that error details with expected/actual values are captured
 	Test(t, TestMetadata{
-		DisplayName: "Test Assert Error Capture With Values",
 		Title:       "Test Assert Error Capture With Values",
 		Description: "Test that error details with expected/actual values are captured",
 	}, func() {
@@ -35,7 +33,6 @@ func TestAssertErrorCaptureWithValues(t *testing.T) {
 func TestAssertErrorCaptureError(t *testing.T) {
 	// Test that error details are captured for error assertions
 	Test(t, TestMetadata{
-		DisplayName: "Test Assert Error Capture Error",
 		Title:       "Test Assert Error Capture Error",
 		Description: "Test that error details are captured for error assertions",
 	}, func() {
@@ -162,8 +159,8 @@ func TestStepFunctionality(t *testing.T) {
 
 	// Execute a step
 	Step(t, StepMetadata{
-		Name:        "Test Step",
-		Description: "This is a test step",
+		Name:           "Test Step",
+		ExpectedResult: "This is a test step",
 	}, func() {
 		// Step execution
 		AddMessage("Executing test step")
@@ -223,8 +220,8 @@ func TestStepFailure(t *testing.T) {
 
 	// Execute a step that will fail
 	Step(testT, StepMetadata{
-		Name:        "Failing Step",
-		Description: "This step should fail",
+		Name:           "Failing Step",
+		ExpectedResult: "This step should fail",
 	}, func() {
 		// This assertion will fail
 		True(testT, false, "This step should fail")
@@ -263,15 +260,15 @@ func TestNestedSteps(t *testing.T) {
 
 	// Execute a main step with nested steps
 	Step(t, StepMetadata{
-		Name:        "Main Step",
-		Description: "Main step containing nested steps",
+		Name:           "Main Step",
+		ExpectedResult: "Main step containing nested steps",
 	}, func() {
 		AddMessage("Starting main step")
 
 		// First nested step
 		Step(t, StepMetadata{
-			Name:        "Sub Step 1",
-			Description: "First nested step",
+			Name:           "Sub Step 1",
+			ExpectedResult: "First nested step",
 		}, func() {
 			AddMessage("Executing sub step 1")
 			True(t, true)
@@ -279,8 +276,8 @@ func TestNestedSteps(t *testing.T) {
 
 		// Second nested step
 		Step(t, StepMetadata{
-			Name:        "Sub Step 2",
-			Description: "Second nested step",
+			Name:           "Sub Step 2",
+			ExpectedResult: "Second nested step",
 		}, func() {
 			AddMessage("Executing sub step 2")
 			Equal(t, 3+2, 5)

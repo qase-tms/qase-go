@@ -218,9 +218,7 @@ func TestTestResult_SetTestopsIDMultiple(t *testing.T) {
 	}
 }
 
-func TestTestResult_SetMessage(t *testing.T) {
-	testResult := NewTestResult("Test")
-
+func TestTestResult_AddMessage(t *testing.T) {
 	tests := []struct {
 		name    string
 		message string
@@ -234,16 +232,57 @@ func TestTestResult_SetMessage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			testResult.SetMessage(tt.message)
+			testResult := NewTestResult("Test")
+			testResult.AddMessage(tt.message)
 
 			if testResult.Message == nil {
-				t.Error("Message should not be nil after SetMessage")
+				t.Error("Message should not be nil after AddMessage")
 				return
 			}
 			if *testResult.Message != tt.message {
 				t.Errorf("Message: got %q, want %q", *testResult.Message, tt.message)
 			}
 		})
+	}
+}
+
+func TestTestResult_AddMessageAccumulation(t *testing.T) {
+	testResult := NewTestResult("Test")
+
+	// Add first message
+	testResult.AddMessage("First message")
+	if testResult.Message == nil || *testResult.Message != "First message" {
+		t.Error("First message should be set correctly")
+	}
+
+	// Add second message
+	testResult.AddMessage("Second message")
+	expected := "First message\nSecond message"
+	if testResult.Message == nil || *testResult.Message != expected {
+		t.Errorf("Messages should accumulate: got %q, want %q", *testResult.Message, expected)
+	}
+
+	// Add third message
+	testResult.AddMessage("Third message")
+	expected = "First message\nSecond message\nThird message"
+	if testResult.Message == nil || *testResult.Message != expected {
+		t.Errorf("Messages should accumulate: got %q, want %q", *testResult.Message, expected)
+	}
+}
+
+func TestTestResult_AddSystemMessage(t *testing.T) {
+	testResult := NewTestResult("Test")
+
+	// Add user messages first
+	testResult.AddMessage("User message 1")
+	testResult.AddMessage("User message 2")
+
+	// Add system message
+	testResult.AddSystemMessage("System error message")
+
+	expected := "User message 1\nUser message 2\n\n**System error message**"
+	if testResult.Message == nil || *testResult.Message != expected {
+		t.Errorf("System message should be separated and bold: got %q, want %q", *testResult.Message, expected)
 	}
 }
 
@@ -391,7 +430,7 @@ func TestTestResult_AddStep(t *testing.T) {
 
 	expected1 := "Button is clicked"
 	expected2 := "Result is correct"
-	
+
 	step1 := TestStep{
 		ID:       "step-1",
 		StepType: StepTypeText,
@@ -583,7 +622,7 @@ func TestTestResult_JSONSerialization(t *testing.T) {
 				tr.Signature = "test.complete"
 				tr.SetRunID(789)
 				tr.SetTestopsIDSingle(101112)
-				tr.SetMessage("Test completed successfully")
+				tr.AddMessage("Test completed successfully")
 				tr.SetField("priority", "high")
 				tr.SetParam("browser", "chrome")
 				tr.SetGroupParam("suite", "smoke")
@@ -673,18 +712,18 @@ func TestTestResult_EdgeCases(t *testing.T) {
 	t.Run("proper initialization prevents panics", func(t *testing.T) {
 		// NewTestResult should properly initialize all maps and slices
 		tr := NewTestResult("Test")
-		
+
 		// These operations should not panic
 		tr.SetField("key", "value")
 		tr.SetParam("param", "value")
 		tr.SetGroupParam("group", "value")
-		
+
 		attachment := *NewAttachment("att-1", "file.txt", "text/plain", []byte("content"))
 		tr.AddAttachment(attachment)
-		
+
 		step := TestStep{ID: "step-1", StepType: StepTypeText}
 		tr.AddStep(step)
-		
+
 		// Verify all operations worked
 		if tr.Fields["key"] != "value" {
 			t.Error("Field not set properly")
@@ -706,12 +745,12 @@ func TestTestResult_EdgeCases(t *testing.T) {
 	t.Run("very long strings", func(t *testing.T) {
 		longString := string(make([]byte, 10000))
 		tr := NewTestResult(longString)
-		
+
 		if tr.Title != longString {
 			t.Error("Long title should be preserved")
 		}
 
-		tr.SetMessage(longString)
+		tr.AddMessage(longString)
 		if tr.Message == nil || *tr.Message != longString {
 			t.Error("Long message should be preserved")
 		}
@@ -722,7 +761,7 @@ func TestTestResult_EdgeCases(t *testing.T) {
 		tr.SetField("描述", "测试描述")
 		tr.SetParam("parámetro", "valor")
 		tr.SetGroupParam("groupe", "paramètre")
-		tr.SetMessage("Message d'erreur")
+		tr.AddMessage("Message d'erreur")
 
 		// Verify unicode is preserved
 		if tr.Title != "测试 ✓ ñáéíóú" {
@@ -733,4 +772,3 @@ func TestTestResult_EdgeCases(t *testing.T) {
 		}
 	})
 }
-

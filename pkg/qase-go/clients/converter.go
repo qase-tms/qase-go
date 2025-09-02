@@ -47,35 +47,41 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 	execution := api_v2_client.NewResultExecution(string(result.Execution.Status))
 
 	if result.Execution.StartTime != nil {
-		// Convert milliseconds to seconds if needed
+		// Convert milliseconds to seconds with fractional part
 		startTime := *result.Execution.StartTime
+		var startTimeSeconds float64
 		if startTime > 1e12 { // If time is in milliseconds (13+ digits)
-			startTime = startTime / 1000
+			startTimeSeconds = float64(startTime) / 1000.0
+		} else {
+			startTimeSeconds = float64(startTime)
 		}
 
 		// Ensure time is not in the future (API requirement)
-		now := time.Now().Unix()
-		if startTime > now {
-			startTime = now - 1 // Set to 1 second ago
+		now := float64(time.Now().Unix())
+		if startTimeSeconds > now {
+			startTimeSeconds = now - 1.0 // Set to 1 second ago
 		}
 
-		execution.SetStartTime(float64(startTime))
+		execution.SetStartTime(startTimeSeconds)
 	}
 
 	if result.Execution.EndTime != nil {
-		// Convert milliseconds to seconds if needed
+		// Convert milliseconds to seconds with fractional part
 		endTime := *result.Execution.EndTime
+		var endTimeSeconds float64
 		if endTime > 1e12 { // If time is in milliseconds (13+ digits)
-			endTime = endTime / 1000
+			endTimeSeconds = float64(endTime) / 1000.0
+		} else {
+			endTimeSeconds = float64(endTime)
 		}
 
 		// Ensure time is not in the future (API requirement)
-		now := time.Now().Unix()
-		if endTime > now {
-			endTime = now
+		now := float64(time.Now().Unix())
+		if endTimeSeconds > now {
+			endTimeSeconds = now
 		}
 
-		execution.SetEndTime(float64(endTime))
+		execution.SetEndTime(endTimeSeconds)
 	}
 
 	if result.Execution.Duration != nil {
@@ -297,6 +303,9 @@ func (c *V2Converter) setTestopsID(apiResult *api_v2_client.ResultCreate, testop
 func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields map[string]string) error {
 	resultFields := api_v2_client.NewResultCreateFields()
 
+	// Initialize AdditionalProperties map
+	additionalProperties := make(map[string]interface{})
+
 	for key, value := range fields {
 		switch key {
 		case "description":
@@ -323,8 +332,15 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 			resultFields.SetExecutedBy(value)
 		case "author":
 			resultFields.SetAuthor(value)
+		default:
+			// Add unknown fields to AdditionalProperties
+			additionalProperties[key] = value
 		}
-		// Note: Unknown fields are silently ignored to maintain compatibility
+	}
+
+	// Set AdditionalProperties if there are any
+	if len(additionalProperties) > 0 {
+		resultFields.AdditionalProperties = additionalProperties
 	}
 
 	apiResult.SetFields(*resultFields)

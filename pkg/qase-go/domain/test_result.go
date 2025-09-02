@@ -199,9 +199,28 @@ func (tr *TestResult) SetTestopsIDMultiple(ids []int64) {
 	tr.TestopsID = ids
 }
 
-// SetMessage sets the message
-func (tr *TestResult) SetMessage(message string) {
-	tr.Message = &message
+// AddMessage appends a message to the existing message
+func (tr *TestResult) AddMessage(message string) {
+	if tr.Message == nil {
+		tr.Message = &message
+	} else {
+		combined := *tr.Message + "\n" + message
+		tr.Message = &combined
+	}
+}
+
+// AddSystemMessage appends a system message with separator to the existing message
+func (tr *TestResult) AddSystemMessage(message string) {
+	// Make system message bold using markdown
+	boldMessage := "**" + message + "**"
+
+	if tr.Message == nil {
+		tr.Message = &boldMessage
+	} else {
+		// Add extra newline to separate user messages from system messages
+		combined := *tr.Message + "\n\n" + boldMessage
+		tr.Message = &combined
+	}
 }
 
 // SetField sets a field value
