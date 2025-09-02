@@ -2,6 +2,8 @@ package qase
 
 import (
 	"encoding/json"
+	"fmt"
+	"runtime"
 	"sync"
 	"testing"
 
@@ -80,7 +82,36 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 	// Create test result
 	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
+
 	defer func() {
+		if r := recover(); r != nil {
+			// Panic occurred - set status to invalid and capture stacktrace
+			result.Execution.Status = domain.StatusInvalid
+			msg := fmt.Sprintf("panic: %v", r)
+			result.Message = &msg
+
+			// Capture stacktrace for panic
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
+		} else if t.Failed() {
+			// Test failed due to assertion failure
+			result.Execution.Status = domain.StatusFailed
+			msg := "Test failed due to assertion failure"
+			result.Message = &msg
+
+			// Capture stacktrace for failed test
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
+		} else {
+			result.Execution.Status = domain.StatusPassed
+		}
+
 		// Add result to reporter
 		if err := reporter.AddResult(result); err != nil {
 			t.Logf("Failed to add result to reporter: %v", err)
@@ -124,7 +155,36 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	builder := &TestStepBuilder{
 		result: result,
 	}
+
 	defer func() {
+		if r := recover(); r != nil {
+			// Panic occurred - set status to invalid and capture stacktrace
+			result.Execution.Status = domain.StatusInvalid
+			msg := fmt.Sprintf("panic: %v", r)
+			result.Message = &msg
+
+			// Capture stacktrace for panic
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
+		} else if t.Failed() {
+			// Test failed due to assertion failure
+			result.Execution.Status = domain.StatusFailed
+			msg := "Test failed due to assertion failure"
+			result.Message = &msg
+
+			// Capture stacktrace for failed test
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stacktrace := string(buf[:n])
+			result.Execution.Stacktrace = &stacktrace
+
+		} else {
+			result.Execution.Status = domain.StatusPassed
+		}
+
 		// Add result to reporter
 		if err := reporter.AddResult(result); err != nil {
 			t.Logf("Failed to add result to reporter: %v", err)
