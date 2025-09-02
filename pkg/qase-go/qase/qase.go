@@ -28,20 +28,15 @@ var (
 	stepStackMutex   sync.RWMutex
 	// Add this for automatic test run completion
 	completeTestRunOnce sync.Once
-	// Global initialization control
-	globalInitialized bool
-	globalMutex       sync.RWMutex
 )
 
 func init() {
 	once.Do(func() {
 		// Check if global initialization has already been done
-		globalMutex.RLock()
-		if globalInitialized {
-			globalMutex.RUnlock()
-			return // Already initialized globally
+		if IsGlobalInitialized() {
+			// Global initialization was done, skip local initialization
+			return
 		}
-		globalMutex.RUnlock()
 
 		// Fallback to local initialization if global wasn't called
 		cfg, err := config.Load()
@@ -200,8 +195,8 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		result.Execution.Duration = &duration
 
 		// Add result to reporter
-		if reporter != nil {
-			_ = reporter.AddResult(result)
+		if getActiveReporter() != nil {
+			_ = getActiveReporter().AddResult(result)
 		}
 	}()
 
@@ -307,7 +302,7 @@ func AddAttachments(path string) {
 	result.Attachments = append(result.Attachments, *attachment)
 
 	// Log for debugging
-	if reporter != nil && reporter.GetConfig().Debug {
+	if getActiveReporter() != nil && getActiveReporter().GetConfig().Debug {
 		logging.Info("Added attachment: %s to test: %s", path, result.Title)
 	}
 }
@@ -329,7 +324,7 @@ func AttachFile(name, filePath, contentType string) {
 	result.Attachments = append(result.Attachments, *attachment)
 
 	// Log for debugging
-	if reporter != nil && reporter.GetConfig().Debug {
+	if getActiveReporter() != nil && getActiveReporter().GetConfig().Debug {
 		logging.Info("Added file attachment: %s (%s) - %s to test: %s", name, contentType, filePath, result.Title)
 	}
 }
@@ -350,7 +345,7 @@ func AttachContent(name, content, contentType string) {
 	result.Attachments = append(result.Attachments, *attachment)
 
 	// Log for debugging
-	if reporter != nil && reporter.GetConfig().Debug {
+	if getActiveReporter() != nil && getActiveReporter().GetConfig().Debug {
 		contentPreview := content
 		if len(content) > 50 {
 			contentPreview = content[:50] + "..."
@@ -365,9 +360,9 @@ func AttachContent(name, content, contentType string) {
 func CompleteTestRun() error {
 	var err error
 	completeTestRunOnce.Do(func() {
-		if reporter != nil {
+		if getActiveReporter() != nil {
 			logging.Info("Completing test run (will only happen once)")
-			err = reporter.CompleteTestRun(context.Background())
+			err = getActiveReporter().CompleteTestRun(context.Background())
 			if err != nil {
 				logging.Error("Error completing test run: %v", err)
 			} else {
@@ -443,12 +438,14 @@ func InitializeGlobal() error {
 	}
 
 	reporter = r
-	if err := reporter.StartTestRun(context.Background()); err != nil {
+	if err := getActiveReporter().StartTestRun(context.Background()); err != nil {
 		logging.Error("Failed to start test run: %v", err)
 		return err
 	}
 
-	globalInitialized = true
+	SetGlobalInitialized(true)
+	SetGlobalReporter(r)
+
 	logging.Info("Qase test run started successfully (global initialization)")
 	return nil
 }
@@ -486,33 +483,37 @@ func InitializeGlobalWithConfig(cfg *config.Config) error {
 	}
 
 	reporter = r
-	if err := reporter.StartTestRun(context.Background()); err != nil {
+	if err := getActiveReporter().StartTestRun(context.Background()); err != nil {
 		logging.Error("Failed to start test run: %v", err)
 		return err
 	}
 
-	globalInitialized = true
+	SetGlobalInitialized(true)
+	SetGlobalReporter(r)
+
 	logging.Info("Qase test run started successfully (global initialization with custom config)")
 	return nil
 }
 
-// IsGlobalInitialized returns true if qase has been globally initialized
-func IsGlobalInitialized() bool {
-	globalMutex.RLock()
-	defer globalMutex.RUnlock()
-	return globalInitialized
-}
-
 // ResetGlobal resets the global initialization state (useful for testing)
 func ResetGlobal() {
-	globalMutex.Lock()
-	defer globalMutex.Unlock()
-	globalInitialized = false
+	ResetGlobalState()
 	reporter = nil
 	once = sync.Once{}
 }
 
 // Helper functions
+
+// getActiveReporter returns the active reporter (global or local)
+func getActiveReporter() *reporters.CoreReporter {
+	// First check if global reporter is available
+	if GetGlobalReporter() != nil {
+		return GetGlobalReporter()
+	}
+	// Fallback to local reporter
+	return reporter
+}
+
 func getTestFile() string {
 	_, file, _, ok := runtime.Caller(2)
 	if ok {
