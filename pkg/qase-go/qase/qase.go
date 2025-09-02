@@ -68,8 +68,17 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 		return
 	}
 
+	// Use DisplayName as title, fallback to Title if DisplayName is empty
+	title := meta.DisplayName
+	if title == "" {
+		title = meta.Title
+	}
+	if title == "" {
+		title = t.Name() // Use test name as fallback
+	}
+
 	// Create test result
-	result := domain.NewTestResult(meta.Title)
+	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
 	defer func() {
 		// Add result to reporter
@@ -98,8 +107,17 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 		return
 	}
 
+	// Use DisplayName as title, fallback to Title if DisplayName is empty
+	title := meta.DisplayName
+	if title == "" {
+		title = meta.Title
+	}
+	if title == "" {
+		title = t.Name() // Use test name as fallback
+	}
+
 	// Create test result
-	result := domain.NewTestResult(meta.Title)
+	result := domain.NewTestResult(title)
 	result.Execution.Status = domain.StatusPassed
 
 	// Create step builder
