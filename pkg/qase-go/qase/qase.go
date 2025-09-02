@@ -33,7 +33,8 @@ var (
 func init() {
 	once.Do(func() {
 		// Check if global initialization has already been done
-		if IsGlobalInitialized() {
+		// Use environment variable to track global initialization across packages
+		if os.Getenv("QASE_GLOBAL_INITIALIZED") == "true" {
 			// Global initialization was done, skip local initialization
 			return
 		}
@@ -438,14 +439,17 @@ func InitializeGlobal() error {
 	}
 
 	reporter = r
-	if err := getActiveReporter().StartTestRun(context.Background()); err != nil {
+	if err := reporter.StartTestRun(context.Background()); err != nil {
 		logging.Error("Failed to start test run: %v", err)
 		return err
 	}
 
-	SetGlobalInitialized(true)
+		SetGlobalInitialized(true)
 	SetGlobalReporter(r)
-
+	
+	// Set environment variable to indicate global initialization
+	os.Setenv("QASE_GLOBAL_INITIALIZED", "true")
+	
 	logging.Info("Qase test run started successfully (global initialization)")
 	return nil
 }
@@ -483,14 +487,17 @@ func InitializeGlobalWithConfig(cfg *config.Config) error {
 	}
 
 	reporter = r
-	if err := getActiveReporter().StartTestRun(context.Background()); err != nil {
+	if err := reporter.StartTestRun(context.Background()); err != nil {
 		logging.Error("Failed to start test run: %v", err)
 		return err
 	}
 
-	SetGlobalInitialized(true)
+		SetGlobalInitialized(true)
 	SetGlobalReporter(r)
-
+	
+	// Set environment variable to indicate global initialization
+	os.Setenv("QASE_GLOBAL_INITIALIZED", "true")
+	
 	logging.Info("Qase test run started successfully (global initialization with custom config)")
 	return nil
 }
@@ -500,6 +507,8 @@ func ResetGlobal() {
 	ResetGlobalState()
 	reporter = nil
 	once = sync.Once{}
+	// Clear environment variable
+	os.Unsetenv("QASE_GLOBAL_INITIALIZED")
 }
 
 // Helper functions
