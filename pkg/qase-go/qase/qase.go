@@ -170,6 +170,36 @@ func AddMessage(message string) {
 	logging.Info("Test message: %s", message)
 }
 
+// Step executes a test step with metadata
+func Step(t *testing.T, meta StepMetadata, fn func()) {
+	// For now, just log the step and execute the function
+	logging.Info("Executing step: %s", meta.Name)
+	if meta.Description != "" {
+		logging.Info("Step description: %s", meta.Description)
+	}
+	fn()
+}
+
+// AddAttachments adds file attachments to the current test result
+func AddAttachments(filePaths ...string) {
+	if reporter == nil {
+		return
+	}
+	// For now, just log the attachments
+	for _, path := range filePaths {
+		logging.Info("Adding attachment: %s", path)
+	}
+}
+
+// AttachContent adds content as an attachment to the current test result
+func AttachContent(name, content, mimeType string) {
+	if reporter == nil {
+		return
+	}
+	// For now, just log the content attachment
+	logging.Info("Adding content attachment: %s (type: %s)", name, mimeType)
+}
+
 // GetReporter returns the current reporter instance
 func GetReporter() *reporters.CoreReporter {
 	return reporter
