@@ -71,10 +71,7 @@ func Test(t *testing.T, meta TestMetadata, fn func()) {
 
 	// Create test result
 	result := domain.NewTestResult(meta.Title)
-	result.Execution.Status = domain.TestResultStatusPassed
-
-	// Set start time
-	startTime := context.Background()
+	result.Execution.Status = domain.StatusPassed
 	defer func() {
 		// Add result to reporter
 		if err := reporter.AddResult(result); err != nil {
@@ -104,15 +101,12 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 
 	// Create test result
 	result := domain.NewTestResult(meta.Title)
-	result.Execution.Status = domain.TestResultStatusPassed
+	result.Execution.Status = domain.StatusPassed
 
 	// Create step builder
 	builder := &TestStepBuilder{
 		result: result,
 	}
-
-	// Set start time
-	startTime := context.Background()
 	defer func() {
 		// Add result to reporter
 		if err := reporter.AddResult(result); err != nil {
@@ -124,12 +118,7 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	fn(builder)
 }
 
-// TestMetadata represents metadata for a test
-type TestMetadata struct {
-	Title       string
-	Description string
-	Ignore      bool
-}
+
 
 // TestStepBuilder helps build test steps
 type TestStepBuilder struct {
@@ -147,7 +136,12 @@ func (b *TestStepBuilder) AddStep(action string, status domain.StepStatus) {
 func (b *TestStepBuilder) AddStepWithData(action string, status domain.StepStatus, data map[string]interface{}) {
 	step := domain.NewTestStep(action)
 	step.Execution.Status = status
-	step.Data = data
+	// Convert map to StepTextData if needed
+	if data != nil {
+		step.Data = &domain.StepTextData{
+			Text: data["text"].(string),
+		}
+	}
 	b.result.AddStep(*step)
 }
 
