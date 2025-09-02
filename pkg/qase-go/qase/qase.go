@@ -200,6 +200,21 @@ func AttachContent(name, content, mimeType string) {
 	logging.Info("Adding content attachment: %s (type: %s)", name, mimeType)
 }
 
+// InitializeGlobal initializes qase globally (for backward compatibility)
+// This function is kept for backward compatibility but doesn't do anything special
+// since initialization now happens automatically in init()
+func InitializeGlobal() error {
+	// Initialization already happened in init(), just return success
+	return nil
+}
+
+// TestMain is a placeholder function for backward compatibility
+// In the simplified architecture, this is not needed
+func TestMain(m *testing.M) {
+	// Just run the tests
+	_ = m.Run()
+}
+
 // GetReporter returns the current reporter instance
 func GetReporter() *reporters.CoreReporter {
 	return reporter
