@@ -33,8 +33,9 @@ var (
 func init() {
 	once.Do(func() {
 		// Check if global initialization has already been done
-		// Use environment variable to track global initialization across packages
-		if os.Getenv("QASE_GLOBAL_INITIALIZED") == "true" {
+		// Use a temporary file to track global initialization across packages
+		globalInitFile := "/tmp/qase_global_initialized"
+		if _, err := os.Stat(globalInitFile); err == nil {
 			// Global initialization was done, skip local initialization
 			return
 		}
@@ -447,8 +448,9 @@ func InitializeGlobal() error {
 		SetGlobalInitialized(true)
 	SetGlobalReporter(r)
 	
-	// Set environment variable to indicate global initialization
-	os.Setenv("QASE_GLOBAL_INITIALIZED", "true")
+	// Create file to indicate global initialization
+	globalInitFile := "/tmp/qase_global_initialized"
+	os.WriteFile(globalInitFile, []byte("initialized"), 0644)
 	
 	logging.Info("Qase test run started successfully (global initialization)")
 	return nil
@@ -495,8 +497,9 @@ func InitializeGlobalWithConfig(cfg *config.Config) error {
 		SetGlobalInitialized(true)
 	SetGlobalReporter(r)
 	
-	// Set environment variable to indicate global initialization
-	os.Setenv("QASE_GLOBAL_INITIALIZED", "true")
+	// Create file to indicate global initialization
+	globalInitFile := "/tmp/qase_global_initialized"
+	os.WriteFile(globalInitFile, []byte("initialized"), 0644)
 	
 	logging.Info("Qase test run started successfully (global initialization with custom config)")
 	return nil
@@ -507,8 +510,9 @@ func ResetGlobal() {
 	ResetGlobalState()
 	reporter = nil
 	once = sync.Once{}
-	// Clear environment variable
-	os.Unsetenv("QASE_GLOBAL_INITIALIZED")
+	// Remove global initialization file
+	globalInitFile := "/tmp/qase_global_initialized"
+	os.Remove(globalInitFile)
 }
 
 // Helper functions
