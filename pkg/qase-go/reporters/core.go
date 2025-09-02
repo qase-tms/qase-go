@@ -15,6 +15,9 @@ import (
 type Reporter interface {
 	// AddResult adds a test result to the reporter
 	AddResult(result *domain.TestResult) error
+	
+	// CompleteTestRun finalizes the test run
+	CompleteTestRun(ctx context.Context) error
 }
 
 // CoreReporter manages a single reporter with fallback support
@@ -172,7 +175,33 @@ func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
 	return nil
 }
 
+// CompleteTestRun completes the test run with the main reporter
+func (cr *CoreReporter) CompleteTestRun(ctx context.Context) error {
+	cr.mutex.Lock()
+	defer cr.mutex.Unlock()
 
+	if cr.reporter == nil {
+		return fmt.Errorf("no reporter configured")
+	}
+
+	// Complete test run with main reporter
+	if err := cr.reporter.CompleteTestRun(ctx); err != nil {
+		logging.Warn("Warning: Failed to complete test run: %v", err)
+		// Try fallback if available
+		if cr.fallback != nil {
+			logging.Info("Trying fallback reporter")
+			if fallbackErr := cr.fallback.CompleteTestRun(ctx); fallbackErr != nil {
+				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
+			}
+			cr.reporter = cr.fallback
+			cr.fallback = nil
+		} else {
+			return fmt.Errorf("failed to complete test run: %w", err)
+		}
+	}
+
+	return nil
+}
 
 // GetResults returns all collected test results from the active reporter
 func (cr *CoreReporter) GetResults() []*domain.TestResult {

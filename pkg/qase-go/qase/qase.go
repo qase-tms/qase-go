@@ -1,8 +1,10 @@
 package qase
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"runtime"
 	"sync"
 	"testing"
@@ -268,11 +270,26 @@ func InitializeGlobal() error {
 	return nil
 }
 
-// TestMain is a placeholder function for backward compatibility
-// In the simplified architecture, this is not needed
+// TestMain is a function that should be called in test main to properly complete the test run
 func TestMain(m *testing.M) {
-	// Just run the tests
-	_ = m.Run()
+	// Run the tests
+	code := m.Run()
+	
+	// Complete the test run and send all results
+	if err := CompleteTestRun(); err != nil {
+		logging.Error("Failed to complete test run: %v", err)
+	}
+	
+	// Exit with the test result code
+	os.Exit(code)
+}
+
+// CompleteTestRun completes the test run and sends all results
+func CompleteTestRun() error {
+	if reporter != nil {
+		return reporter.CompleteTestRun(context.Background())
+	}
+	return nil
 }
 
 // GetReporter returns the current reporter instance
