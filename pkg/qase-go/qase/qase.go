@@ -1,7 +1,6 @@
 package qase
 
 import (
-	"context"
 	"encoding/json"
 	"sync"
 	"testing"
@@ -117,8 +116,6 @@ func TestWithSteps(t *testing.T, meta TestMetadata, fn func(*TestStepBuilder)) {
 	// Run the test function
 	fn(builder)
 }
-
-
 
 // TestStepBuilder helps build test steps
 type TestStepBuilder struct {
