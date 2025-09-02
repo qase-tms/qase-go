@@ -58,7 +58,7 @@ func TestNewCoreReporter_TestOpsMode_NoToken(t *testing.T) {
 	cfg := config.NewConfig()
 	cfg.Mode = "testops"
 	cfg.Fallback = "off"
-	
+
 	reporter, err := NewCoreReporter(cfg)
 	if err == nil {
 		t.Error("Expected error for TestOps mode without token")
@@ -72,7 +72,7 @@ func TestNewCoreReporter_TestOpsMode_TestOpsFallback(t *testing.T) {
 	cfg := config.NewConfig()
 	cfg.Mode = "testops"
 	cfg.Fallback = "testops"
-	
+
 	// This should fail because TestOps client creation fails for both main and fallback
 	reporter, err := NewCoreReporter(cfg)
 	if err == nil {
@@ -88,23 +88,18 @@ func TestNewCoreReporter_TestOpsMode_WithFallback(t *testing.T) {
 	cfg.Mode = "testops"
 	cfg.Fallback = "report"
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
+	// Don't set run ID - this should fail with error, not use fallback
 
 	reporter, err := NewCoreReporter(cfg)
-	if err != nil {
-		t.Fatalf("Failed to create core reporter: %v", err)
+	if err == nil {
+		t.Error("Expected error when run ID is not provided for TestOps mode")
 	}
-
-	if reporter == nil {
-		t.Fatal("Core reporter should not be nil")
-	}
-
-	// Should have file reporter as main reporter (fallback became main)
-	if reporter.GetReporterCount() != 1 {
-		t.Errorf("Expected 1 reporter (fallback became main), got %d", reporter.GetReporterCount())
+	if reporter != nil {
+		t.Error("Expected nil reporter when run ID is not provided for TestOps mode")
 	}
 }
 
-func TestCoreReporter_StartTestRun(t *testing.T) {
+func TestCoreReporter_Configuration(t *testing.T) {
 	cfg := config.NewConfig()
 	cfg.Mode = "report"
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
@@ -114,14 +109,25 @@ func TestCoreReporter_StartTestRun(t *testing.T) {
 		t.Fatalf("Failed to create core reporter: %v", err)
 	}
 
-	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Errorf("StartTestRun should not return error: %v", err)
+	// Test configuration access
+	config := reporter.GetConfig()
+	if config == nil {
+		t.Error("Config should not be nil")
+	}
+	if config.Mode != "report" {
+		t.Errorf("Expected mode 'report', got %s", config.Mode)
 	}
 
-	// Results are not stored in core reporter anymore
-	// This test is now a placeholder
+	// Test mode checks
+	if !reporter.IsReportMode() {
+		t.Error("Should be in report mode")
+	}
+	if reporter.IsTestOpsMode() {
+		t.Error("Should not be in TestOps mode")
+	}
+	if reporter.IsOffMode() {
+		t.Error("Should not be in off mode")
+	}
 }
 
 func TestCoreReporter_AddResult(t *testing.T) {
@@ -132,12 +138,6 @@ func TestCoreReporter_AddResult(t *testing.T) {
 	reporter, err := NewCoreReporter(cfg)
 	if err != nil {
 		t.Fatalf("Failed to create core reporter: %v", err)
-	}
-
-	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("Failed to start test run: %v", err)
 	}
 
 	result := domain.NewTestResult("Test 1")
@@ -196,10 +196,6 @@ func TestCoreReporter_CompleteTestRun(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("Failed to start test run: %v", err)
-	}
 
 	result := domain.NewTestResult("Test 1")
 	result.Execution.Status = domain.StatusPassed
@@ -215,7 +211,7 @@ func TestCoreReporter_CompleteTestRun(t *testing.T) {
 	}
 }
 
-func TestCoreReporter_GetRunID(t *testing.T) {
+func TestCoreReporter_GetResults(t *testing.T) {
 	cfg := config.NewConfig()
 	cfg.Mode = "report"
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
@@ -225,22 +221,13 @@ func TestCoreReporter_GetRunID(t *testing.T) {
 		t.Fatalf("Failed to create core reporter: %v", err)
 	}
 
-	// Initially should be nil
-	if reporter.GetRunID() != nil {
-		t.Error("RunID should be nil initially")
+	// GetResults should return empty slice (placeholder implementation)
+	results := reporter.GetResults()
+	if results == nil {
+		t.Error("GetResults should not return nil")
 	}
-
-	// Set run ID
-	runID := int64(123)
-	reporter.SetRunID(runID)
-
-	// Check if set correctly
-	resultRunID := reporter.GetRunID()
-	if resultRunID == nil {
-		t.Error("RunID should not be nil after setting")
-	}
-	if *resultRunID != runID {
-		t.Errorf("Expected run ID %d, got %d", runID, *resultRunID)
+	if len(results) != 0 {
+		t.Errorf("Expected empty results, got %d results", len(results))
 	}
 }
 

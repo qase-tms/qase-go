@@ -12,25 +12,10 @@ import (
 
 // mockClient implements the TestOpsClient interface for testing
 type mockClient struct {
-	createRunCalled    bool
-	createRunRunID     int64
-	createRunError     error
-	completeRunCalled  bool
-	completeRunError   error
 	uploadResultsCalled bool
-	uploadResultsError error
-	uploadedResults    []*domain.TestResult
-	uploadedRunID      int64
-}
-
-func (m *mockClient) CreateRun(ctx context.Context) (int64, error) {
-	m.createRunCalled = true
-	return m.createRunRunID, m.createRunError
-}
-
-func (m *mockClient) CompleteRun(ctx context.Context, runID int64) error {
-	m.completeRunCalled = true
-	return m.completeRunError
+	uploadResultsError  error
+	uploadedResults     []*domain.TestResult
+	uploadedRunID       int64
 }
 
 func (m *mockClient) UploadResults(ctx context.Context, runID int64, results []*domain.TestResult) error {
@@ -50,14 +35,15 @@ func TestNewTestOpsReporter(t *testing.T) {
 			Project: "TEST",
 		},
 	}
-	
+
 	client, err := clients.NewUnifiedClient(cfg)
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
-	
-	reporter := NewTestOpsReporter(client)
-	
+
+	runID := int64(123)
+	reporter := NewTestOpsReporter(client, runID)
+
 	if reporter == nil {
 		t.Fatal("reporter should not be nil")
 	}
@@ -70,59 +56,8 @@ func TestNewTestOpsReporter(t *testing.T) {
 	if len(reporter.results) != 0 {
 		t.Error("results slice should be empty initially")
 	}
-	if reporter.runID != nil {
-		t.Error("runID should be nil initially")
-	}
-}
-
-func TestTestOpsReporter_StartTestRun(t *testing.T) {
-	tests := []struct {
-		name          string
-		createRunID   int64
-		createRunErr  error
-		expectError   bool
-	}{
-		{
-			name:        "successful run creation",
-			createRunID: 123,
-			createRunErr: nil,
-			expectError: false,
-		},
-		{
-			name:        "failed run creation",
-			createRunID: 0,
-			createRunErr: fmt.Errorf("API error"),
-			expectError: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			mock := &mockClient{
-				createRunRunID: tt.createRunID,
-				createRunError: tt.createRunErr,
-			}
-			
-			reporter := NewTestOpsReporter(mock)
-			ctx := context.Background()
-			
-			err := reporter.StartTestRun(ctx)
-			
-			if tt.expectError && err == nil {
-				t.Error("expected error but got none")
-			}
-			if !tt.expectError && err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
-			
-			if !mock.createRunCalled {
-				t.Error("CreateRun should have been called")
-			}
-			
-			if !tt.expectError && reporter.runID != nil && *reporter.runID != tt.createRunID {
-				t.Errorf("expected runID %d, got %d", tt.createRunID, *reporter.runID)
-			}
-		})
+	if reporter.runID != runID {
+		t.Errorf("expected runID %d, got %d", runID, reporter.runID)
 	}
 }
 
@@ -151,33 +86,27 @@ func TestTestOpsReporter_AddResult(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mock := &mockClient{createRunRunID: 123}
-			reporter := NewTestOpsReporter(mock)
-			
-			// Start test run first
-			ctx := context.Background()
-			err := reporter.StartTestRun(ctx)
-			if err != nil {
-				t.Fatalf("failed to start test run: %v", err)
-			}
-			
+			mock := &mockClient{}
+			runID := int64(123)
+			reporter := NewTestOpsReporter(mock, runID)
+
 			initialCount := len(reporter.results)
-			err = reporter.AddResult(tt.result)
-			
+			err := reporter.AddResult(tt.result)
+
 			if tt.expectError && err == nil {
 				t.Error("expected error but got none")
 			}
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			
+
 			if !tt.expectError {
 				if len(reporter.results) != initialCount+1 {
 					t.Errorf("expected %d results, got %d", initialCount+1, len(reporter.results))
 				}
-				
+
 				// Check that run ID was set
-				if tt.result.RunID == nil || *tt.result.RunID != 123 {
+				if tt.result.RunID == nil || *tt.result.RunID != runID {
 					t.Error("result should have run ID set")
 				}
 			}
@@ -185,107 +114,77 @@ func TestTestOpsReporter_AddResult(t *testing.T) {
 	}
 }
 
-func TestTestOpsReporter_AddResult_WithoutStartingRun(t *testing.T) {
-	mock := &mockClient{}
-	reporter := NewTestOpsReporter(mock)
-	
-	result := domain.NewTestResult("Test 1")
-	err := reporter.AddResult(result)
-	
-	if err != nil {
-		t.Errorf("AddResult should not fail without started run: %v", err)
-	}
-	
-	// Run ID should not be set
-	if result.RunID != nil {
-		t.Error("result should not have run ID set when no run started")
-	}
-}
-
 func TestTestOpsReporter_CompleteTestRun(t *testing.T) {
 	tests := []struct {
-		name           string
-		hasStartedRun  bool
-		uploadError    error
-		completeError  error
-		expectError    bool
+		name        string
+		uploadError error
+		expectError bool
+		hasResults  bool
 	}{
 		{
-			name:          "successful completion with results",
-			hasStartedRun: true,
-			uploadError:   nil,
-			completeError: nil,
-			expectError:   false,
+			name:        "successful completion with results",
+			uploadError: nil,
+			expectError: false,
+			hasResults:  true,
 		},
 		{
-			name:          "upload error",
-			hasStartedRun: true,
-			uploadError:   fmt.Errorf("upload failed"),
-			completeError: nil,
-			expectError:   true,
+			name:        "upload error",
+			uploadError: fmt.Errorf("upload failed"),
+			expectError: true,
+			hasResults:  true,
 		},
 		{
-			name:          "complete error",
-			hasStartedRun: true,
-			uploadError:   nil,
-			completeError: fmt.Errorf("complete failed"),
-			expectError:   true,
-		},
-		{
-			name:          "no run started",
-			hasStartedRun: false,
-			expectError:   true,
+			name:        "no results to upload",
+			uploadError: nil,
+			expectError: false,
+			hasResults:  false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mock := &mockClient{
-				createRunRunID:     123,
 				uploadResultsError: tt.uploadError,
-				completeRunError:   tt.completeError,
 			}
-			
-			reporter := NewTestOpsReporter(mock)
+
+			runID := int64(123)
+			reporter := NewTestOpsReporter(mock, runID)
 			ctx := context.Background()
-			
-			if tt.hasStartedRun {
-				err := reporter.StartTestRun(ctx)
-				if err != nil {
-					t.Fatalf("failed to start test run: %v", err)
-				}
-				
+
+			if tt.hasResults {
 				// Add a test result
 				result := domain.NewTestResult("Test 1")
-				err = reporter.AddResult(result)
+				err := reporter.AddResult(result)
 				if err != nil {
 					t.Fatalf("failed to add result: %v", err)
 				}
 			}
-			
+
 			err := reporter.CompleteTestRun(ctx)
-			
+
 			if tt.expectError && err == nil {
 				t.Error("expected error but got none")
 			}
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			
-			if tt.hasStartedRun {
+
+			if tt.hasResults {
 				if !mock.uploadResultsCalled {
 					t.Error("UploadResults should have been called")
 				}
-				if tt.uploadError == nil && !mock.completeRunCalled {
-					t.Error("CompleteRun should have been called")
-				}
-				
+
 				// Verify uploaded data
-				if mock.uploadedRunID != 123 {
-					t.Errorf("expected uploaded run ID 123, got %d", mock.uploadedRunID)
+				if mock.uploadedRunID != runID {
+					t.Errorf("expected uploaded run ID %d, got %d", runID, mock.uploadedRunID)
 				}
 				if len(mock.uploadedResults) != 1 {
 					t.Errorf("expected 1 uploaded result, got %d", len(mock.uploadedResults))
+				}
+			} else {
+				// If no results, UploadResults should not be called
+				if mock.uploadResultsCalled {
+					t.Error("UploadResults should not have been called when no results")
 				}
 			}
 		})
@@ -293,30 +192,20 @@ func TestTestOpsReporter_CompleteTestRun(t *testing.T) {
 }
 
 func TestTestOpsReporter_CompleteTestRun_EmptyResults(t *testing.T) {
-	mock := &mockClient{createRunRunID: 123}
-	reporter := NewTestOpsReporter(mock)
+	mock := &mockClient{}
+	runID := int64(123)
+	reporter := NewTestOpsReporter(mock, runID)
 	ctx := context.Background()
-	
-	// Start test run without adding results
-	err := reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("failed to start test run: %v", err)
-	}
-	
-	err = reporter.CompleteTestRun(ctx)
+
+	// Complete test run without adding results
+	err := reporter.CompleteTestRun(ctx)
 	if err != nil {
 		t.Errorf("CompleteTestRun should not fail with empty results: %v", err)
 	}
-	
-	// Note: UploadResults may not be called if the UnifiedClient optimizes empty result sets
-	// The important thing is that CompleteRun is called
-	if !mock.completeRunCalled {
-		t.Error("CompleteRun should have been called")
-	}
-	
-	// If UploadResults was called, it should have been called with empty results
-	if mock.uploadResultsCalled && len(mock.uploadedResults) != 0 {
-		t.Errorf("if UploadResults called, expected 0 uploaded results, got %d", len(mock.uploadedResults))
+
+	// UploadResults should not be called if there are no results
+	if mock.uploadResultsCalled {
+		t.Error("UploadResults should not have been called with empty results")
 	}
 }
 
@@ -334,39 +223,139 @@ func TestTestOpsReporter_WorkflowIntegration(t *testing.T) {
 			},
 		},
 	}
-	
+
 	client, err := clients.NewUnifiedClient(cfg)
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
-	
-	reporter := NewTestOpsReporter(client)
+
+	runID := int64(123)
+	reporter := NewTestOpsReporter(client, runID)
 	ctx := context.Background()
-	
-	// This will fail due to no real API, but we test the workflow
-	err = reporter.StartTestRun(ctx)
-	if err == nil {
-		t.Log("StartTestRun succeeded (unexpected but possible)")
-	} else {
-		t.Logf("StartTestRun failed as expected: %v", err)
-	}
-	
-	// Add results regardless
+
+	// Add results
 	result1 := domain.NewTestResult("Test 1")
 	result1.Execution.Status = domain.StatusPassed
 	err = reporter.AddResult(result1)
 	if err != nil {
 		t.Errorf("AddResult should not fail: %v", err)
 	}
-	
+
 	result2 := domain.NewTestResult("Test 2")
 	result2.Execution.Status = domain.StatusFailed
 	err = reporter.AddResult(result2)
 	if err != nil {
 		t.Errorf("AddResult should not fail: %v", err)
 	}
-	
+
 	if len(reporter.results) != 2 {
 		t.Errorf("expected 2 results, got %d", len(reporter.results))
+	}
+
+	// This will fail due to no real API, but we test the workflow
+	err = reporter.CompleteTestRun(ctx)
+	if err == nil {
+		t.Log("CompleteTestRun succeeded (unexpected but possible)")
+	} else {
+		t.Logf("CompleteTestRun failed as expected: %v", err)
+	}
+}
+
+func TestCreateSimpleResult(t *testing.T) {
+	title := "Test Simple Result"
+	status := domain.StatusPassed
+
+	result := CreateSimpleResult(title, status)
+
+	if result == nil {
+		t.Fatal("result should not be nil")
+	}
+
+	if result.Title != title {
+		t.Errorf("expected title %q, got %q", title, result.Title)
+	}
+
+	if result.Execution.Status != status {
+		t.Errorf("expected status %v, got %v", status, result.Execution.Status)
+	}
+
+	if result.Execution.StartTime == nil {
+		t.Error("StartTime should be set")
+	}
+
+	if result.Execution.EndTime == nil {
+		t.Error("EndTime should be set")
+	}
+
+	if result.Execution.StartTime != nil && result.Execution.EndTime != nil {
+		if *result.Execution.StartTime != *result.Execution.EndTime {
+			t.Error("StartTime and EndTime should be equal for simple result")
+		}
+	}
+}
+
+func TestCreateResultWithSteps(t *testing.T) {
+	title := "Test With Steps"
+	status := domain.StatusFailed
+
+	steps := []domain.TestStep{
+		CreateStep("Step 1", domain.StepStatusPassed),
+		CreateStep("Step 2", domain.StepStatusFailed),
+	}
+
+	result := CreateResultWithSteps(title, status, steps)
+
+	if result == nil {
+		t.Fatal("result should not be nil")
+	}
+
+	if result.Title != title {
+		t.Errorf("expected title %q, got %q", title, result.Title)
+	}
+
+	if result.Execution.Status != status {
+		t.Errorf("expected status %v, got %v", status, result.Execution.Status)
+	}
+
+	if len(result.Steps) != len(steps) {
+		t.Errorf("expected %d steps, got %d", len(steps), len(result.Steps))
+	}
+
+	for i, step := range result.Steps {
+		if step.Data.Action != steps[i].Data.Action {
+			t.Errorf("step %d: expected action %q, got %q", i, steps[i].Data.Action, step.Data.Action)
+		}
+		if step.Execution.Status != steps[i].Execution.Status {
+			t.Errorf("step %d: expected status %v, got %v", i, steps[i].Execution.Status, step.Execution.Status)
+		}
+	}
+}
+
+func TestCreateStep(t *testing.T) {
+	action := "Click button"
+	status := domain.StepStatusPassed
+
+	step := CreateStep(action, status)
+
+	if step.Data.Action != action {
+		t.Errorf("expected action %q, got %q", action, step.Data.Action)
+	}
+
+	if step.Execution.Status != status {
+		t.Errorf("expected status %v, got %v", status, step.Execution.Status)
+	}
+
+	if step.Execution.StartTime == nil {
+		t.Error("StartTime should be set")
+	}
+
+	if step.Execution.EndTime == nil {
+		t.Error("EndTime should be set")
+	}
+
+	if step.Execution.StartTime != nil && step.Execution.EndTime != nil {
+		if *step.Execution.StartTime != *step.Execution.EndTime {
+			t.Error("StartTime and EndTime should be equal for simple step")
+		}
 	}
 }

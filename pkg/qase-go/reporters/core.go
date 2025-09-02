@@ -15,7 +15,7 @@ import (
 type Reporter interface {
 	// AddResult adds a test result to the reporter
 	AddResult(result *domain.TestResult) error
-	
+
 	// CompleteTestRun finalizes the test run
 	CompleteTestRun(ctx context.Context) error
 }
@@ -64,7 +64,7 @@ func (cr *CoreReporter) initializeReporter() error {
 		if cr.config.TestOps.Run.ID == nil {
 			return fmt.Errorf("test run ID is required for TestOps mode - set QASE_TESTOPS_RUN_ID environment variable or id in run config")
 		}
-		
+
 		// Try to create TestOps reporter
 		client, err := cr.createTestOpsClient()
 		if err != nil {
@@ -136,8 +136,6 @@ func (cr *CoreReporter) createTestOpsClient() (TestOpsClient, error) {
 	// Create a TestOpsClientAdapter that wraps the UnifiedClient
 	return &TestOpsClientAdapter{client: client}, nil
 }
-
-
 
 // AddResult adds a test result to the main reporter
 func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
@@ -214,8 +212,6 @@ func (cr *CoreReporter) GetResults() []*domain.TestResult {
 	return []*domain.TestResult{}
 }
 
-
-
 // GetConfig returns the current configuration
 func (cr *CoreReporter) GetConfig() *config.Config {
 	return cr.config
@@ -253,18 +249,8 @@ func (cr *CoreReporter) IsOffMode() bool {
 
 // GetCurrentMode returns the current active mode (may differ from config mode due to fallback)
 func (cr *CoreReporter) GetCurrentMode() string {
-	// If we have a file reporter as main reporter, we're in report mode
-	if cr.reporter != nil {
-		// This is a simple check - in a real implementation you might want to use type assertion
-		// For now, we'll check if the config mode is report or if we're using fallback
-		if cr.config.Mode == "report" {
-			return "report"
-		}
-		// If we're in testops mode but have a file reporter, we're using fallback
-		if cr.config.Mode == "testops" {
-			return "report" // fallback mode
-		}
-	}
+	// Return the configured mode - the actual reporter type doesn't change the mode
+	// Fallback is just a backup, not a mode change
 	return cr.config.Mode
 }
 

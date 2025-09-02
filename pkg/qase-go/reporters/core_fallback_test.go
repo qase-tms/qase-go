@@ -22,12 +22,7 @@ func NewMockReporter(shouldFail bool) *MockReporter {
 	}
 }
 
-func (m *MockReporter) StartTestRun(ctx context.Context) error {
-	if m.shouldFail {
-		return fmt.Errorf("mock reporter start failed")
-	}
-	return nil
-}
+// StartTestRun method removed - no longer exists in Reporter interface
 
 func (m *MockReporter) AddResult(result *domain.TestResult) error {
 	if m.shouldFail {
@@ -49,23 +44,15 @@ func TestCoreReporter_FallbackLogic(t *testing.T) {
 	cfg.Mode = "testops"
 	cfg.Fallback = "report"
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
+	// Don't set run ID - this should fail with error, not use fallback
 
-	// Create core reporter
+	// Create core reporter - this should fail because run ID is required
 	reporter, err := NewCoreReporter(cfg)
-	if err != nil {
-		t.Fatalf("Failed to create core reporter: %v", err)
+	if err == nil {
+		t.Error("Expected error when run ID is not provided for TestOps mode")
 	}
-
-	// Test that fallback is used when TestOps fails
-	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Errorf("StartTestRun should not fail with fallback: %v", err)
-	}
-
-	// Should have 1 reporter (fallback became main)
-	if reporter.GetReporterCount() != 1 {
-		t.Errorf("Expected 1 reporter after fallback, got %d", reporter.GetReporterCount())
+	if reporter != nil {
+		t.Error("Expected nil reporter when run ID is not provided for TestOps mode")
 	}
 }
 
@@ -80,10 +67,6 @@ func TestCoreReporter_FallbackOnAddResult(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("Failed to start test run: %v", err)
-	}
 
 	// Add a result
 	result := domain.NewTestResult("Test 1")
@@ -121,31 +104,14 @@ func TestCoreReporter_FallbackBecomesMain(t *testing.T) {
 	cfg.Mode = "testops"
 	cfg.Fallback = "report"
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
+	// Don't set run ID - this should fail with error, not use fallback
 
 	reporter, err := NewCoreReporter(cfg)
-	if err != nil {
-		t.Fatalf("Failed to create core reporter: %v", err)
+	if err == nil {
+		t.Error("Expected error when run ID is not provided for TestOps mode")
 	}
-
-	// Initially should have 1 reporter (fallback became main during initialization)
-	if reporter.GetReporterCount() != 1 {
-		t.Errorf("Expected 1 reporter initially (fallback became main), got %d", reporter.GetReporterCount())
-	}
-
-	ctx := context.Background()
-	err = reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("StartTestRun should not fail: %v", err)
-	}
-
-	// Should still have 1 reporter
-	if reporter.GetReporterCount() != 1 {
-		t.Errorf("Expected 1 reporter after start, got %d", reporter.GetReporterCount())
-	}
-
-	// Should be in report mode now (fallback mode)
-	if reporter.GetCurrentMode() != "report" {
-		t.Errorf("Should be in report mode after fallback, got %s", reporter.GetCurrentMode())
+	if reporter != nil {
+		t.Error("Expected nil reporter when run ID is not provided for TestOps mode")
 	}
 }
 
@@ -176,6 +142,7 @@ func TestCoreReporter_TestOpsModeWithValidConfig(t *testing.T) {
 	cfg.Fallback = "report"
 	cfg.TestOps.API.Token = "valid-token"
 	cfg.TestOps.Project = "TEST"
+	cfg.TestOps.Run.ID = func() *int64 { id := int64(123); return &id }() // Set run ID
 	cfg.Report.Connection.Local.Path = "/tmp/test-reports"
 
 	// This should still fail because we don't have a real TestOps client implementation
@@ -185,13 +152,15 @@ func TestCoreReporter_TestOpsModeWithValidConfig(t *testing.T) {
 		t.Fatalf("Failed to create core reporter: %v", err)
 	}
 
-	// Should have 1 reporter after fallback
-	if reporter.GetReporterCount() != 1 {
-		t.Errorf("Expected 1 reporter after fallback, got %d", reporter.GetReporterCount())
+	// Should have 2 reporters (TestOps main + file fallback)
+	if reporter.GetReporterCount() != 2 {
+		t.Errorf("Expected 2 reporters (TestOps main + file fallback), got %d", reporter.GetReporterCount())
 	}
 
-	if reporter.GetCurrentMode() != "report" {
-		t.Errorf("Should be in report mode after fallback, got %s", reporter.GetCurrentMode())
+	// Mode should be testops since we provided valid config
+	currentMode := reporter.GetCurrentMode()
+	if currentMode != "testops" {
+		t.Errorf("Should be in testops mode, got %s", currentMode)
 	}
 }
 
@@ -220,6 +189,11 @@ func TestCoreReporter_AllModeFallbackCombinations(t *testing.T) {
 			cfg.Mode = test.mode
 			cfg.Fallback = test.fallback
 			cfg.Report.Connection.Local.Path = "/tmp/test-reports"
+
+			// For TestOps mode tests that expect success, we need to set run ID
+			if test.mode == "testops" && !test.expectError {
+				cfg.TestOps.Run.ID = func() *int64 { id := int64(123); return &id }()
+			}
 
 			reporter, err := NewCoreReporter(cfg)
 			if test.expectError {
