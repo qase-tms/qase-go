@@ -58,8 +58,8 @@ func (cr *CoreReporter) initializeReporter() error {
 		})
 	case "testops":
 		// Check if run ID is provided
-		if cr.config.TestOps.RunID == nil {
-			return fmt.Errorf("test run ID is required for TestOps mode - set QASE_TESTOPS_RUN_ID environment variable or runId in config")
+		if cr.config.TestOps.Run.ID == nil {
+			return fmt.Errorf("test run ID is required for TestOps mode - set QASE_TESTOPS_RUN_ID environment variable or id in run config")
 		}
 		
 		// Try to create TestOps reporter
@@ -75,7 +75,7 @@ func (cr *CoreReporter) initializeReporter() error {
 			return fmt.Errorf("failed to create TestOps client: %w", err)
 		}
 
-		cr.reporter = NewTestOpsReporter(client, *cr.config.TestOps.RunID)
+		cr.reporter = NewTestOpsReporter(client, *cr.config.TestOps.Run.ID)
 	case "off":
 		return fmt.Errorf("reporting is disabled (mode: off)")
 	default:
@@ -94,14 +94,14 @@ func (cr *CoreReporter) initializeFallback() error {
 		})
 	case "testops":
 		// Try to create TestOps client for fallback
-		if cr.config.TestOps.RunID == nil {
+		if cr.config.TestOps.Run.ID == nil {
 			return fmt.Errorf("test run ID is required for TestOps fallback mode")
 		}
 		client, err := cr.createTestOpsClient()
 		if err != nil {
 			return fmt.Errorf("failed to create TestOps client for fallback: %w", err)
 		}
-		cr.fallback = NewTestOpsReporter(client, *cr.config.TestOps.RunID)
+		cr.fallback = NewTestOpsReporter(client, *cr.config.TestOps.Run.ID)
 	case "off":
 		// No fallback configured
 		cr.fallback = nil
