@@ -8,8 +8,14 @@ import (
 	"github.com/qase-tms/qase-go/pkg/qase-go/qase"
 )
 
+// TestMain automatically completes the test run after all tests finish
+func TestMain(m *testing.M) {
+	qase.TestMain(m)
+}
+
 func TestQaseSimple_Success(t *testing.T) {
-	defer qase.CompleteTestRun()
+	// Note: No defer qase.CompleteTestRun() needed!
+	// Test run will be automatically completed after all tests finish
 
 	qase.Test(t,
 		qase.TestMetadata{
@@ -25,7 +31,7 @@ func TestQaseSimple_Success(t *testing.T) {
 }
 
 func TestQaseWithSteps_Success(t *testing.T) {
-	defer qase.CompleteTestRun()
+	// Note: No defer qase.CompleteTestRun() needed!
 
 	qase.Test(t,
 		qase.TestMetadata{
@@ -52,7 +58,7 @@ func TestQaseWithSteps_Success(t *testing.T) {
 }
 
 func TestQaseWithParameters(t *testing.T) {
-	defer qase.CompleteTestRun()
+	// Note: No defer qase.CompleteTestRun() needed!
 
 	qase.Test(t,
 		qase.TestMetadata{
@@ -72,7 +78,7 @@ func TestQaseWithParameters(t *testing.T) {
 }
 
 func TestQaseWithLabels(t *testing.T) {
-	defer qase.CompleteTestRun()
+	// Note: No defer qase.CompleteTestRun() needed!
 
 	qase.Test(t,
 		qase.TestMetadata{

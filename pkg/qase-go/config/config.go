@@ -43,6 +43,7 @@ type TestOpsConfig struct {
 	Defect  bool        `json:"defect"`
 	Project string      `json:"project"`
 	Batch   BatchConfig `json:"batch"`
+	RunID   *int64      `json:"runId,omitempty"` // Optional test run ID
 }
 
 // APIConfig represents API configuration
@@ -190,6 +191,13 @@ func (c *Config) LoadFromEnvironment() {
 	if batchSize := os.Getenv("QASE_TESTOPS_BATCH_SIZE"); batchSize != "" {
 		if size, err := strconv.Atoi(batchSize); err == nil {
 			c.TestOps.Batch.Size = size
+		}
+	}
+	
+	// Test run ID from environment variable
+	if runID := os.Getenv("QASE_TESTOPS_RUN_ID"); runID != "" {
+		if id, err := strconv.ParseInt(runID, 10, 64); err == nil {
+			c.TestOps.RunID = &id
 		}
 	}
 }

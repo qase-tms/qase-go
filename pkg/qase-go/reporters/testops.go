@@ -10,43 +10,29 @@ import (
 
 // TestOpsClient defines the interface for test operations client
 type TestOpsClient interface {
-	// CreateRun creates a new test run and returns its ID
-	CreateRun(ctx context.Context) (int64, error)
-	
-	// CompleteRun completes the test run by ID
-	CompleteRun(ctx context.Context, runID int64) error
-	
 	// UploadResults uploads test results to the specified run
 	UploadResults(ctx context.Context, runID int64, results []*domain.TestResult) error
 }
 
-// TestOpsReporter handles sending test results to Qase TestOps with a simple 3-method API
+// TestOpsReporter handles sending test results to Qase TestOps
 type TestOpsReporter struct {
 	client  TestOpsClient
 	results []*domain.TestResult
-	runID   *int64
+	runID   int64
 }
 
 
-// NewTestOpsReporter creates a new TestOps reporter with the given TestOps client
-func NewTestOpsReporter(client TestOpsClient) *TestOpsReporter {
+// NewTestOpsReporter creates a new TestOps reporter with the given TestOps client and run ID
+func NewTestOpsReporter(client TestOpsClient, runID int64) *TestOpsReporter {
 	return &TestOpsReporter{
 		client:  client,
 		results: make([]*domain.TestResult, 0),
+		runID:   runID,
 	}
 }
 
 
-// StartTestRun creates a new test run and stores the run ID
-func (r *TestOpsReporter) StartTestRun(ctx context.Context) error {
-	runID, err := r.client.CreateRun(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to create test run: %w", err)
-	}
-	
-	r.runID = &runID
-	return nil
-}
+
 
 // AddResult adds a test result to the internal collection
 func (r *TestOpsReporter) AddResult(result *domain.TestResult) error {
@@ -58,37 +44,14 @@ func (r *TestOpsReporter) AddResult(result *domain.TestResult) error {
 		return fmt.Errorf("result title cannot be empty")
 	}
 	
-	// Set run ID if not already set
-	if result.RunID == nil && r.runID != nil {
-		result.SetRunID(*r.runID)
-	}
+	// Set run ID
+	result.SetRunID(r.runID)
 	
 	r.results = append(r.results, result)
 	return nil
 }
 
-// CompleteTestRun sends all accumulated results and completes the test run
-func (r *TestOpsReporter) CompleteTestRun(ctx context.Context) error {
-	if r.runID == nil {
-		return fmt.Errorf("no test run started - call StartTestRun first")
-	}
-	
-	// Upload results using unified client (handles batching internally)
-	if len(r.results) > 0 {
-		err := r.client.UploadResults(ctx, *r.runID, r.results)
-		if err != nil {
-			return fmt.Errorf("failed to upload results: %w", err)
-		}
-	}
-	
-	// Complete the test run
-	err := r.client.CompleteRun(ctx, *r.runID)
-	if err != nil {
-		return fmt.Errorf("failed to complete test run: %w", err)
-	}
-	
-	return nil
-}
+
 
 // CreateSimpleResult creates a simple test result with minimal required fields
 func CreateSimpleResult(title string, status domain.TestResultStatus) *domain.TestResult {
