@@ -190,8 +190,8 @@ func TestDefaultLoggerConfig(t *testing.T) {
 	if !config.LogToFile {
 		t.Error("Default config should enable file logging")
 	}
-	if config.LogDir != "./logs" {
-		t.Errorf("Default log directory should be './logs', got: %s", config.LogDir)
+	if config.LogDir != "logs" {
+		t.Errorf("Default log directory should be 'logs', got: %s", config.LogDir)
 	}
 	if config.LogLevel != INFO {
 		t.Errorf("Default log level should be INFO, got: %v", config.LogLevel)

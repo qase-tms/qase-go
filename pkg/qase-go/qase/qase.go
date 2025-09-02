@@ -469,13 +469,37 @@ func clearStepStack() {
 // since initialization now happens automatically in init()
 func InitializeGlobal() error {
 	// Initialization already happened in init(), just return success
+	// But we need to ensure reporter is set for testing
+	if reporter == nil {
+		// Load configuration from root directory
+		cfg, err := config.LoadWithParentSearch()
+		if err != nil {
+			// Fallback to unsafe loading if validation fails
+			logging.Warn("Warning: Configuration validation failed, using unsafe loading: %v", err)
+			cfg = config.LoadUnsafeWithParentSearch()
+		}
+
+		r, err := reporters.NewCoreReporter(cfg)
+		if err != nil {
+			logging.Error("Failed to create core reporter: %v", err)
+			return err
+		}
+
+		reporter = r
+	}
 	return nil
 }
 
 // InitializeGlobalWithConfig initializes qase globally with custom config
 func InitializeGlobalWithConfig(cfg *config.Config) error {
-	// For testing purposes, we'll just return success
-	// In a real implementation, this would reinitialize with the custom config
+	// Create reporter with the provided config
+	r, err := reporters.NewCoreReporter(cfg)
+	if err != nil {
+		logging.Error("Failed to create core reporter with custom config: %v", err)
+		return err
+	}
+
+	reporter = r
 	return nil
 }
 

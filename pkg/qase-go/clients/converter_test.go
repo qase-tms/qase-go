@@ -55,8 +55,9 @@ func TestV2Converter_ConvertTestResult_AllFields(t *testing.T) {
 	domainResult.Signature = "test-signature"
 	domainResult.Execution.Status = domain.StatusFailed
 
-	startTime := time.Now().Unix()
-	endTime := startTime + 10
+	// Use fixed time values to avoid issues with "time in future" logic
+	startTime := int64(1609459200000) // 2021-01-01 00:00:00 UTC in milliseconds
+	endTime := startTime + 10000
 	duration := int64(10000)
 	stacktrace := "Error at line 42"
 	thread := "main-thread"
@@ -113,11 +114,13 @@ func TestV2Converter_ConvertTestResult_AllFields(t *testing.T) {
 
 	// Verify execution
 	execution := apiResult.GetExecution()
-	if execution.GetStartTime() != float64(startTime) {
-		t.Errorf("Expected start time %f, got: %f", float64(startTime), execution.GetStartTime())
+	expectedStartTime := float64(startTime) / 1000.0
+	expectedEndTime := float64(endTime) / 1000.0
+	if execution.GetStartTime() != expectedStartTime {
+		t.Errorf("Expected start time %f, got: %f", expectedStartTime, execution.GetStartTime())
 	}
-	if execution.GetEndTime() != float64(endTime) {
-		t.Errorf("Expected end time %f, got: %f", float64(endTime), execution.GetEndTime())
+	if execution.GetEndTime() != expectedEndTime {
+		t.Errorf("Expected end time %f, got: %f", expectedEndTime, execution.GetEndTime())
 	}
 	if execution.GetDuration() != duration {
 		t.Errorf("Expected duration %d, got: %d", duration, execution.GetDuration())
@@ -433,8 +436,8 @@ func TestV2Converter_ConvertTestStep_AllFields(t *testing.T) {
 	domainStep.ParentID = &parentID
 	domainStep.Execution.Status = domain.StepStatusFailed
 
-	startTime := time.Now().Unix()
-	endTime := startTime + 5
+	startTime := time.Now().UnixMilli()
+	endTime := startTime + 5000
 	duration := int64(5000)
 
 	domainStep.Execution.StartTime = &startTime
@@ -479,11 +482,13 @@ func TestV2Converter_ConvertTestStep_AllFields(t *testing.T) {
 
 	// Verify execution
 	execution := apiStep.GetExecution()
-	if execution.GetStartTime() != float64(startTime) {
-		t.Errorf("Expected start time %f, got: %f", float64(startTime), execution.GetStartTime())
+	expectedStartTime := float64(startTime) / 1000.0
+	expectedEndTime := float64(endTime) / 1000.0
+	if execution.GetStartTime() != expectedStartTime {
+		t.Errorf("Expected start time %f, got: %f", expectedStartTime, execution.GetStartTime())
 	}
-	if execution.GetEndTime() != float64(endTime) {
-		t.Errorf("Expected end time %f, got: %f", float64(endTime), execution.GetEndTime())
+	if execution.GetEndTime() != expectedEndTime {
+		t.Errorf("Expected end time %f, got: %f", expectedEndTime, execution.GetEndTime())
 	}
 	if execution.GetDuration() != duration {
 		t.Errorf("Expected duration %d, got: %d", duration, execution.GetDuration())
