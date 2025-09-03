@@ -10,7 +10,7 @@ jobs:
       max-parallel: 5
       matrix:
         go-version: [ '1.18', '1.19', '1.20', '1.21', '1.22' ]
-        changed-dir: [ "qase-api-client", "qase-api-v2-client"  ]
+        changed-dir: [ "qase-api-client", "qase-api-v2-client", "pkg/qase-go" ]
     name: Project ${{ matrix.changed-dir }} - Go ${{ matrix.go-version }}
     steps:
       - uses: actions/checkout@v4
@@ -37,9 +37,9 @@ jobs:
       - name: Build
         if: steps.filter.outputs.changes == 'true'
         working-directory: ./${{ matrix.changed-dir }}
-        run: go build -v
+        run: go build -v ./...
 
       - name: Test
         if: steps.filter.outputs.changes == 'true'
         working-directory: ./${{ matrix.changed-dir }}
-        run: go test -v ./test
+        run: go test -v -cover ./...

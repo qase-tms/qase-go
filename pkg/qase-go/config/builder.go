@@ -1,0 +1,172 @@
+package config
+
+// ConfigBuilder provides a fluent interface for building configuration
+type ConfigBuilder struct {
+	config *Config
+}
+
+// NewConfigBuilder creates a new ConfigBuilder with default configuration
+func NewConfigBuilder() *ConfigBuilder {
+	return &ConfigBuilder{
+		config: NewConfig(),
+	}
+}
+
+// FromFile loads configuration from file and returns builder
+func FromFile(filename string) (*ConfigBuilder, error) {
+	config, err := LoadFromFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return &ConfigBuilder{config: config}, nil
+}
+
+// Main configuration methods
+
+// WithMode sets the operating mode
+func (b *ConfigBuilder) WithMode(mode string) *ConfigBuilder {
+	b.config.Mode = mode
+	return b
+}
+
+// WithFallback sets the fallback mode
+func (b *ConfigBuilder) WithFallback(fallback string) *ConfigBuilder {
+	b.config.Fallback = fallback
+	return b
+}
+
+// WithDebug sets debug flag
+func (b *ConfigBuilder) WithDebug(debug bool) *ConfigBuilder {
+	b.config.Debug = debug
+	return b
+}
+
+// WithEnvironment sets environment name
+func (b *ConfigBuilder) WithEnvironment(environment string) *ConfigBuilder {
+	b.config.Environment = environment
+	return b
+}
+
+// WithCaptureLogs sets capture logs flag
+func (b *ConfigBuilder) WithCaptureLogs(captureLogs bool) *ConfigBuilder {
+	b.config.CaptureLogs = captureLogs
+	return b
+}
+
+// Report configuration methods
+
+// WithReportDriver sets report driver
+func (b *ConfigBuilder) WithReportDriver(driver string) *ConfigBuilder {
+	b.config.Report.Driver = driver
+	return b
+}
+
+// WithReportPath sets report output path
+func (b *ConfigBuilder) WithReportPath(path string) *ConfigBuilder {
+	b.config.Report.Connection.Local.Path = path
+	return b
+}
+
+// WithReportFormat sets report format
+func (b *ConfigBuilder) WithReportFormat(format string) *ConfigBuilder {
+	b.config.Report.Connection.Local.Format = format
+	return b
+}
+
+// TestOps API configuration methods
+
+// WithAPIToken sets API token
+func (b *ConfigBuilder) WithAPIToken(token string) *ConfigBuilder {
+	b.config.TestOps.API.Token = token
+	return b
+}
+
+// WithAPIHost sets API host
+func (b *ConfigBuilder) WithAPIHost(host string) *ConfigBuilder {
+	b.config.TestOps.API.Host = host
+	return b
+}
+
+// TestOps Run configuration methods
+
+// WithRunID sets run ID
+func (b *ConfigBuilder) WithRunID(id int64) *ConfigBuilder {
+	b.config.TestOps.Run.ID = &id
+	return b
+}
+
+// TestOps other configuration methods
+
+// WithDefect sets defect flag
+func (b *ConfigBuilder) WithDefect(defect bool) *ConfigBuilder {
+	b.config.TestOps.Defect = defect
+	return b
+}
+
+// WithProject sets project code
+func (b *ConfigBuilder) WithProject(project string) *ConfigBuilder {
+	b.config.TestOps.Project = project
+	return b
+}
+
+// WithBatchSize sets batch size
+func (b *ConfigBuilder) WithBatchSize(size int) *ConfigBuilder {
+	b.config.TestOps.Batch.Size = size
+	return b
+}
+
+// Environment and file loading methods
+
+// LoadFromEnvironment loads configuration from environment variables
+func (b *ConfigBuilder) LoadFromEnvironment() *ConfigBuilder {
+	b.config.LoadFromEnvironment()
+	return b
+}
+
+// LoadFromFileIfExists loads configuration from file if it exists
+func (b *ConfigBuilder) LoadFromFileIfExists(filename string) *ConfigBuilder {
+	if config, err := LoadFromFile(filename); err == nil {
+		b.config = config
+	}
+	return b
+}
+
+// Build returns the built configuration after validation
+func (b *ConfigBuilder) Build() (*Config, error) {
+	if err := b.config.Validate(); err != nil {
+		return nil, err
+	}
+	return b.config, nil
+}
+
+// BuildUnsafe returns the built configuration without validation
+func (b *ConfigBuilder) BuildUnsafe() *Config {
+	return b.config
+}
+
+// Preset methods for common configurations
+
+// TestOpsMode configures builder for TestOps mode
+func (b *ConfigBuilder) TestOpsMode() *ConfigBuilder {
+	return b.WithMode("testops")
+}
+
+// ReportMode configures builder for Report mode
+func (b *ConfigBuilder) ReportMode() *ConfigBuilder {
+	return b.WithMode("report")
+}
+
+// OffMode configures builder for Off mode
+func (b *ConfigBuilder) OffMode() *ConfigBuilder {
+	return b.WithMode("off")
+}
+
+// JSONReport configures builder for JSON report format
+func (b *ConfigBuilder) JSONReport() *ConfigBuilder {
+	return b.WithReportFormat("json")
+}
+
+// YAMLReport configures builder for YAML report format
+func (b *ConfigBuilder) YAMLReport() *ConfigBuilder {
+	return b.WithReportFormat("yaml")
+}
