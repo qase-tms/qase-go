@@ -18,6 +18,6 @@ API client supporting the new Qase TestOps API (v2). Use this client for project
 
 ### Examples
 
-* **examples/go**  
+* **[examples/go](/examples/go)**  
 Comprehensive examples demonstrating SDK usage, including basic integration, multi-package testing, and advanced configuration scenarios.
 

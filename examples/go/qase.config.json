@@ -1,0 +1,15 @@
+{
+    "debug": true,
+    "mode": "testops",
+    "testops": {
+      "api": {
+        "token": "YOUR_TOKEN"
+      },
+  
+      "project": "project code",
+  
+      "run": {
+        "id": 1    
+      }
+    }
+  }

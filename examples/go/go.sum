@@ -1,0 +1,16 @@
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/qase-tms/qase-go/pkg/qase-go v1.0.0 h1:KE7z94J4sQQwYTSdvZowclFXRm8S9cBVvJXYXZ2TYto=
+github.com/qase-tms/qase-go/pkg/qase-go v1.0.0/go.mod h1:eZi3JSnhgm8vnlWzgi770ylRpb1GD/yaVuO3OJBVrx4=
+github.com/qase-tms/qase-go/qase-api-client v1.1.5 h1:9uJk4udv2gRE4PuoAf5eWHwBzqMGIN7JnDav4c1sqWo=
+github.com/qase-tms/qase-go/qase-api-client v1.1.5/go.mod h1:5w7jTtz8r3ccc8axnK0Sq6Dx5JKJtJnaz8AuysTw7SA=
+github.com/qase-tms/qase-go/qase-api-v2-client v1.1.3 h1:UK3O2HJUb9KydoYekkZFMM+pqmf3qEZHgohdgWWh5FU=
+github.com/qase-tms/qase-go/qase-api-v2-client v1.1.3/go.mod h1:qyIUXyT9ein6Ii2+IUW3R0eXWAJzVj44II05RRMR+wg=
+github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
+github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
