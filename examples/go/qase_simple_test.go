@@ -19,7 +19,7 @@ func TestQaseSimple_Success(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Simple Success Test",
+			Title:       "Simple Success Test",
 			Description: "A basic test that demonstrates simple Qase reporting",
 		},
 		func() {
@@ -35,21 +35,21 @@ func TestQaseWithSteps_Success(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Steps",
+			Title:       "Test with Steps",
 			Description: "Demonstrates how to use steps in Qase reporting",
 		},
 		func() {
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Step 1",
-				Description: "First step of the test",
+				Name:           "Step 1",
+				ExpectedResult: "First step of the test",
 			}, func() {
 				qase.AddMessage("Executing step 1")
 				qase.True(t, true)
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Step 2",
-				Description: "Second step of the test",
+				Name:           "Step 2",
+				ExpectedResult: "Second step of the test",
 			}, func() {
 				qase.AddMessage("Executing step 2")
 				qase.Equal(t, 2*2, 4)
@@ -62,7 +62,7 @@ func TestQaseWithParameters(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Parameters",
+			Title:       "Test with Parameters",
 			Description: "Shows how to add parameters to test results",
 			Parameters: map[string]string{
 				"browser": "chrome",
@@ -82,7 +82,7 @@ func TestQaseWithLabels(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Labels",
+			Title:       "Test with Labels",
 			Description: "Demonstrates adding labels to test results",
 		},
 		func() {
@@ -96,7 +96,7 @@ func TestQaseWithLinks(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Links",
+			Title:       "Test with Links",
 			Description: "Shows how to add links to test results",
 		},
 		func() {
@@ -111,27 +111,27 @@ func TestQaseNestedSteps(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Nested Steps",
+			Title:       "Test with Nested Steps",
 			Description: "Demonstrates nested step structure",
 		},
 		func() {
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Main Step",
-				Description: "Main step containing nested steps",
+				Name:           "Main Step",
+				ExpectedResult: "Main step containing nested steps",
 			}, func() {
 				qase.AddMessage("Starting main step")
 
 				qase.Step(t, qase.StepMetadata{
-					Name:        "Sub Step 1",
-					Description: "First nested step",
+					Name:           "Sub Step 1",
+					ExpectedResult: "First nested step",
 				}, func() {
 					qase.AddMessage("Executing sub step 1")
 					qase.True(t, true)
 				})
 
 				qase.Step(t, qase.StepMetadata{
-					Name:        "Sub Step 2",
-					Description: "Second nested step",
+					Name:           "Sub Step 2",
+					ExpectedResult: "Second nested step",
 				}, func() {
 					qase.AddMessage("Executing sub step 2")
 					qase.Equal(t, 3+2, 5)
@@ -145,7 +145,7 @@ func TestQaseWithAttachments(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with Attachments",
+			Title:       "Test with Attachments",
 			Description: "Demonstrates adding attachments to test results",
 		},
 		func() {
@@ -161,7 +161,7 @@ func TestQaseWithExternalId(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Test with External ID",
+			Title:       "Test with External ID",
 			Description: "Shows how to set external test ID",
 		},
 		func() {
@@ -175,7 +175,7 @@ func TestQaseComplexExample(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Complex Test Example",
+			Title:       "Complex Test Example",
 			Description: "A comprehensive example showing all Qase features",
 			Parameters: map[string]string{
 				"environment": "staging",
@@ -186,8 +186,8 @@ func TestQaseComplexExample(t *testing.T) {
 			qase.AddMessage("Starting complex test")
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Setup",
-				Description: "Test setup phase",
+				Name:           "Setup",
+				ExpectedResult: "Test setup phase",
 			}, func() {
 				qase.AddMessage("Setting up test environment")
 				time.Sleep(100 * time.Millisecond) // Simulate setup
@@ -195,15 +195,15 @@ func TestQaseComplexExample(t *testing.T) {
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Execute",
-				Description: "Main test execution",
+				Name:           "Execute",
+				ExpectedResult: "Main test execution",
 			}, func() {
 				qase.AddMessage("Executing main test logic")
 				qase.Equal(t, Sum(2, 3), 5)
 
 				qase.Step(t, qase.StepMetadata{
-					Name:        "Validation",
-					Description: "Validate results",
+					Name:           "Validation",
+					ExpectedResult: "Validate results",
 				}, func() {
 					qase.AddMessage("Validating test results")
 					qase.True(t, true)
@@ -211,8 +211,8 @@ func TestQaseComplexExample(t *testing.T) {
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Cleanup",
-				Description: "Test cleanup phase",
+				Name:           "Cleanup",
+				ExpectedResult: "Test cleanup phase",
 			}, func() {
 				qase.AddMessage("Cleaning up test resources")
 				qase.AddAttachments("test-report.json")
@@ -228,7 +228,7 @@ func TestQaseFailing_Simple(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Simple Failing Test",
+			Title:       "Simple Failing Test",
 			Description: "A simple test that should fail",
 		},
 		func() {
@@ -243,7 +243,7 @@ func TestQaseFailing_PanicSimple(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Panic Test",
+			Title:       "Panic Test",
 			Description: "Test that demonstrates panic handling",
 		},
 		func() {
@@ -258,7 +258,7 @@ func TestQaseFailing_EqualSimple(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Failing Equal Test",
+			Title:       "Failing Equal Test",
 			Description: "Test that demonstrates failing equality assertion",
 		},
 		func() {
@@ -273,23 +273,23 @@ func TestQaseFailing_WithSteps(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Failing Test with Steps",
+			Title:       "Failing Test with Steps",
 			Description: "Test with steps where one fails",
 		},
 		func() {
 			qase.AddMessage("Starting test with steps")
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Setup Step",
-				Description: "This step should pass",
+				Name:           "Setup Step",
+				ExpectedResult: "This step should pass",
 			}, func() {
 				qase.AddMessage("Setting up")
 				qase.True(t, true)
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Failing Step",
-				Description: "This step should fail",
+				Name:           "Failing Step",
+				ExpectedResult: "This step should fail",
 			}, func() {
 				qase.AddMessage("About to fail")
 				qase.Equal(t, "expected", "actual") // This will fail
@@ -297,8 +297,8 @@ func TestQaseFailing_WithSteps(t *testing.T) {
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Cleanup Step",
-				Description: "This step should not execute",
+				Name:           "Cleanup Step",
+				ExpectedResult: "This step should not execute",
 			}, func() {
 				qase.AddMessage("Cleaning up")
 				qase.True(t, true)
@@ -311,7 +311,7 @@ func TestQaseFailing_WithAttachmentsSimple(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Failing Test with Attachments",
+			Title:       "Failing Test with Attachments",
 			Description: "Test that fails but includes attachments",
 		},
 		func() {
@@ -332,7 +332,7 @@ func TestQaseParallel_SimpleInline(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Parallel Simple Test",
+			Title:       "Parallel Simple Test",
 			Description: "A simple parallel test",
 		},
 		func() {
@@ -349,15 +349,15 @@ func TestQaseParallel_WithStepsInline(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Parallel Test with Steps",
+			Title:       "Parallel Test with Steps",
 			Description: "Parallel test with multiple steps",
 		},
 		func() {
 			qase.AddMessage("Starting parallel test with steps")
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Parallel Step 1",
-				Description: "First parallel step",
+				Name:           "Parallel Step 1",
+				ExpectedResult: "First parallel step",
 			}, func() {
 				time.Sleep(50 * time.Millisecond)
 				qase.AddMessage("Step 1 completed")
@@ -365,8 +365,8 @@ func TestQaseParallel_WithStepsInline(t *testing.T) {
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Parallel Step 2",
-				Description: "Second parallel step",
+				Name:           "Parallel Step 2",
+				ExpectedResult: "Second parallel step",
 			}, func() {
 				time.Sleep(50 * time.Millisecond)
 				qase.AddMessage("Step 2 completed")
@@ -381,7 +381,7 @@ func TestQaseParallel_FailingInline(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Parallel Failing Test",
+			Title:       "Parallel Failing Test",
 			Description: "A parallel test that should fail",
 		},
 		func() {
@@ -398,7 +398,7 @@ func TestQaseParallel_ConcurrentInline(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Parallel Concurrent Test",
+			Title:       "Parallel Concurrent Test",
 			Description: "Test with internal concurrency",
 		},
 		func() {

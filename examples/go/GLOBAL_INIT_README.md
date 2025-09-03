@@ -63,7 +63,7 @@ import (
 func TestMyTest(t *testing.T) {
     qase.Test(t,
         qase.TestMetadata{
-            DisplayName: "My Test",
+            Title: "My Test",
             Description: "A test in a subpackage",
         },
         func() {

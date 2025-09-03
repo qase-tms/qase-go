@@ -50,7 +50,7 @@ Tests in subpackages (`suite01`, `suite02`) don't need `TestMain` - they automat
 func TestMyTest(t *testing.T) {
     qase.Test(t,
         qase.TestMetadata{
-            DisplayName: "My Test",
+            Title: "My Test",
             Description: "A test in a subpackage",
         },
         func() {

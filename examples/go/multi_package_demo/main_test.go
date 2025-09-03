@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 func TestMainPackageTest(t *testing.T) {
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Main Package Test",
+			Title:       "Main Package Test",
 			Description: "A test in the main package that uses global initialization",
 		},
 		func() {

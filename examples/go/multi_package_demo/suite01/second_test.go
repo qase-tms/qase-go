@@ -9,7 +9,7 @@ import (
 func TestSecondSuiteTest(t *testing.T) {
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Second Suite Test",
+			Title:       "Second Suite Test",
 			Description: "A test in the second suite that uses global initialization",
 		},
 		func() {
@@ -23,21 +23,21 @@ func TestSecondSuiteTest(t *testing.T) {
 func TestSecondSuiteWithSteps(t *testing.T) {
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Second Suite Test with Steps",
+			Title:       "Second Suite Test with Steps",
 			Description: "Demonstrates steps in the second suite",
 		},
 		func() {
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Second Suite Step 1",
-				Description: "First step in second suite",
+				Name:           "Second Suite Step 1",
+				ExpectedResult: "First step in second suite",
 			}, func() {
 				qase.AddMessage("Executing second suite step 1")
 				qase.True(t, true)
 			})
 
 			qase.Step(t, qase.StepMetadata{
-				Name:        "Second Suite Step 2",
-				Description: "Second step in second suite",
+				Name:           "Second Suite Step 2",
+				ExpectedResult: "Second step in second suite",
 			}, func() {
 				qase.AddMessage("Executing second suite step 2")
 				qase.Equal(t, 3*3, 9)

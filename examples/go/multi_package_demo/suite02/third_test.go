@@ -9,7 +9,7 @@ import (
 func TestThirdSuiteTest(t *testing.T) {
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Third Suite Test",
+			Title:       "Third Suite Test",
 			Description: "A test in the third suite that uses global initialization",
 		},
 		func() {
@@ -25,7 +25,7 @@ func TestThirdSuiteParallel(t *testing.T) {
 
 	qase.Test(t,
 		qase.TestMetadata{
-			DisplayName: "Third Suite Parallel Test",
+			Title:       "Third Suite Parallel Test",
 			Description: "A parallel test in the third suite",
 		},
 		func() {
