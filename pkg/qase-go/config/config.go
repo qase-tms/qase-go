@@ -53,7 +53,7 @@ type APIConfig struct {
 
 // RunConfig represents test run configuration
 type RunConfig struct {
-	ID             *int64               `json:"id,omitempty"` // Test run ID
+	ID *int64 `json:"id,omitempty"` // Test run ID
 }
 
 // BatchConfig represents batch configuration

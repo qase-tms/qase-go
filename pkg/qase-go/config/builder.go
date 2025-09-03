@@ -95,7 +95,6 @@ func (b *ConfigBuilder) WithRunID(id int64) *ConfigBuilder {
 	return b
 }
 
-
 // TestOps other configuration methods
 
 // WithDefect sets defect flag

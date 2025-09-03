@@ -15,7 +15,7 @@ type TestMetadata struct {
 	Comment     string
 
 	// Suite information
-	Suite string
+	Suite []string
 
 	// Metadata fields (matching JavaScript fields)
 	Fields map[string]string

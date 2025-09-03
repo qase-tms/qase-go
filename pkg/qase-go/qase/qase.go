@@ -670,11 +670,10 @@ func applyTestMetadata(result *domain.TestResult, meta TestMetadata) {
 	// Set suite
 	var suiteData []domain.SuiteData
 
-	if meta.Suite != "" {
-		// Parse nested suites (e.g., "Parent Suite > Child Suite > Grandchild Suite")
-		suiteTitles := strings.Split(meta.Suite, " > ")
-		suiteData = make([]domain.SuiteData, len(suiteTitles))
-		for i, title := range suiteTitles {
+	if len(meta.Suite) > 0 {
+		// Use suite titles directly from the slice
+		suiteData = make([]domain.SuiteData, len(meta.Suite))
+		for i, title := range meta.Suite {
 			suiteData[i] = domain.SuiteData{
 				Title: strings.TrimSpace(title),
 			}
