@@ -1,485 +1,198 @@
 # Qase Go SDK
 
-Qase Go SDK provides comprehensive tools for integrating Go applications with Qase TestOps. The SDK includes domain models, reporters, and testing utilities.
+[![Go Report Card](https://goreportcard.com/badge/github.com/qase-tms/qase-go)](https://goreportcard.com/report/github.com/qase-tms/qase-go)
+[![GoDoc](https://godoc.org/github.com/qase-tms/qase-go?status.svg)](https://godoc.org/github.com/qase-tms/qase-go)
+
+Qase Go SDK provides comprehensive tools for integrating Go applications with Qase TestOps. The SDK includes domain models, reporters, and testing utilities for seamless test result reporting.
 
 ## Features
 
-- **Domain Models**: Complete Go representations of Qase TestOps data structures
-- **Reporters**: Flexible reporting system with TestOps and file-based reporters
-- **Testing Utilities**: Helper functions for creating test reports
-- **Configuration Management**: Easy configuration setup for different environments
-- **Error Handling**: Comprehensive error handling and validation
+- **Simple Integration**: Easy setup with minimal configuration
+- **Flexible Reporting**: Support for TestOps and local file reporting
+- **Rich Assertions**: Comprehensive assertion library with detailed error capture
+- **Test Organization**: Suite management and test metadata support
+- **Configuration Management**: Environment-based configuration with fallback support
 
-## Quick Start
-
-### Installation
+## Installation
 
 ```bash
 go get github.com/qase-tms/qase-go/pkg/qase-go
 ```
 
+**⚠️ Important**: After installation, you must add `TestMain` to each package for the reporter to work properly. See the [Quick Start](#quick-start) section below.
+
+## Quick Start
+
 ### Basic Usage
+
+**Important**: Add `TestMain` to each package to initialize the reporter:
 
 ```go
 package main
 
 import (
-    "context"
     "testing"
-    
-    "github.com/qase-tms/qase-go/pkg/qase-go/config"
-    "github.com/qase-tms/qase-go/pkg/qase-go/reporters"
-    "github.com/qase-tms/qase-go/pkg/qase-go/domain"
+    "github.com/qase-tms/qase-go/pkg/qase-go/qase"
 )
 
+// TestMain ensures that results are sent for this package
+func TestMain(m *testing.M) {
+    qase.TestMainForPackage(m)
+}
+
 func TestMyFeature(t *testing.T) {
-    // Create configuration
-    cfg := &config.Config{
-        Mode: "report",
-        Report: config.ReportConfig{
-            Driver: "local",
-            Connection: config.ConnectionConfig{
-                Local: config.LocalConfig{
-                    Path: "./reports",
-                    Format: "json",
-                },
-            },
-        },
-    }
-    
-    // Create reporter
-    coreReporter, err := reporters.NewCoreReporter(cfg)
-    if err != nil {
-        t.Fatal(err)
-    }
-    
-    // Start test run
-    ctx := context.Background()
-    if err := coreReporter.StartTestRun(ctx); err != nil {
-        t.Fatal(err)
-    }
-    defer coreReporter.CompleteTestRun(ctx)
-    
-    // Create test result
-    result := domain.NewTestResult("My Feature Test")
-    result.Title = "My Feature Test"
-    result.Fields["description"] = "Testing my feature functionality"
-    
-    // Create test step
-    step := domain.NewTestStep("Perform action")
-    step.SetExpectedResult("Action completed successfully")
-    step.SetData("input: test data")
-    step.SetStatus(domain.StepStatusPassed)
-    
-    result.AddStep(step)
-    
-    // Add result to reporter
-    if err := coreReporter.AddResult(result); err != nil {
-        t.Fatal(err)
-    }
+    qase.Test(t, qase.TestMetadata{
+        Title:       "My Feature Test",
+        Description: "Testing my feature functionality",
+    }, func() {
+        // Your test logic here
+        qase.True(t, true, "This should pass")
+    })
 }
 ```
 
-## Components
+### Configuration
 
-### Domain Models
+Create a `qase.config.json` file in your project root:
 
-The domain package provides Go representations of Qase TestOps data structures:
-
-- `TestResult`: Represents a test execution result
-- `TestStep`: Represents a test step with execution details
-- `Attachment`: Represents file attachments
-- `Status`: Test and step status enums
-
-```go
-import "github.com/qase-tms/qase-go/pkg/qase-go/domain"
-
-// Create a test result
-result := domain.NewTestResult("My Test")
-result.SetRunID(123)
-result.Execution.Status = domain.StatusPassed
-
-// Create a test step
-step := domain.NewTestStep("My Step")
-step.SetExpectedResult("Expected outcome")
-step.SetStatus(domain.StepStatusPassed)
-```
-
-### Reporters
-
-The reporters package provides flexible reporting capabilities:
-
-- **CoreReporter**: Main reporter with fallback support
-- **FileReporter**: File-based reporting
-- **TestOpsReporter**: Direct integration with Qase TestOps
-
-```go
-import "github.com/qase-tms/qase-go/pkg/qase-go/reporters"
-
-// Create file reporter
-fileReporter := reporters.NewFileReporter(reporters.FileReporterConfig{
-    Config: cfg,
-})
-
-// Add test result
-result := domain.NewTestResult("Test")
-err := fileReporter.AddResult(result)
-```
-
-### Qase Package
-
-The qase package provides high-level testing utilities:
-
-- **Test function**: Simplified test execution with metadata
-- **Assert utilities**: Common assertion functions with detailed error capture
-- **Reporter integration**: Automatic reporter setup
-- **Error Details**: Comprehensive error information capture for failed assertions
-
-```go
-import "github.com/qase-tms/qase-go/pkg/qase-go/qase"
-
-// Simple test with metadata
-qase.Test(t, qase.TestMetadata{
-    DisplayName: "My Test",
-    Title: "My Test Title",
-    Description: "Test description",
-    IDs: []int64{123},
-}, func() {
-    // Test logic here
-    // Results are automatically reported
-})
-```
-
-#### Enhanced Error Details
-
-The SDK now captures comprehensive error information when assertions fail, including:
-
-- **Error Type**: The type of assertion that failed (e.g., "Should be true", "Not equal")
-- **Expected Value**: What was expected
-- **Actual Value**: What was actually received
-- **Error Message**: Detailed description of the failure
-- **File and Line**: Location where the assertion failed
-
-```go
-// When an assertion fails, detailed error information is automatically captured
-qase.True(t, false, "This will fail")
-
-// The resulting TestResult will contain:
-// result.Execution.ErrorDetails.ErrorType = "Should be true"
-// result.Execution.ErrorDetails.Expected = "true"
-// result.Execution.ErrorDetails.Actual = "false"
-// result.Execution.ErrorDetails.File = "/path/to/test.go"
-// result.Execution.ErrorDetails.Line = 42
-```
-
-#### Enhanced Error Messages
-
-All assertion functions now provide more informative error messages that include the actual values being compared:
-
-```go
-// Before: "Should be true"
-// Now: "Should be true, but got: false"
-
-// Before: "Not equal"
-// Now: "Not equal: expected: expected, actual: actual"
-
-// Before: "Should be empty"
-// Now: "Should be empty, but was [1 2 3]"
-
-// Before: "Elements do not match"
-// Now: "Elements do not match: listA: [1 2 3], listB: [1 2 4]"
-```
-
-This makes debugging much easier as you can immediately see what values caused the assertion to fail.
-
-#### Available Assertion Functions
-
-All assertion functions automatically capture error details:
-
-```go
-// Basic assertions
-qase.True(t, value, "message")
-qase.False(t, value, "message")
-qase.Equal(t, expected, actual, "message")
-qase.NotEqual(t, expected, actual, "message")
-qase.EqualValues(t, expected, actual, "message")
-qase.NotEqualValues(t, expected, actual, "message")
-
-// Error assertions
-qase.Error(t, err, "message")
-qase.NoError(t, err, "message")
-qase.EqualError(t, err, expectedMessage, "message")
-qase.ErrorIs(t, err, target, "message")
-qase.ErrorAs(t, err, target, "message")
-
-// String assertions
-qase.Contains(t, str, substr, "message")
-qase.NotContains(t, str, substr, "message")
-qase.Regexp(t, rx, str, "message")
-qase.NotRegexp(t, rx, str, "message")
-
-// Numeric assertions
-qase.Greater(t, e1, e2, "message")
-qase.GreaterOrEqual(t, e1, e2, "message")
-qase.Less(t, e1, e2, "message")
-qase.LessOrEqual(t, e1, e2, "message")
-
-// Collection assertions
-qase.Empty(t, object, "message")
-qase.NotEmpty(t, object, "message")
-qase.Len(t, object, length, "message")
-qase.Same(t, expected, actual, "message")
-qase.NotSame(t, expected, actual, "message")
-qase.Subset(t, list, subset, "message")
-qase.NotSubset(t, list, subset, "message")
-qase.ElementsMatch(t, listA, listB, "message")
-```
-
-## Configuration
-
-The SDK supports flexible configuration through the config package:
-
-```go
-import "github.com/qase-tms/qase-go/pkg/qase-go/config"
-
-cfg := &config.Config{
-    Mode: "testops", // "report", "testops", or "off"
-    Fallback: "report", // Fallback mode if main mode fails
-    
-    // TestOps configuration
-    TestOps: config.TestOpsConfig{
-        API: config.APIConfig{
-            Token: "your-api-token",
-            Host: "api.qase.io",
-        },
-        Project: "your-project-code",
+```json
+{
+  "mode": "testops",
+  "fallback": "report",
+  
+  "testops": {
+    "api": {
+      "token": "your-api-token",
+      "host": "qase.io"
     },
-    
-    // Report configuration
-    Report: config.ReportConfig{
-        Driver: "local",
-        Connection: config.ConnectionConfig{
-            Local: config.LocalConfig{
-                Path: "./reports",
-                Format: "json",
-            },
-        },
-    },
-}
-```
-
-## Examples
-
-### Basic Test with Qase Package
-
-```go
-func TestLoginFlow(t *testing.T) {
-    qase.Test(t, qase.TestMetadata{
-        DisplayName: "Login Flow Test",
-        Title: "User Login Flow",
-        Description: "Test the complete user login process",
-        IDs: []int64{456},
-        Fields: map[string]string{
-            "environment": "staging",
-            "browser": "chrome",
-        },
-    }, func() {
-        // Test logic here
-        // Results are automatically reported
-    })
-}
-```
-
-### Test with Custom Reporter
-
-```go
-func TestWithCustomReporter(t *testing.T) {
-    cfg := &config.Config{
-        Mode: "report",
-        Report: config.ReportConfig{
-            Driver: "local",
-            Connection: config.ConnectionConfig{
-                Local: config.LocalConfig{
-                    Path: "./custom-reports",
-                    Format: "json",
-                },
-            },
-        },
+    "project": "your-project-code",
+    "run": {
+      "id": 123
     }
-    
-    reporter, err := reporters.NewCoreReporter(cfg)
-    if err != nil {
-        t.Fatal(err)
+  },
+  "report": {
+    "driver": "local",
+    "connection": {
+      "local": {
+        "path": "./build/qase-report",
+        "format": "json"
+      }
     }
-    
-    ctx := context.Background()
-    if err := reporter.StartTestRun(ctx); err != nil {
-        t.Fatal(err)
-    }
-    defer reporter.CompleteTestRun(ctx)
-    
-    result := domain.NewTestResult("Custom Test")
-    result.Title = "Custom Test Title"
-    
-    step := domain.NewTestStep("Custom Step")
-    step.SetExpectedResult("Step completed")
-    step.SetStatus(domain.StepStatusPassed)
-    
-    result.AddStep(step)
-    
-    if err := reporter.AddResult(result); err != nil {
-        t.Fatal(err)
     }
 }
 ```
 
-### Test with Attachments
+### TestMain Setup
+
+Add this to each package to initialize the reporter:
 
 ```go
-func TestWithScreenshots(t *testing.T) {
-    qase.Test(t, qase.TestMetadata{
-        DisplayName: "Screenshot Test",
-        Title: "Test with Screenshots",
-    }, func() {
-        // Create attachment
-        screenshot := domain.Attachment{
-            ID:       "screenshot-1",
-            FileName: "homepage.png",
-            MimeType: "image/png",
-            Content:  []byte("fake image data"),
-            Size:     16,
-        }
-        
-        // Add attachment to result (handled automatically by qase.Test)
-    })
+// TestMain ensures that results are sent for this package
+func TestMain(m *testing.M) {
+    qase.TestMainForPackage(m)
 }
 ```
 
-### Test with Enhanced Error Details
+Or use environment variables:
 
-```go
-func TestWithErrorDetails(t *testing.T) {
-    qase.Test(t, qase.TestMetadata{
-        DisplayName: "Error Details Test",
-        Title: "Test Error Details Capture",
-        Description: "Demonstrates enhanced error information capture",
-    }, func() {
-        // This test will fail and capture detailed error information
-        userID := "12345"
-        expectedUserID := "67890"
-        
-        // When this assertion fails, detailed error information is captured
-        qase.Equal(t, expectedUserID, userID, "User ID should match expected value")
-        
-        // The resulting TestResult will contain:
-        // - ErrorDetails.ErrorType = "Not equal"
-        // - ErrorDetails.Expected = "67890"
-        // - ErrorDetails.Actual = "12345"
-        // - ErrorDetails.File = "/path/to/test.go"
-        // - ErrorDetails.Line = line number where assertion failed
-    })
-}
+```bash
+export QASE_MODE=testops
+export QASE_TESTOPS_API_TOKEN=your-api-token
+export QASE_TESTOPS_PROJECT=your-project-code
+export QASE_TESTOPS_RUN_ID=123
 ```
 
-### Enhanced Error Messages Examples
+### Running Tests
 
-```go
-func TestEnhancedErrorMessages(t *testing.T) {
-    qase.Test(t, qase.TestMetadata{
-        DisplayName: "Enhanced Error Messages Test",
-        Title: "Test Enhanced Error Messages",
-        Description: "Demonstrates improved error messages with actual values",
-    }, func() {
-        // These assertions will fail with enhanced error messages
-        
-        // Before: "Should be true"
-        // Now: "Should be true, but got: false"
-        qase.True(t, false, "This will fail")
-        
-        // Before: "Should be empty"
-        // Now: "Should be empty, but was [1 2 3]"
-        qase.Empty(t, []int{1, 2, 3}, "This will fail")
-        
-        // Before: "Elements do not match"
-        // Now: "Elements do not match: listA: [1 2 3], listB: [1 2 4]"
-        qase.ElementsMatch(t, []int{1, 2, 3}, []int{1, 2, 4}, "This will fail")
-        
-        // Before: "Should be zero"
-        // Now: "Should be zero, but was 42"
-        qase.Zero(t, 42, "This will fail")
-        
-        // Before: "Should not be empty"
-        // Now: "Should NOT be empty, but was []"
-        qase.NotEmpty(t, []int{}, "This will fail")
-    })
+**Note**: Make sure you have added `TestMain` to each package before running tests.
+
+**Important**: The reporter does not create or complete test runs automatically. You must specify an existing test run ID in your configuration.
+
+#### Creating Test Runs
+
+You can create test runs using:
+
+**cURL:**
+```bash
+curl --request POST \
+     --url https://api.qase.io/v1/run/DEMO \
+     --header 'Token: YOUR_TOKEN' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "title": "My test run"
 }
+'
 ```
 
-### Accessing Error Details Programmatically
-
-```go
-func TestAccessErrorDetails(t *testing.T) {
-    result := domain.NewTestResult("Error Details Access Test")
-    
-    // Set current test result for error capture
-    qase.setCurrentTestResult(result)
-    defer qase.clearCurrentTestResult()
-    
-    // Simulate a failed assertion
-    qase.True(t, false, "This will fail")
-    
-    // Access captured error details
-    if result.Execution.ErrorDetails != nil {
-        fmt.Printf("Error Type: %s\n", result.Execution.ErrorDetails.ErrorType)
-        fmt.Printf("Expected: %s\n", result.Execution.ErrorDetails.Expected)
-        fmt.Printf("Actual: %s\n", result.Execution.ErrorDetails.Actual)
-        fmt.Printf("File: %s\n", result.Execution.ErrorDetails.File)
-        fmt.Printf("Line: %d\n", result.Execution.ErrorDetails.Line)
-    }
-}
+**qasectl CLI:**
+```bash
+qasectl testops run create --project PROJ --token <token> --title "Test Run 1"
 ```
 
-## Status Mapping
+#### Completing Test Runs
 
-The SDK maps test statuses to Qase TestOps statuses:
+You can complete test runs using:
 
-| SDK Status | Qase Status |
-|------------|-------------|
-| `domain.StatusPassed` | "passed" |
-| `domain.StatusFailed` | "failed" |
-| `domain.StatusBlocked` | "blocked" |
-| `domain.StatusSkipped` | "skipped" |
-| `domain.StatusInProgress` | "in_progress" |
-| `domain.StatusInvalid` | "invalid" |
+**cURL:**
+```bash
+curl --request POST \
+     --url https://api.qase.io/v1/run/DEMO/1/complete \
+     --header 'Token: YOUR_TOKEN' \
+     --header 'accept: application/json'
+```
 
-## Best Practices
+**qasectl CLI:**
+```bash
+qasectl testops run complete --project PROJ --token <token> --id 1
+```
 
-1. **Use Descriptive Titles**: Make test titles clear and descriptive
-2. **Add Descriptions**: Provide detailed descriptions for complex tests
-3. **Use Steps**: Break down tests into logical steps
-4. **Handle Errors**: Always handle errors appropriately
-5. **Use Metadata**: Add relevant metadata for better organization
-6. **Use Attachments**: Add screenshots and logs when helpful
-7. **Configure Fallbacks**: Always configure fallback reporters for reliability
+**GitHub Actions:**
+If you're using GitHub, we provide ready-to-use actions:
+- [Create test runs](https://github.com/qase-tms/gh-actions/run-create)
+- [Complete test runs](https://github.com/qase-tms/gh-actions/run-complete)
 
-## Integration with Qase TestOps
+#### Running Tests
 
-The SDK integrates seamlessly with Qase TestOps:
+```bash
+# Run tests with reporting
+go test ./...
 
-1. **Configuration**: Set up with TestOps credentials
-2. **Test Execution**: Run tests with automatic reporting
-3. **Result Upload**: Results are automatically uploaded to TestOps
-4. **Dashboard**: View results in Qase TestOps dashboard
+# Run specific test
+go test -run TestMyFeature ./...
 
-## Contributing
+# Run with verbose output
+go test -v ./...
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
+## Configuration Options
+
+| Environment Variable | Description | Default |
+|---------------------|-------------|---------|
+| `QASE_MODE` | Reporting mode: `testops`, `report`, or `off` | `off` |
+| `QASE_FALLBACK` | Fallback mode if main mode fails | `off` |
+| `QASE_DEBUG` | Enable debug logging | `false` |
+| `QASE_ENVIRONMENT` | Environment name | `local` |
+| `QASE_CAPTURE_LOGS` | Capture test logs | `false` |
+| `QASE_TESTOPS_API_TOKEN` | Qase API token | - |
+| `QASE_TESTOPS_PROJECT` | Project code | - |
+| `QASE_TESTOPS_RUN_ID` | Test run ID | - |
+| `QASE_TESTOPS_API_HOST` | API host | `qase.io` |
+| `QASE_TESTOPS_DEFECT` | Auto-create defects for failed tests | `false` |
+| `QASE_TESTOPS_BATCH_SIZE` | Batch size for result uploads | `100` |
+| `QASE_REPORT_DRIVER` | Report driver | `local` |
+| `QASE_REPORT_CONNECTION_PATH` | Local report path | `./build/qase-report` |
+| `QASE_REPORT_CONNECTION_FORMAT` | Report format | `json` |
+
+## Documentation
+
+For detailed documentation and advanced usage examples, see:
+
+- [Usage Guide](docs/usage.md) - Comprehensive usage documentation
+- [API Reference](https://godoc.org/github.com/qase-tms/qase-go) - Go package documentation
+
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
