@@ -53,24 +53,7 @@ type APIConfig struct {
 
 // RunConfig represents test run configuration
 type RunConfig struct {
-	ID             *int64             `json:"id,omitempty"` // Test run ID
-	Title          string             `json:"title"`
-	Description    string             `json:"description"`
-	Complete       bool               `json:"complete"`
-	Tags           []string           `json:"tags"`
-	Configurations ConfigurationsData `json:"configurations"`
-}
-
-// ConfigurationsData represents run configurations
-type ConfigurationsData struct {
-	Values            []ConfigurationValue `json:"values"`
-	CreateIfNotExists bool                 `json:"createIfNotExists"`
-}
-
-// ConfigurationValue represents a single configuration value
-type ConfigurationValue struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	ID             *int64               `json:"id,omitempty"` // Test run ID
 }
 
 // BatchConfig represents batch configuration
@@ -103,16 +86,7 @@ func NewConfig() *Config {
 				Token: "",
 				Host:  "qase.io",
 			},
-			Run: RunConfig{
-				Title:       "",
-				Description: "",
-				Complete:    true,
-				Tags:        []string{},
-				Configurations: ConfigurationsData{
-					Values:            []ConfigurationValue{},
-					CreateIfNotExists: true,
-				},
-			},
+			Run:     RunConfig{},
 			Defect:  false,
 			Project: "",
 			Batch: BatchConfig{
@@ -167,22 +141,6 @@ func (c *Config) LoadFromEnvironment() {
 	if runID := os.Getenv("QASE_TESTOPS_RUN_ID"); runID != "" {
 		if id, err := strconv.ParseInt(runID, 10, 64); err == nil {
 			c.TestOps.Run.ID = &id
-		}
-	}
-	if title := os.Getenv("QASE_TESTOPS_RUN_TITLE"); title != "" {
-		c.TestOps.Run.Title = title
-	}
-	if description := os.Getenv("QASE_TESTOPS_RUN_DESCRIPTION"); description != "" {
-		c.TestOps.Run.Description = description
-	}
-	if complete := os.Getenv("QASE_TESTOPS_RUN_COMPLETE"); complete != "" {
-		c.TestOps.Run.Complete = strings.ToLower(complete) == "true"
-	}
-	if tags := os.Getenv("QASE_TESTOPS_RUN_TAGS"); tags != "" {
-		c.TestOps.Run.Tags = strings.Split(tags, ",")
-		// Trim spaces
-		for i, tag := range c.TestOps.Run.Tags {
-			c.TestOps.Run.Tags[i] = strings.TrimSpace(tag)
 		}
 	}
 
@@ -256,6 +214,9 @@ func (c *Config) Validate() error {
 		}
 		if c.TestOps.Project == "" {
 			return fmt.Errorf("project code is required when mode is 'testops'")
+		}
+		if c.TestOps.Run.ID == nil || *c.TestOps.Run.ID == 0 {
+			return fmt.Errorf("run ID is required when mode is 'testops'")
 		}
 	}
 

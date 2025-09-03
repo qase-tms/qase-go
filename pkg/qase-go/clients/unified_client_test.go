@@ -120,81 +120,6 @@ func TestUnifiedClient_GetConfig(t *testing.T) {
 	}
 }
 
-func TestUnifiedClient_CreateRun_TitleFromConfig(t *testing.T) {
-	tests := []struct {
-		name           string
-		runTitle       string
-		runDescription string
-		environment    string
-		expectedTitle  string
-		expectedDesc   string
-	}{
-		{
-			name:          "title from config",
-			runTitle:      "Custom Test Run",
-			runDescription: "Custom description",
-			expectedTitle: "Custom Test Run",
-			expectedDesc:  "Custom description",
-		},
-		{
-			name:          "default title",
-			runTitle:      "",
-			runDescription: "",
-			expectedTitle: "Automated Test Run",
-			expectedDesc:  "",
-		},
-		{
-			name:          "title with environment description",
-			runTitle:      "",
-			runDescription: "",
-			environment:   "staging",
-			expectedTitle: "Automated Test Run",
-			expectedDesc:  "Test run in staging environment",
-		},
-		{
-			name:          "explicit description overrides environment",
-			runTitle:      "Custom Title",
-			runDescription: "Explicit description",
-			environment:   "staging",
-			expectedTitle: "Custom Title",
-			expectedDesc:  "Explicit description",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cfg := &config.Config{
-				TestOps: config.TestOpsConfig{
-					API: config.APIConfig{
-						Token: "test-token",
-						Host:  "qase.io",
-					},
-					Project: "TEST",
-					Run: config.RunConfig{
-						Title:       tt.runTitle,
-						Description: tt.runDescription,
-					},
-				},
-				Environment: tt.environment,
-			}
-			
-			client, err := NewUnifiedClient(cfg)
-			if err != nil {
-				t.Fatalf("failed to create client: %v", err)
-			}
-			
-			// Note: We can't actually test the API call without mocking,
-			// but we can verify the client was created correctly
-			if client.config.TestOps.Run.Title != tt.runTitle {
-				t.Errorf("expected run title %s, got %s", tt.runTitle, client.config.TestOps.Run.Title)
-			}
-			if client.config.TestOps.Run.Description != tt.runDescription {
-				t.Errorf("expected run description %s, got %s", tt.runDescription, client.config.TestOps.Run.Description)
-			}
-		})
-	}
-}
-
 func TestUnifiedClient_UploadResults_BatchHandling(t *testing.T) {
 	cfg := &config.Config{
 		TestOps: config.TestOpsConfig{
@@ -257,18 +182,6 @@ func TestUnifiedClient_Interface(t *testing.T) {
 	
 	// Test that all interface methods exist (will fail if API calls fail, which is expected)
 	ctx := context.Background()
-	
-	// CreateRun
-	_, err = client.CreateRun(ctx)
-	if err != nil {
-		t.Logf("CreateRun failed as expected without real API: %v", err)
-	}
-	
-	// CompleteRun
-	err = client.CompleteRun(ctx, 123)
-	if err != nil {
-		t.Logf("CompleteRun failed as expected without real API: %v", err)
-	}
 	
 	// UploadResults
 	results := []*domain.TestResult{domain.NewTestResult("Test")}

@@ -17,6 +17,24 @@ func TestNewConfig(t *testing.T) {
 	if config.Fallback != "off" {
 		t.Errorf("Expected default fallback 'off', got '%s'", config.Fallback)
 	}
+	if config.Debug != false {
+		t.Errorf("Expected default debug false, got %t", config.Debug)
+	}
+	if config.Environment != "local" {
+		t.Errorf("Expected default environment 'local', got '%s'", config.Environment)
+	}
+	if config.CaptureLogs != false {
+		t.Errorf("Expected default captureLogs false, got %t", config.CaptureLogs)
+	}
+	if config.Report.Driver != "local" {
+		t.Errorf("Expected default report driver 'local', got '%s'", config.Report.Driver)
+	}
+	if config.Report.Connection.Local.Path != "./build/qase-report" {
+		t.Errorf("Expected default report path './build/qase-report', got '%s'", config.Report.Connection.Local.Path)
+	}
+	if config.Report.Connection.Local.Format != "json" {
+		t.Errorf("Expected default report format 'json', got '%s'", config.Report.Connection.Local.Format)
+	}
 	if config.TestOps.API.Host != "qase.io" {
 		t.Errorf("Expected default host 'qase.io', got '%s'", config.TestOps.API.Host)
 	}
@@ -74,7 +92,7 @@ func TestConfigValidation(t *testing.T) {
 			expectError: true,
 		},
 		{
-			name: "valid testops config",
+			name: "testops mode without run ID",
 			config: func() *Config {
 				c := NewConfig()
 				c.Mode = "testops"
@@ -82,7 +100,29 @@ func TestConfigValidation(t *testing.T) {
 				c.TestOps.Project = "DEMO"
 				return c
 			}(),
+			expectError: true,
+		},
+		{
+			name: "valid testops config",
+			config: func() *Config {
+				c := NewConfig()
+				c.Mode = "testops"
+				c.TestOps.API.Token = "token"
+				c.TestOps.Project = "DEMO"
+				runID := int64(123)
+				c.TestOps.Run.ID = &runID
+				return c
+			}(),
 			expectError: false,
+		},
+		{
+			name: "invalid report format",
+			config: func() *Config {
+				c := NewConfig()
+				c.Report.Connection.Local.Format = "xml"
+				return c
+			}(),
+			expectError: true,
 		},
 	}
 
@@ -103,18 +143,32 @@ func TestLoadFromEnvironment(t *testing.T) {
 	// Set environment variables
 	os.Setenv("QASE_MODE", "testops")
 	os.Setenv("QASE_DEBUG", "true")
+	os.Setenv("QASE_ENVIRONMENT", "staging")
+	os.Setenv("QASE_CAPTURE_LOGS", "true")
+	os.Setenv("QASE_REPORT_DRIVER", "local")
+	os.Setenv("QASE_REPORT_CONNECTION_PATH", "/custom/path")
+	os.Setenv("QASE_REPORT_CONNECTION_FORMAT", "yaml")
 	os.Setenv("QASE_TESTOPS_API_TOKEN", "test-token")
+	os.Setenv("QASE_TESTOPS_API_HOST", "custom.qase.io")
 	os.Setenv("QASE_TESTOPS_PROJECT", "TEST")
-	os.Setenv("QASE_TESTOPS_RUN_TAGS", "tag1, tag2, tag3")
+	os.Setenv("QASE_TESTOPS_RUN_ID", "123")
+	os.Setenv("QASE_TESTOPS_DEFECT", "true")
 	os.Setenv("QASE_TESTOPS_BATCH_SIZE", "50")
 
 	defer func() {
 		// Clean up environment variables
 		os.Unsetenv("QASE_MODE")
 		os.Unsetenv("QASE_DEBUG")
+		os.Unsetenv("QASE_ENVIRONMENT")
+		os.Unsetenv("QASE_CAPTURE_LOGS")
+		os.Unsetenv("QASE_REPORT_DRIVER")
+		os.Unsetenv("QASE_REPORT_CONNECTION_PATH")
+		os.Unsetenv("QASE_REPORT_CONNECTION_FORMAT")
 		os.Unsetenv("QASE_TESTOPS_API_TOKEN")
+		os.Unsetenv("QASE_TESTOPS_API_HOST")
 		os.Unsetenv("QASE_TESTOPS_PROJECT")
-		os.Unsetenv("QASE_TESTOPS_RUN_TAGS")
+		os.Unsetenv("QASE_TESTOPS_RUN_ID")
+		os.Unsetenv("QASE_TESTOPS_DEFECT")
 		os.Unsetenv("QASE_TESTOPS_BATCH_SIZE")
 	}()
 
@@ -127,14 +181,35 @@ func TestLoadFromEnvironment(t *testing.T) {
 	if !config.Debug {
 		t.Error("Expected debug to be true")
 	}
+	if config.Environment != "staging" {
+		t.Errorf("Expected environment 'staging', got '%s'", config.Environment)
+	}
+	if !config.CaptureLogs {
+		t.Error("Expected captureLogs to be true")
+	}
+	if config.Report.Driver != "local" {
+		t.Errorf("Expected report driver 'local', got '%s'", config.Report.Driver)
+	}
+	if config.Report.Connection.Local.Path != "/custom/path" {
+		t.Errorf("Expected report path '/custom/path', got '%s'", config.Report.Connection.Local.Path)
+	}
+	if config.Report.Connection.Local.Format != "yaml" {
+		t.Errorf("Expected report format 'yaml', got '%s'", config.Report.Connection.Local.Format)
+	}
 	if config.TestOps.API.Token != "test-token" {
 		t.Errorf("Expected token 'test-token', got '%s'", config.TestOps.API.Token)
+	}
+	if config.TestOps.API.Host != "custom.qase.io" {
+		t.Errorf("Expected host 'custom.qase.io', got '%s'", config.TestOps.API.Host)
 	}
 	if config.TestOps.Project != "TEST" {
 		t.Errorf("Expected project 'TEST', got '%s'", config.TestOps.Project)
 	}
-	if len(config.TestOps.Run.Tags) != 3 {
-		t.Errorf("Expected 3 tags, got %d", len(config.TestOps.Run.Tags))
+	if config.TestOps.Run.ID == nil || *config.TestOps.Run.ID != 123 {
+		t.Errorf("Expected run ID 123, got %v", config.TestOps.Run.ID)
+	}
+	if !config.TestOps.Defect {
+		t.Error("Expected defect to be true")
 	}
 	if config.TestOps.Batch.Size != 50 {
 		t.Errorf("Expected batch size 50, got %d", config.TestOps.Batch.Size)
@@ -183,9 +258,13 @@ func TestConfigBuilder(t *testing.T) {
 		WithAPIToken("builder-token").
 		WithProject("BUILD").
 		WithDebug(true).
-		AddRunTag("tag1").
-		AddRunTag("tag2").
-		AddRunConfiguration("browser", "chrome").
+		WithEnvironment("test").
+		WithCaptureLogs(true).
+		WithReportDriver("local").
+		WithReportPath("/custom/report").
+		WithReportFormat("yaml").
+		WithRunID(123).
+		WithDefect(true).
 		WithBatchSize(75).
 		Build()
 
@@ -205,11 +284,23 @@ func TestConfigBuilder(t *testing.T) {
 	if !config.Debug {
 		t.Error("Expected debug to be true")
 	}
-	if len(config.TestOps.Run.Tags) != 2 {
-		t.Errorf("Expected 2 tags, got %d", len(config.TestOps.Run.Tags))
+	if config.Environment != "test" {
+		t.Errorf("Expected environment 'test', got '%s'", config.Environment)
 	}
-	if len(config.TestOps.Run.Configurations.Values) != 1 {
-		t.Errorf("Expected 1 configuration, got %d", len(config.TestOps.Run.Configurations.Values))
+	if !config.CaptureLogs {
+		t.Error("Expected captureLogs to be true")
+	}
+	if config.Report.Driver != "local" {
+		t.Errorf("Expected report driver 'local', got '%s'", config.Report.Driver)
+	}
+	if config.Report.Connection.Local.Path != "/custom/report" {
+		t.Errorf("Expected report path '/custom/report', got '%s'", config.Report.Connection.Local.Path)
+	}
+	if config.Report.Connection.Local.Format != "yaml" {
+		t.Errorf("Expected report format 'yaml', got '%s'", config.Report.Connection.Local.Format)
+	}
+	if !config.TestOps.Defect {
+		t.Error("Expected defect to be true")
 	}
 	if config.TestOps.Batch.Size != 75 {
 		t.Errorf("Expected batch size 75, got %d", config.TestOps.Batch.Size)
@@ -226,6 +317,8 @@ func TestConfigLoader(t *testing.T) {
 	testConfig.Mode = "testops"
 	testConfig.TestOps.API.Token = "loader-token"
 	testConfig.TestOps.Project = "LOAD"
+	runID := int64(999)
+	testConfig.TestOps.Run.ID = &runID
 
 	err := testConfig.SaveToFile(configFile)
 	if err != nil {
@@ -258,7 +351,6 @@ func TestJSONMarshaling(t *testing.T) {
 	config.Mode = "testops"
 	config.TestOps.API.Token = "test-token"
 	config.TestOps.Project = "JSON"
-	config.TestOps.Run.Tags = []string{"json", "test"}
 
 	// Marshal to JSON
 	data, err := json.MarshalIndent(config, "", "  ")
@@ -279,8 +371,5 @@ func TestJSONMarshaling(t *testing.T) {
 	}
 	if loadedConfig.TestOps.API.Token != config.TestOps.API.Token {
 		t.Errorf("Token mismatch: expected '%s', got '%s'", config.TestOps.API.Token, loadedConfig.TestOps.API.Token)
-	}
-	if len(loadedConfig.TestOps.Run.Tags) != len(config.TestOps.Run.Tags) {
-		t.Errorf("Tags length mismatch: expected %d, got %d", len(config.TestOps.Run.Tags), len(loadedConfig.TestOps.Run.Tags))
 	}
 }

@@ -89,56 +89,12 @@ func (b *ConfigBuilder) WithAPIHost(host string) *ConfigBuilder {
 
 // TestOps Run configuration methods
 
-// WithRunTitle sets run title
-func (b *ConfigBuilder) WithRunTitle(title string) *ConfigBuilder {
-	b.config.TestOps.Run.Title = title
+// WithRunID sets run ID
+func (b *ConfigBuilder) WithRunID(id int64) *ConfigBuilder {
+	b.config.TestOps.Run.ID = &id
 	return b
 }
 
-// WithRunDescription sets run description
-func (b *ConfigBuilder) WithRunDescription(description string) *ConfigBuilder {
-	b.config.TestOps.Run.Description = description
-	return b
-}
-
-// WithRunComplete sets run complete flag
-func (b *ConfigBuilder) WithRunComplete(complete bool) *ConfigBuilder {
-	b.config.TestOps.Run.Complete = complete
-	return b
-}
-
-// WithRunTags sets run tags
-func (b *ConfigBuilder) WithRunTags(tags []string) *ConfigBuilder {
-	b.config.TestOps.Run.Tags = tags
-	return b
-}
-
-// AddRunTag adds a single tag to run tags
-func (b *ConfigBuilder) AddRunTag(tag string) *ConfigBuilder {
-	b.config.TestOps.Run.Tags = append(b.config.TestOps.Run.Tags, tag)
-	return b
-}
-
-// WithRunConfigurations sets run configurations
-func (b *ConfigBuilder) WithRunConfigurations(configurations []ConfigurationValue) *ConfigBuilder {
-	b.config.TestOps.Run.Configurations.Values = configurations
-	return b
-}
-
-// AddRunConfiguration adds a single configuration to run configurations
-func (b *ConfigBuilder) AddRunConfiguration(name, value string) *ConfigBuilder {
-	b.config.TestOps.Run.Configurations.Values = append(
-		b.config.TestOps.Run.Configurations.Values,
-		ConfigurationValue{Name: name, Value: value},
-	)
-	return b
-}
-
-// WithCreateConfigurationsIfNotExists sets flag to create configurations if not exists
-func (b *ConfigBuilder) WithCreateConfigurationsIfNotExists(create bool) *ConfigBuilder {
-	b.config.TestOps.Run.Configurations.CreateIfNotExists = create
-	return b
-}
 
 // TestOps other configuration methods
 

@@ -23,6 +23,8 @@ func TestConfigLoaderWithParentSearch(t *testing.T) {
 	testConfig.Mode = "testops"
 	testConfig.TestOps.API.Token = "parent-search-token"
 	testConfig.TestOps.Project = "PARENT"
+	runID := int64(123)
+	testConfig.TestOps.Run.ID = &runID
 
 	err := testConfig.SaveToFile(configFile)
 	if err != nil {
@@ -73,6 +75,8 @@ func TestLoadWithParentSearch(t *testing.T) {
 	testConfig.Mode = "testops"
 	testConfig.TestOps.API.Token = "global-parent-token"
 	testConfig.TestOps.Project = "GLOBAL"
+	runID := int64(456)
+	testConfig.TestOps.Run.ID = &runID
 
 	err := testConfig.SaveToFile(configFile)
 	if err != nil {
@@ -122,6 +126,8 @@ func TestLoadUnsafeWithParentSearch(t *testing.T) {
 	testConfig.Mode = "testops"
 	testConfig.TestOps.API.Token = "unsafe-parent-token"
 	testConfig.TestOps.Project = "UNSAFE"
+	runID := int64(789)
+	testConfig.TestOps.Run.ID = &runID
 
 	err := testConfig.SaveToFile(configFile)
 	if err != nil {

@@ -49,34 +49,6 @@ func NewUnifiedClient(cfg *config.Config) (*UnifiedClient, error) {
 	}, nil
 }
 
-// CreateRun creates a new test run using v1 API and returns the run ID
-func (c *UnifiedClient) CreateRun(ctx context.Context) (int64, error) {
-	// Get run title from config or use default
-	title := c.config.TestOps.Run.Title
-	if title == "" {
-		title = "Automated Test Run"
-	}
-
-	// Get run description from config
-	description := c.config.TestOps.Run.Description
-	if description == "" && c.config.Environment != "" {
-		description = "Test run in " + c.config.Environment + " environment"
-	}
-
-	// Create run using v1 client
-	runInfo, err := c.v1Client.CreateRun(ctx, c.projectCode, title, description)
-	if err != nil {
-		return 0, err
-	}
-
-	return runInfo.ID, nil
-}
-
-// CompleteRun completes the test run using v1 API
-func (c *UnifiedClient) CompleteRun(ctx context.Context, runID int64) error {
-	return c.v1Client.CompleteRun(ctx, c.projectCode, runID)
-}
-
 // UploadResults uploads test results using v2 API with batching
 func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results []*domain.TestResult) error {
 	if len(results) == 0 {

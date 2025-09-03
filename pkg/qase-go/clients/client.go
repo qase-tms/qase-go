@@ -17,12 +17,6 @@ type Client interface {
 	// SendResults sends multiple test results to Qase (batch operation)
 	SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error
 	
-	// CreateRun creates a new test run
-	CreateRun(ctx context.Context, projectCode string, title, description string) (*RunInfo, error)
-	
-	// CompleteRun marks a test run as completed
-	CompleteRun(ctx context.Context, projectCode string, runID int64) error
-	
 	// UploadAttachment uploads attachments to Qase
 	UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error)
 }

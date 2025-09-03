@@ -406,18 +406,6 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	return nil
 }
 
-// CreateRun creates a new test run (placeholder - not implemented in v2 client yet)
-func (c *V2Client) CreateRun(ctx context.Context, projectCode string, title, description string) (*RunInfo, error) {
-	// TODO: Implement when run creation API is available in v2 client
-	return nil, fmt.Errorf("CreateRun not implemented for API v2 client")
-}
-
-// CompleteRun marks a test run as completed (placeholder - not implemented in v2 client yet)
-func (c *V2Client) CompleteRun(ctx context.Context, projectCode string, runID int64) error {
-	// TODO: Implement when run completion API is available in v2 client
-	return fmt.Errorf("CompleteRun not implemented for API v2 client")
-}
-
 // UploadAttachment is not supported in API v2 client, use V1Client instead
 func (c *V2Client) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
 	return "", fmt.Errorf("UploadAttachment is not supported in API v2 client. Please use V1Client instead")

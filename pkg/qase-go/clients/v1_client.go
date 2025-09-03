@@ -2,15 +2,12 @@ package clients
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
-	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 	api_v1_client "github.com/qase-tms/qase-go/qase-api-client"
 )
 
@@ -50,106 +47,6 @@ func (c *V1Client) SendResult(ctx context.Context, projectCode string, runID int
 // SendResults is not supported in API v1 client
 func (c *V1Client) SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error {
 	return fmt.Errorf("SendResults is not supported in API v1 client. Please use V2Client instead. You can create it with clients.NewV2Client()")
-}
-
-// CreateRun creates a new test run using API v1
-func (c *V1Client) CreateRun(ctx context.Context, projectCode string, title, description string) (*RunInfo, error) {
-	logging.Info("Creating test run: project=%s, title=%s, description=%s", projectCode, title, description)
-
-	// Create run request
-	runCreate := api_v1_client.NewRunCreate(title)
-	runCreate.SetDescription(description)
-
-	// Set start time in format expected by API v1: "2006-01-02 15:04:05"
-	// Subtract 7 seconds to ensure time is in the past
-	startTime := time.Now().UTC().Add(-7 * time.Second).Format("2006-01-02 15:04:05")
-	runCreate.SetStartTime(startTime)
-
-	if c.config.Debug {
-		// Create a simplified structure for logging
-		logData := map[string]interface{}{
-			"title":       runCreate.GetTitle(),
-			"description": runCreate.GetDescription(),
-			"start_time":  runCreate.GetStartTime(),
-		}
-
-		// Convert to JSON for pretty printing
-		if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
-			logging.Info("RunCreate object: %s", string(jsonData))
-		} else {
-			logging.Info("RunCreate object: %+v", logData)
-		}
-	}
-
-	// Set API token in context
-	authCtx := context.WithValue(ctx, api_v1_client.ContextAPIKeys, map[string]api_v1_client.APIKey{
-		"TokenAuth": {
-			Key: c.config.APIToken,
-		},
-	})
-
-	// Create run via API
-	response, httpResp, err := c.client.RunsAPI.CreateRun(authCtx, projectCode).RunCreate(*runCreate).Execute()
-	if err != nil {
-		if c.config.Debug {
-			logging.Error("API request failed with error: %v", err)
-			if httpResp != nil {
-				logging.Info("HTTP response status: %s", httpResp.Status)
-				logging.Info("HTTP response headers: %v", httpResp.Header)
-				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					logging.Info("HTTP response body: %s", string(body))
-				}
-			}
-		}
-		return nil, fmt.Errorf("failed to create test run: %w", err)
-	}
-
-	runInfo := &RunInfo{
-		ID:          response.Result.GetId(),
-		Title:       "", // Title not available in API v1 response
-		Description: "", // Description not available in API v1 response
-		URL:         fmt.Sprintf("https://app.qase.io/run/%s/dashboard/%d", projectCode, response.Result.GetId()),
-	}
-
-	if c.config.Debug {
-		logging.Info("Successfully created test run: id=%d, url=%s", runInfo.ID, runInfo.URL)
-	}
-
-	return runInfo, nil
-}
-
-// CompleteRun marks a test run as completed using API v1
-func (c *V1Client) CompleteRun(ctx context.Context, projectCode string, runID int64) error {
-	logging.Info("Completing test run: project=%s, run=%d", projectCode, runID)
-
-	// Set API token in context
-	authCtx := context.WithValue(ctx, api_v1_client.ContextAPIKeys, map[string]api_v1_client.APIKey{
-		"TokenAuth": {
-			Key: c.config.APIToken,
-		},
-	})
-
-	// Complete run via API
-	_, httpResp, err := c.client.RunsAPI.CompleteRun(authCtx, projectCode, int32(runID)).Execute()
-	if err != nil {
-		if c.config.Debug {
-			logging.Error("API request failed with error: %v", err)
-			if httpResp != nil {
-				logging.Info("HTTP response status: %s", httpResp.Status)
-				logging.Info("HTTP response headers: %v", httpResp.Header)
-				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					logging.Info("HTTP response body: %s", string(body))
-				}
-			}
-		}
-		return fmt.Errorf("failed to complete test run: %w", err)
-	}
-
-	if c.config.Debug {
-		logging.Info("Successfully completed test run: run=%d", runID)
-	}
-
-	return nil
 }
 
 // UploadAttachment uploads attachments to Qase API v1
