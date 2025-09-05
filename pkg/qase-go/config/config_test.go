@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -154,6 +155,7 @@ func TestLoadFromEnvironment(t *testing.T) {
 	os.Setenv("QASE_TESTOPS_RUN_ID", "123")
 	os.Setenv("QASE_TESTOPS_DEFECT", "true")
 	os.Setenv("QASE_TESTOPS_BATCH_SIZE", "50")
+	os.Setenv("QASE_TESTOPS_STATUS_FILTER", "passed,failed")
 
 	defer func() {
 		// Clean up environment variables
@@ -170,6 +172,7 @@ func TestLoadFromEnvironment(t *testing.T) {
 		os.Unsetenv("QASE_TESTOPS_RUN_ID")
 		os.Unsetenv("QASE_TESTOPS_DEFECT")
 		os.Unsetenv("QASE_TESTOPS_BATCH_SIZE")
+		os.Unsetenv("QASE_TESTOPS_STATUS_FILTER")
 	}()
 
 	config := NewConfig()
@@ -213,6 +216,16 @@ func TestLoadFromEnvironment(t *testing.T) {
 	}
 	if config.TestOps.Batch.Size != 50 {
 		t.Errorf("Expected batch size 50, got %d", config.TestOps.Batch.Size)
+	}
+	expectedStatusFilter := []string{"passed", "failed"}
+	if len(config.TestOps.StatusFilter) != len(expectedStatusFilter) {
+		t.Errorf("Expected statusFilter length %d, got %d", len(expectedStatusFilter), len(config.TestOps.StatusFilter))
+	} else {
+		for i, status := range expectedStatusFilter {
+			if config.TestOps.StatusFilter[i] != status {
+				t.Errorf("Expected statusFilter[%d] '%s', got '%s'", i, status, config.TestOps.StatusFilter[i])
+			}
+		}
 	}
 }
 
@@ -371,5 +384,78 @@ func TestJSONMarshaling(t *testing.T) {
 	}
 	if loadedConfig.TestOps.API.Token != config.TestOps.API.Token {
 		t.Errorf("Token mismatch: expected '%s', got '%s'", config.TestOps.API.Token, loadedConfig.TestOps.API.Token)
+	}
+}
+
+func TestStatusFilterValidation(t *testing.T) {
+	tests := []struct {
+		name          string
+		statusFilter  []string
+		shouldError   bool
+		expectedError string
+	}{
+		{
+			name:         "valid status filter",
+			statusFilter: []string{"passed", "failed"},
+			shouldError:  false,
+		},
+		{
+			name:         "valid single status",
+			statusFilter: []string{"passed"},
+			shouldError:  false,
+		},
+		{
+			name:         "valid all statuses",
+			statusFilter: []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"},
+			shouldError:  false,
+		},
+		{
+			name:         "empty status filter",
+			statusFilter: []string{},
+			shouldError:  false,
+		},
+		{
+			name:         "nil status filter",
+			statusFilter: nil,
+			shouldError:  false,
+		},
+		{
+			name:          "invalid status",
+			statusFilter:  []string{"passed", "invalid_status"},
+			shouldError:   true,
+			expectedError: "invalid status 'invalid_status'",
+		},
+		{
+			name:          "case sensitive status",
+			statusFilter:  []string{"PASSED", "failed"},
+			shouldError:   true,
+			expectedError: "invalid status 'PASSED'",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			config := NewConfig()
+			config.Mode = "testops"
+			config.TestOps.API.Token = "test-token"
+			config.TestOps.Project = "TEST"
+			runID := int64(123)
+			config.TestOps.Run.ID = &runID
+			config.TestOps.StatusFilter = tt.statusFilter
+
+			err := config.Validate()
+
+			if tt.shouldError {
+				if err == nil {
+					t.Errorf("Expected validation error, but got none")
+				} else if !strings.Contains(err.Error(), tt.expectedError) {
+					t.Errorf("Expected error containing '%s', got '%s'", tt.expectedError, err.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Expected no validation error, but got: %v", err)
+				}
+			}
+		})
 	}
 }

@@ -10,7 +10,6 @@ This guide provides comprehensive documentation for using the Qase Go SDK in you
 - [Test Metadata](#test-metadata)
 - [Step Metadata](#step-metadata)
 - [Assertions](#assertions)
-- [Reporters](#reporters)
 - [Test Run Management](#test-run-management)
 - [Advanced Features](#advanced-features)
 - [Best Practices](#best-practices)
@@ -56,7 +55,8 @@ Create a `qase.config.json` file in your project root:
     "defect": false,
     "batch": {
       "size": 100
-    }
+    },
+    "statusFilter": ["passed", "skipped"]
   },
   "report": {
     "driver": "local",
@@ -81,6 +81,7 @@ Create a `qase.config.json` file in your project root:
 - `testops.run.id`: **Required** - specific test run ID (must be created beforehand)
 - `testops.defect`: Auto-create defects for failed tests
 - `testops.batch.size`: Batch size for result uploads
+- `testops.statusFilter`: Array of test result statuses to exclude from TestOps reporting
 - `report.connection.local.format`: "json" or "xml"
 
 **Note**: For TestOps mode, you must create a test run first and specify its ID in the configuration. See [Test Run Management](#test-run-management) section below.
@@ -102,6 +103,7 @@ export QASE_TESTOPS_RUN_ID=123
 export QASE_TESTOPS_API_HOST=qase.io
 export QASE_TESTOPS_DEFECT=false
 export QASE_TESTOPS_BATCH_SIZE=100
+export QASE_TESTOPS_STATUS_FILTER=passed,skipped
 
 # Report Configuration
 export QASE_REPORT_DRIVER=local
@@ -418,6 +420,101 @@ qase.Step(t, qase.StepMetadata{
 })
 ```
 
+### Status Filtering
+
+The SDK supports filtering test results by status when reporting to TestOps. This allows you to exclude certain test result statuses from being sent to Qase TestOps, which can be useful for reducing noise in your test reports or focusing on specific types of results.
+
+#### Status Filter Configuration
+
+Add the `statusFilter` field to your TestOps configuration:
+
+```json
+{
+  "mode": "testops",
+  "testops": {
+    "api": {
+      "token": "your-api-token",
+      "host": "qase.io"
+    },
+    "project": "your-project-code",
+    "run": {
+      "id": 123
+    },
+    "statusFilter": ["passed", "failed"]
+  }
+}
+```
+
+#### Environment Variable
+
+You can also configure status filtering using environment variables:
+
+```bash
+export QASE_TESTOPS_STATUS_FILTER=passed,failed
+```
+
+#### Supported Statuses
+
+The following test result statuses can be filtered:
+
+- `passed` - Test passed successfully
+- `failed` - Test failed
+- `blocked` - Test was blocked
+- `skipped` - Test was skipped
+- `in_progress` - Test is in progress
+- `invalid` - Test result is invalid
+
+#### How It Works
+
+- **Exclusion Logic**: Statuses listed in `statusFilter` are **excluded** from TestOps reporting
+- **Case Insensitive**: Status comparison is case-insensitive
+- **Empty Filter**: If `statusFilter` is empty or not specified, all results are sent to TestOps
+- **Debug Logging**: When debug mode is enabled, filtered results are logged
+
+#### Configuration Examples
+
+**Exclude only passed tests:**
+
+```json
+{
+  "testops": {
+    "statusFilter": ["passed"]
+  }
+}
+```
+
+This will send `failed`, `blocked`, `skipped`, `in_progress`, and `invalid` results to TestOps, but exclude `passed` results.
+
+**Exclude multiple statuses:**
+
+```json
+{
+  "testops": {
+    "statusFilter": ["passed", "skipped"]
+  }
+}
+```
+
+This will send only `failed`, `blocked`, `in_progress`, and `invalid` results to TestOps.
+
+**Exclude all statuses:**
+
+```json
+{
+  "testops": {
+    "statusFilter": ["passed", "failed", "blocked", "skipped", "in_progress", "invalid"]
+  }
+}
+```
+
+This will prevent any results from being sent to TestOps.
+
+#### Use Cases
+
+- **Focus on Failures**: Exclude `passed` and `skipped` results to focus only on test failures
+- **Reduce Noise**: Exclude `skipped` tests from reports to reduce clutter
+- **Debug Mode**: Exclude `passed` tests during debugging to focus on problematic areas
+
 ### Multi-package Testing
 
 For multi-package projects, add `TestMain` to each package to ensure proper initialization and result reporting:
@@ -440,6 +537,7 @@ func TestMain(m *testing.M) {
 You can create test runs using:
 
 **cURL:**
+
 ```bash
 curl --request POST \
      --url https://api.qase.io/v1/run/DEMO \
@@ -454,6 +552,7 @@ curl --request POST \
 ```
 
 **qasectl CLI:**
+
 ```bash
 qasectl run create --project DEMO --title "My test run"
 ```
@@ -463,6 +562,7 @@ qasectl run create --project DEMO --title "My test run"
 You can complete test runs using:
 
 **cURL:**
+
 ```bash
 curl --request POST \
      --url https://api.qase.io/v1/run/DEMO/1/complete \
@@ -471,12 +571,15 @@ curl --request POST \
 ```
 
 **qasectl CLI:**
+
 ```bash
 qasectl run complete --project DEMO --id 1
 ```
 
 **GitHub Actions:**
+
 If you're using GitHub, we provide ready-to-use actions:
+
 - [Create test runs](https://github.com/qase-tms/gh-actions/run-create)
 - [Complete test runs](https://github.com/qase-tms/gh-actions/run-complete)
 

@@ -68,7 +68,8 @@ Create a `qase.config.json` file in your project root:
     "project": "your-project-code",
     "run": {
       "id": 123
-    }
+    },
+    "statusFilter": ["passed", "failed"]
   },
   "report": {
     "driver": "local",
@@ -113,6 +114,7 @@ export QASE_TESTOPS_RUN_ID=123
 You can create test runs using:
 
 **cURL:**
+
 ```bash
 curl --request POST \
      --url https://api.qase.io/v1/run/DEMO \
@@ -127,6 +129,7 @@ curl --request POST \
 ```
 
 **qasectl CLI:**
+
 ```bash
 qasectl testops run create --project PROJ --token <token> --title "Test Run 1"
 ```
@@ -136,6 +139,7 @@ qasectl testops run create --project PROJ --token <token> --title "Test Run 1"
 You can complete test runs using:
 
 **cURL:**
+
 ```bash
 curl --request POST \
      --url https://api.qase.io/v1/run/DEMO/1/complete \
@@ -144,16 +148,19 @@ curl --request POST \
 ```
 
 **qasectl CLI:**
+
 ```bash
 qasectl testops run complete --project PROJ --token <token> --id 1
 ```
 
 **GitHub Actions:**
+
 If you're using GitHub, we provide ready-to-use actions:
+
 - [Create test runs](https://github.com/qase-tms/gh-actions/run-create)
 - [Complete test runs](https://github.com/qase-tms/gh-actions/run-complete)
 
-#### Running Tests
+#### Test Execution
 
 ```bash
 # Run tests with reporting
@@ -181,6 +188,7 @@ go test -v ./...
 | `QASE_TESTOPS_API_HOST` | API host | `qase.io` |
 | `QASE_TESTOPS_DEFECT` | Auto-create defects for failed tests | `false` |
 | `QASE_TESTOPS_BATCH_SIZE` | Batch size for result uploads | `100` |
+| `QASE_TESTOPS_STATUS_FILTER` | Comma-separated list of statuses to exclude from TestOps | - |
 | `QASE_REPORT_DRIVER` | Report driver | `local` |
 | `QASE_REPORT_CONNECTION_PATH` | Local report path | `./build/qase-report` |
 | `QASE_REPORT_CONNECTION_FORMAT` | Report format | `json` |
@@ -191,7 +199,6 @@ For detailed documentation and advanced usage examples, see:
 
 - [Usage Guide](docs/usage.md) - Comprehensive usage documentation
 - [API Reference](https://godoc.org/github.com/qase-tms/qase-go) - Go package documentation
-
 
 ## License
 

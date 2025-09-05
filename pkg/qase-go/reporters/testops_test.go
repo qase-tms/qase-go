@@ -359,3 +359,170 @@ func TestCreateStep(t *testing.T) {
 		}
 	}
 }
+
+func TestTestOpsReporterStatusFiltering(t *testing.T) {
+	tests := []struct {
+		name           string
+		statusFilter   []string
+		testResults    []*domain.TestResult
+		expectedCount  int
+		expectedTitles []string
+	}{
+		{
+			name:         "no filter - all results included",
+			statusFilter: nil,
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+				createTestResultWithStatus("Test 3", domain.StatusSkipped),
+			},
+			expectedCount:  3,
+			expectedTitles: []string{"Test 1", "Test 2", "Test 3"},
+		},
+		{
+			name:         "exclude passed status",
+			statusFilter: []string{"passed"},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+				createTestResultWithStatus("Test 3", domain.StatusSkipped),
+			},
+			expectedCount:  2,
+			expectedTitles: []string{"Test 2", "Test 3"},
+		},
+		{
+			name:         "exclude passed and failed",
+			statusFilter: []string{"passed", "failed"},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+				createTestResultWithStatus("Test 3", domain.StatusSkipped),
+				createTestResultWithStatus("Test 4", domain.StatusBlocked),
+			},
+			expectedCount:  2,
+			expectedTitles: []string{"Test 3", "Test 4"},
+		},
+		{
+			name:         "exclude case insensitive",
+			statusFilter: []string{"PASSED", "FAILED"},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+				createTestResultWithStatus("Test 3", domain.StatusSkipped),
+			},
+			expectedCount:  1,
+			expectedTitles: []string{"Test 3"},
+		},
+		{
+			name:         "empty filter - all results included",
+			statusFilter: []string{},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+			},
+			expectedCount:  2,
+			expectedTitles: []string{"Test 1", "Test 2"},
+		},
+		{
+			name:         "exclude non-matching status",
+			statusFilter: []string{"blocked"},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+			},
+			expectedCount:  2,
+			expectedTitles: []string{"Test 1", "Test 2"},
+		},
+		{
+			name:         "exclude all statuses",
+			statusFilter: []string{"passed", "failed", "skipped", "blocked", "in_progress", "invalid"},
+			testResults: []*domain.TestResult{
+				createTestResultWithStatus("Test 1", domain.StatusPassed),
+				createTestResultWithStatus("Test 2", domain.StatusFailed),
+				createTestResultWithStatus("Test 3", domain.StatusSkipped),
+			},
+			expectedCount:  0,
+			expectedTitles: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create mock client
+			mockClient := &mockClient{}
+
+			// Create config with status filter
+			cfg := &config.Config{
+				TestOps: config.TestOpsConfig{
+					StatusFilter: tt.statusFilter,
+				},
+			}
+
+			// Create reporter with config
+			runID := int64(123)
+			reporter := NewTestOpsReporterWithConfig(mockClient, runID, cfg)
+
+			// Add test results
+			for _, result := range tt.testResults {
+				err := reporter.AddResult(result)
+				if err != nil {
+					t.Errorf("Unexpected error adding result: %v", err)
+				}
+			}
+
+			// Verify results count
+			if len(reporter.results) != tt.expectedCount {
+				t.Errorf("Expected %d results, got %d", tt.expectedCount, len(reporter.results))
+			}
+
+			// Verify result titles
+			actualTitles := make([]string, len(reporter.results))
+			for i, result := range reporter.results {
+				actualTitles[i] = result.Title
+			}
+
+			if len(actualTitles) != len(tt.expectedTitles) {
+				t.Errorf("Expected %d titles, got %d", len(tt.expectedTitles), len(actualTitles))
+			} else {
+				for i, expectedTitle := range tt.expectedTitles {
+					if actualTitles[i] != expectedTitle {
+						t.Errorf("Expected title[%d] '%s', got '%s'", i, expectedTitle, actualTitles[i])
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestTestOpsReporterWithoutConfig(t *testing.T) {
+	// Test that reporter without config includes all results
+	mockClient := &mockClient{}
+	runID := int64(123)
+	reporter := NewTestOpsReporter(mockClient, runID)
+
+	// Add results with different statuses
+	results := []*domain.TestResult{
+		createTestResultWithStatus("Test 1", domain.StatusPassed),
+		createTestResultWithStatus("Test 2", domain.StatusFailed),
+		createTestResultWithStatus("Test 3", domain.StatusSkipped),
+	}
+
+	for _, result := range results {
+		err := reporter.AddResult(result)
+		if err != nil {
+			t.Errorf("Unexpected error adding result: %v", err)
+		}
+	}
+
+	// All results should be included
+	if len(reporter.results) != 3 {
+		t.Errorf("Expected 3 results, got %d", len(reporter.results))
+	}
+}
+
+// Helper function to create test result with specific status
+func createTestResultWithStatus(title string, status domain.TestResultStatus) *domain.TestResult {
+	result := domain.NewTestResult(title)
+	result.Execution.Status = status
+	return result
+}
