@@ -3,13 +3,17 @@
     "mode": "testops",
     "testops": {
       "api": {
-        "token": "YOUR_TOKEN"
+        "token": "YOUR_TOKEN",
+        "host": "qase.io"
       },
-  
-      "project": "project code",
-  
       "run": {
         "id": 1    
-      }
+      },
+      "defect": false,
+      "project": "project code",
+      "batch": {
+        "size": 100
+      },
+      "statusFilter": ["passed", "failed"]
     }
   }

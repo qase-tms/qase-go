@@ -78,7 +78,7 @@ func (cr *CoreReporter) initializeReporter() error {
 			return fmt.Errorf("failed to create TestOps client: %w", err)
 		}
 
-		cr.reporter = NewTestOpsReporter(client, *cr.config.TestOps.Run.ID)
+		cr.reporter = NewTestOpsReporterWithConfig(client, *cr.config.TestOps.Run.ID, cr.config)
 	case "off":
 		return fmt.Errorf("reporting is disabled (mode: off)")
 	default:
@@ -104,7 +104,7 @@ func (cr *CoreReporter) initializeFallback() error {
 		if err != nil {
 			return fmt.Errorf("failed to create TestOps client for fallback: %w", err)
 		}
-		cr.fallback = NewTestOpsReporter(client, *cr.config.TestOps.Run.ID)
+		cr.fallback = NewTestOpsReporterWithConfig(client, *cr.config.TestOps.Run.ID, cr.config)
 	case "off":
 		// No fallback configured
 		cr.fallback = nil

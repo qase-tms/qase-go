@@ -38,11 +38,12 @@ type LocalConfig struct {
 
 // TestOpsConfig represents TestOps configuration
 type TestOpsConfig struct {
-	API     APIConfig   `json:"api"`
-	Run     RunConfig   `json:"run"`
-	Defect  bool        `json:"defect"`
-	Project string      `json:"project"`
-	Batch   BatchConfig `json:"batch"`
+	API          APIConfig   `json:"api"`
+	Run          RunConfig   `json:"run"`
+	Defect       bool        `json:"defect"`
+	Project      string      `json:"project"`
+	Batch        BatchConfig `json:"batch"`
+	StatusFilter []string    `json:"statusFilter,omitempty"`
 }
 
 // APIConfig represents API configuration
@@ -156,6 +157,14 @@ func (c *Config) LoadFromEnvironment() {
 			c.TestOps.Batch.Size = size
 		}
 	}
+	if statusFilter := os.Getenv("QASE_TESTOPS_STATUS_FILTER"); statusFilter != "" {
+		// Parse comma-separated status values
+		statuses := strings.Split(statusFilter, ",")
+		for i, status := range statuses {
+			statuses[i] = strings.TrimSpace(status)
+		}
+		c.TestOps.StatusFilter = statuses
+	}
 }
 
 // LoadFromFile loads configuration from JSON file
@@ -217,6 +226,16 @@ func (c *Config) Validate() error {
 		}
 		if c.TestOps.Run.ID == nil || *c.TestOps.Run.ID == 0 {
 			return fmt.Errorf("run ID is required when mode is 'testops'")
+		}
+		
+		// Validate status filter if provided
+		if len(c.TestOps.StatusFilter) > 0 {
+			validStatuses := []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
+			for _, status := range c.TestOps.StatusFilter {
+				if !contains(validStatuses, status) {
+					return fmt.Errorf("invalid status '%s' in statusFilter, must be one of: %s", status, strings.Join(validStatuses, ", "))
+				}
+			}
 		}
 	}
 
