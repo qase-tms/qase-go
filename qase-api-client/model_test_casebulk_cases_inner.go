@@ -43,7 +43,7 @@ type TestCasebulkCasesInner struct {
 	// Deprecated, use `parameters` instead.
 	// Deprecated
 	Params     map[string][]string       `json:"params,omitempty"`
-	Parameters []TestCaseParametercreate `json:"parameters,omitempty"`
+	Parameters []TestCaseParameterCreate `json:"parameters,omitempty"`
 	// A map of custom fields values (id => value)
 	CustomField *map[string]string `json:"custom_field,omitempty"`
 	CreatedAt   *string            `json:"created_at,omitempty"`
@@ -644,9 +644,9 @@ func (o *TestCasebulkCasesInner) SetParams(v map[string][]string) {
 }
 
 // GetParameters returns the Parameters field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *TestCasebulkCasesInner) GetParameters() []TestCaseParametercreate {
+func (o *TestCasebulkCasesInner) GetParameters() []TestCaseParameterCreate {
 	if o == nil {
-		var ret []TestCaseParametercreate
+		var ret []TestCaseParameterCreate
 		return ret
 	}
 	return o.Parameters
@@ -655,7 +655,7 @@ func (o *TestCasebulkCasesInner) GetParameters() []TestCaseParametercreate {
 // GetParametersOk returns a tuple with the Parameters field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TestCasebulkCasesInner) GetParametersOk() ([]TestCaseParametercreate, bool) {
+func (o *TestCasebulkCasesInner) GetParametersOk() ([]TestCaseParameterCreate, bool) {
 	if o == nil || IsNil(o.Parameters) {
 		return nil, false
 	}
@@ -671,8 +671,8 @@ func (o *TestCasebulkCasesInner) HasParameters() bool {
 	return false
 }
 
-// SetParameters gets a reference to the given []TestCaseParametercreate and assigns it to the Parameters field.
-func (o *TestCasebulkCasesInner) SetParameters(v []TestCaseParametercreate) {
+// SetParameters gets a reference to the given []TestCaseParameterCreate and assigns it to the Parameters field.
+func (o *TestCasebulkCasesInner) SetParameters(v []TestCaseParameterCreate) {
 	o.Parameters = v
 }
 

@@ -321,13 +321,13 @@ func (a *AttachmentsAPIService) GetAttachmentsExecute(r ApiGetAttachmentsRequest
 	localVarFormParams := url.Values{}
 
 	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
 		r.offset = &defaultValue

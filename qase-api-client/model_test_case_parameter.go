@@ -14,6 +14,8 @@ package api_v1_client
 import (
 	"encoding/json"
 	"fmt"
+
+	"gopkg.in/validator.v2"
 )
 
 // TestCaseParameter - struct for TestCaseParameter
@@ -47,7 +49,11 @@ func (dst *TestCaseParameter) UnmarshalJSON(data []byte) error {
 		if string(jsonTestCaseParameterGroup) == "{}" { // empty struct
 			dst.TestCaseParameterGroup = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.TestCaseParameterGroup); err != nil {
+				dst.TestCaseParameterGroup = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.TestCaseParameterGroup = nil
@@ -60,7 +66,11 @@ func (dst *TestCaseParameter) UnmarshalJSON(data []byte) error {
 		if string(jsonTestCaseParameterSingle) == "{}" { // empty struct
 			dst.TestCaseParameterSingle = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.TestCaseParameterSingle); err != nil {
+				dst.TestCaseParameterSingle = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.TestCaseParameterSingle = nil
@@ -103,6 +113,20 @@ func (obj *TestCaseParameter) GetActualInstance() interface{} {
 
 	if obj.TestCaseParameterSingle != nil {
 		return obj.TestCaseParameterSingle
+	}
+
+	// all schemas are nil
+	return nil
+}
+
+// Get the actual instance value
+func (obj TestCaseParameter) GetActualInstanceValue() interface{} {
+	if obj.TestCaseParameterGroup != nil {
+		return *obj.TestCaseParameterGroup
+	}
+
+	if obj.TestCaseParameterSingle != nil {
+		return *obj.TestCaseParameterSingle
 	}
 
 	// all schemas are nil

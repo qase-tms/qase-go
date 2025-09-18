@@ -16,52 +16,52 @@ import (
 	"fmt"
 )
 
-// TestCaseParams struct for TestCaseParams
+// TestCaseParams Deprecated, use `parameters` instead.
 type TestCaseParams struct {
-	params *[]map[string]interface{}
-	param  *map[string]interface{}
+	ArrayOfMapmapOfStringAny *[]map[string]interface{}
+	MapmapOfStringAny        *map[string]interface{}
 }
 
 // Unmarshal JSON data into any of the pointers in the struct
 func (dst *TestCaseParams) UnmarshalJSON(data []byte) error {
 	var err error
-	// try to unmarshal JSON data into []map[string]interface{}
-	err = json.Unmarshal(data, &dst.params)
+	// try to unmarshal JSON data into ArrayOfMapmapOfStringAny
+	err = json.Unmarshal(data, &dst.ArrayOfMapmapOfStringAny)
 	if err == nil {
-		json, _ := json.Marshal(dst.params)
-		if string(json) == "{}" { // empty struct
-			dst.params = nil
+		jsonArrayOfMapmapOfStringAny, _ := json.Marshal(dst.ArrayOfMapmapOfStringAny)
+		if string(jsonArrayOfMapmapOfStringAny) == "{}" { // empty struct
+			dst.ArrayOfMapmapOfStringAny = nil
 		} else {
-			return nil // data stored in dst.[]map[string]interface{}, return on the first match
+			return nil // data stored in dst.ArrayOfMapmapOfStringAny, return on the first match
 		}
 	} else {
-		dst.params = nil
+		dst.ArrayOfMapmapOfStringAny = nil
 	}
 
-	// try to unmarshal JSON data into map[string]interface{}
-	err = json.Unmarshal(data, &dst.param)
+	// try to unmarshal JSON data into MapmapOfStringAny
+	err = json.Unmarshal(data, &dst.MapmapOfStringAny)
 	if err == nil {
-		jsonmap, _ := json.Marshal(dst.param)
-		if string(jsonmap) == "{}" { // empty struct
-			dst.param = nil
+		jsonMapmapOfStringAny, _ := json.Marshal(dst.MapmapOfStringAny)
+		if string(jsonMapmapOfStringAny) == "{}" { // empty struct
+			dst.MapmapOfStringAny = nil
 		} else {
-			return nil // data stored in dst.map[string]interface{}, return on the first match
+			return nil // data stored in dst.MapmapOfStringAny, return on the first match
 		}
 	} else {
-		dst.param = nil
+		dst.MapmapOfStringAny = nil
 	}
 
 	return fmt.Errorf("data failed to match schemas in anyOf(TestCaseParams)")
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON
-func (src *TestCaseParams) MarshalJSON() ([]byte, error) {
-	if src.params != nil {
-		return json.Marshal(&src.params)
+func (src TestCaseParams) MarshalJSON() ([]byte, error) {
+	if src.ArrayOfMapmapOfStringAny != nil {
+		return json.Marshal(&src.ArrayOfMapmapOfStringAny)
 	}
 
-	if src.param != nil {
-		return json.Marshal(&src.param)
+	if src.MapmapOfStringAny != nil {
+		return json.Marshal(&src.MapmapOfStringAny)
 	}
 
 	return nil, nil // no data in anyOf schemas

@@ -482,7 +482,7 @@ func (a *RunsAPIService) GetRunExecute(r ApiGetRunRequest) (*RunResponse, *http.
 	}
 
 	if r.include != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -667,37 +667,37 @@ func (a *RunsAPIService) GetRunsExecute(r ApiGetRunsRequest) (*RunListResponse, 
 	}
 
 	if r.search != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "", "")
 	}
 	if r.status != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "", "")
 	}
 	if r.milestone != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "milestone", r.milestone, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "milestone", r.milestone, "", "")
 	}
 	if r.environment != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "environment", r.environment, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "environment", r.environment, "", "")
 	}
 	if r.fromStartTime != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "from_start_time", r.fromStartTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "from_start_time", r.fromStartTime, "", "")
 	}
 	if r.toStartTime != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "to_start_time", r.toStartTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "to_start_time", r.toStartTime, "", "")
 	}
 	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
 		r.offset = &defaultValue
 	}
 	if r.include != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -771,11 +771,11 @@ type ApiRunUpdateExternalIssueRequest struct {
 	ctx               context.Context
 	ApiService        *RunsAPIService
 	code              string
-	runexternalIssues *RunexternalIssues
+	runExternalIssues *RunExternalIssues
 }
 
-func (r ApiRunUpdateExternalIssueRequest) RunexternalIssues(runexternalIssues RunexternalIssues) ApiRunUpdateExternalIssueRequest {
-	r.runexternalIssues = &runexternalIssues
+func (r ApiRunUpdateExternalIssueRequest) RunExternalIssues(runExternalIssues RunExternalIssues) ApiRunUpdateExternalIssueRequest {
+	r.runExternalIssues = &runExternalIssues
 	return r
 }
 
@@ -834,8 +834,8 @@ func (a *RunsAPIService) RunUpdateExternalIssueExecute(r ApiRunUpdateExternalIss
 	if strlen(r.code) > 10 {
 		return nil, reportError("code must have less than 10 elements")
 	}
-	if r.runexternalIssues == nil {
-		return nil, reportError("runexternalIssues is required and must be specified")
+	if r.runExternalIssues == nil {
+		return nil, reportError("runExternalIssues is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -856,7 +856,7 @@ func (a *RunsAPIService) RunUpdateExternalIssueExecute(r ApiRunUpdateExternalIss
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.runexternalIssues
+	localVarPostBody = r.runExternalIssues
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

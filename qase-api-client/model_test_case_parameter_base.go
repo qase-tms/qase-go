@@ -22,9 +22,8 @@ var _ MappedNullable = &TestCaseParameterBase{}
 
 // TestCaseParameterBase struct for TestCaseParameterBase
 type TestCaseParameterBase struct {
-	SharedId NullableString    `json:"shared_id,omitempty"`
-	Type     string            `json:"type"`
-	Items    []ParameterSingle `json:"items"`
+	SharedId NullableString `json:"shared_id,omitempty"`
+	Type     string         `json:"type"`
 }
 
 type _TestCaseParameterBase TestCaseParameterBase
@@ -33,10 +32,9 @@ type _TestCaseParameterBase TestCaseParameterBase
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTestCaseParameterBase(type_ string, items []ParameterSingle) *TestCaseParameterBase {
+func NewTestCaseParameterBase(type_ string) *TestCaseParameterBase {
 	this := TestCaseParameterBase{}
 	this.Type = type_
-	this.Items = items
 	return &this
 }
 
@@ -115,30 +113,6 @@ func (o *TestCaseParameterBase) SetType(v string) {
 	o.Type = v
 }
 
-// GetItems returns the Items field value
-func (o *TestCaseParameterBase) GetItems() []ParameterSingle {
-	if o == nil {
-		var ret []ParameterSingle
-		return ret
-	}
-
-	return o.Items
-}
-
-// GetItemsOk returns a tuple with the Items field value
-// and a boolean to check if the value has been set.
-func (o *TestCaseParameterBase) GetItemsOk() ([]ParameterSingle, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.Items, true
-}
-
-// SetItems sets field value
-func (o *TestCaseParameterBase) SetItems(v []ParameterSingle) {
-	o.Items = v
-}
-
 func (o TestCaseParameterBase) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -153,7 +127,6 @@ func (o TestCaseParameterBase) ToMap() (map[string]interface{}, error) {
 		toSerialize["shared_id"] = o.SharedId.Get()
 	}
 	toSerialize["type"] = o.Type
-	toSerialize["items"] = o.Items
 	return toSerialize, nil
 }
 
@@ -163,7 +136,6 @@ func (o *TestCaseParameterBase) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"type",
-		"items",
 	}
 
 	allProperties := make(map[string]interface{})

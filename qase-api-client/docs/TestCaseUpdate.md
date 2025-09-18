@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 **Steps** | Pointer to [**[]TestStepCreate**](TestStepCreate.md) |  | [optional] 
 **Tags** | Pointer to **[]string** |  | [optional] 
 **Params** | Pointer to **map[string][]string** | Deprecated, use &#x60;parameters&#x60; instead. | [optional] 
-**Parameters** | Pointer to [**[]TestCaseParametercreate**](TestCaseParametercreate.md) |  | [optional] 
+**Parameters** | Pointer to [**[]TestCaseParameterCreate**](TestCaseParameterCreate.md) |  | [optional] 
 **CustomField** | Pointer to **map[string]string** | A map of custom fields values (id &#x3D;&gt; value) | [optional] 
 
 ## Methods
@@ -506,20 +506,20 @@ HasParams returns a boolean if a field has been set.
 UnsetParams ensures that no value is present for Params, not even an explicit nil
 ### GetParameters
 
-`func (o *TestCaseUpdate) GetParameters() []TestCaseParametercreate`
+`func (o *TestCaseUpdate) GetParameters() []TestCaseParameterCreate`
 
 GetParameters returns the Parameters field if non-nil, zero value otherwise.
 
 ### GetParametersOk
 
-`func (o *TestCaseUpdate) GetParametersOk() (*[]TestCaseParametercreate, bool)`
+`func (o *TestCaseUpdate) GetParametersOk() (*[]TestCaseParameterCreate, bool)`
 
 GetParametersOk returns a tuple with the Parameters field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetParameters
 
-`func (o *TestCaseUpdate) SetParameters(v []TestCaseParametercreate)`
+`func (o *TestCaseUpdate) SetParameters(v []TestCaseParameterCreate)`
 
 SetParameters sets Parameters field to given value.
 

@@ -6,13 +6,12 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SharedId** | Pointer to **NullableString** |  | [optional] 
 **Type** | **string** |  | 
-**Items** | [**[]ParameterSingle**](ParameterSingle.md) |  | 
 
 ## Methods
 
 ### NewTestCaseParameterBase
 
-`func NewTestCaseParameterBase(type_ string, items []ParameterSingle, ) *TestCaseParameterBase`
+`func NewTestCaseParameterBase(type_ string, ) *TestCaseParameterBase`
 
 NewTestCaseParameterBase instantiates a new TestCaseParameterBase object
 This constructor will assign default values to properties that have it defined,
@@ -80,26 +79,6 @@ and a boolean to check if the value has been set.
 `func (o *TestCaseParameterBase) SetType(v string)`
 
 SetType sets Type field to given value.
-
-
-### GetItems
-
-`func (o *TestCaseParameterBase) GetItems() []ParameterSingle`
-
-GetItems returns the Items field if non-nil, zero value otherwise.
-
-### GetItemsOk
-
-`func (o *TestCaseParameterBase) GetItemsOk() (*[]ParameterSingle, bool)`
-
-GetItemsOk returns a tuple with the Items field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetItems
-
-`func (o *TestCaseParameterBase) SetItems(v []ParameterSingle)`
-
-SetItems sets Items field to given value.
 
 
 

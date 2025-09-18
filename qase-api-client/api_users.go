@@ -20,30 +20,30 @@ import (
 	"strings"
 )
 
-// AuthorsAPIService AuthorsAPI service
-type AuthorsAPIService service
+// UsersAPIService UsersAPI service
+type UsersAPIService service
 
-type ApiGetAuthorRequest struct {
+type ApiGetUserRequest struct {
 	ctx        context.Context
-	ApiService *AuthorsAPIService
+	ApiService *UsersAPIService
 	id         int32
 }
 
-func (r ApiGetAuthorRequest) Execute() (*AuthorResponse, *http.Response, error) {
-	return r.ApiService.GetAuthorExecute(r)
+func (r ApiGetUserRequest) Execute() (*UserResponse, *http.Response, error) {
+	return r.ApiService.GetUserExecute(r)
 }
 
 /*
-GetAuthor Get a specific author
+GetUser Get a specific user.
 
-This method allows to retrieve a specific author.
+This method allows to retrieve a specific user.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param id Identifier.
-	@return ApiGetAuthorRequest
+	@return ApiGetUserRequest
 */
-func (a *AuthorsAPIService) GetAuthor(ctx context.Context, id int32) ApiGetAuthorRequest {
-	return ApiGetAuthorRequest{
+func (a *UsersAPIService) GetUser(ctx context.Context, id int32) ApiGetUserRequest {
+	return ApiGetUserRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -52,21 +52,21 @@ func (a *AuthorsAPIService) GetAuthor(ctx context.Context, id int32) ApiGetAutho
 
 // Execute executes the request
 //
-//	@return AuthorResponse
-func (a *AuthorsAPIService) GetAuthorExecute(r ApiGetAuthorRequest) (*AuthorResponse, *http.Response, error) {
+//	@return UserResponse
+func (a *UsersAPIService) GetUserExecute(r ApiGetUserRequest) (*UserResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *AuthorResponse
+		localVarReturnValue *UserResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthorsAPIService.GetAuthor")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UsersAPIService.GetUser")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/author/{id}"
+	localVarPath := localBasePath + "/user/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -141,52 +141,39 @@ func (a *AuthorsAPIService) GetAuthorExecute(r ApiGetAuthorRequest) (*AuthorResp
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetAuthorsRequest struct {
+type ApiGetUsersRequest struct {
 	ctx        context.Context
-	ApiService *AuthorsAPIService
-	search     *string
-	type_      *string
+	ApiService *UsersAPIService
 	limit      *int32
 	offset     *int32
 }
 
-// Provide a string that will be used to search by name.
-func (r ApiGetAuthorsRequest) Search(search string) ApiGetAuthorsRequest {
-	r.search = &search
-	return r
-}
-
-func (r ApiGetAuthorsRequest) Type_(type_ string) ApiGetAuthorsRequest {
-	r.type_ = &type_
-	return r
-}
-
 // A number of entities in result set.
-func (r ApiGetAuthorsRequest) Limit(limit int32) ApiGetAuthorsRequest {
+func (r ApiGetUsersRequest) Limit(limit int32) ApiGetUsersRequest {
 	r.limit = &limit
 	return r
 }
 
 // How many entities should be skipped.
-func (r ApiGetAuthorsRequest) Offset(offset int32) ApiGetAuthorsRequest {
+func (r ApiGetUsersRequest) Offset(offset int32) ApiGetUsersRequest {
 	r.offset = &offset
 	return r
 }
 
-func (r ApiGetAuthorsRequest) Execute() (*AuthorListResponse, *http.Response, error) {
-	return r.ApiService.GetAuthorsExecute(r)
+func (r ApiGetUsersRequest) Execute() (*UserListResponse, *http.Response, error) {
+	return r.ApiService.GetUsersExecute(r)
 }
 
 /*
-GetAuthors Get all authors
+GetUsers Get all users.
 
-This method allows to retrieve all authors in selected project.
+This method allows to retrieve all users.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetAuthorsRequest
+	@return ApiGetUsersRequest
 */
-func (a *AuthorsAPIService) GetAuthors(ctx context.Context) ApiGetAuthorsRequest {
-	return ApiGetAuthorsRequest{
+func (a *UsersAPIService) GetUsers(ctx context.Context) ApiGetUsersRequest {
+	return ApiGetUsersRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -194,32 +181,26 @@ func (a *AuthorsAPIService) GetAuthors(ctx context.Context) ApiGetAuthorsRequest
 
 // Execute executes the request
 //
-//	@return AuthorListResponse
-func (a *AuthorsAPIService) GetAuthorsExecute(r ApiGetAuthorsRequest) (*AuthorListResponse, *http.Response, error) {
+//	@return UserListResponse
+func (a *UsersAPIService) GetUsersExecute(r ApiGetUsersRequest) (*UserListResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *AuthorListResponse
+		localVarReturnValue *UserListResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthorsAPIService.GetAuthors")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UsersAPIService.GetUsers")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/author"
+	localVarPath := localBasePath + "/user"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
-	if r.search != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "", "")
-	}
-	if r.type_ != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "type", r.type_, "", "")
-	}
 	if r.limit != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {

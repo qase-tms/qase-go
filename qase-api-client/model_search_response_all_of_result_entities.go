@@ -14,6 +14,8 @@ package api_v1_client
 import (
 	"encoding/json"
 	"fmt"
+
+	"gopkg.in/validator.v2"
 )
 
 // SearchResponseAllOfResultEntities - struct for SearchResponseAllOfResultEntities
@@ -79,7 +81,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonDefectQuery) == "{}" { // empty struct
 			dst.DefectQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.DefectQuery); err != nil {
+				dst.DefectQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.DefectQuery = nil
@@ -92,7 +98,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonPlanQuery) == "{}" { // empty struct
 			dst.PlanQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.PlanQuery); err != nil {
+				dst.PlanQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.PlanQuery = nil
@@ -105,7 +115,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonRequirementQuery) == "{}" { // empty struct
 			dst.RequirementQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.RequirementQuery); err != nil {
+				dst.RequirementQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.RequirementQuery = nil
@@ -118,7 +132,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonResultQuery) == "{}" { // empty struct
 			dst.ResultQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.ResultQuery); err != nil {
+				dst.ResultQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.ResultQuery = nil
@@ -131,7 +149,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonRunQuery) == "{}" { // empty struct
 			dst.RunQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.RunQuery); err != nil {
+				dst.RunQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.RunQuery = nil
@@ -144,7 +166,11 @@ func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
 		if string(jsonTestCaseQuery) == "{}" { // empty struct
 			dst.TestCaseQuery = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.TestCaseQuery); err != nil {
+				dst.TestCaseQuery = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.TestCaseQuery = nil
@@ -223,6 +249,36 @@ func (obj *SearchResponseAllOfResultEntities) GetActualInstance() interface{} {
 
 	if obj.TestCaseQuery != nil {
 		return obj.TestCaseQuery
+	}
+
+	// all schemas are nil
+	return nil
+}
+
+// Get the actual instance value
+func (obj SearchResponseAllOfResultEntities) GetActualInstanceValue() interface{} {
+	if obj.DefectQuery != nil {
+		return *obj.DefectQuery
+	}
+
+	if obj.PlanQuery != nil {
+		return *obj.PlanQuery
+	}
+
+	if obj.RequirementQuery != nil {
+		return *obj.RequirementQuery
+	}
+
+	if obj.ResultQuery != nil {
+		return *obj.ResultQuery
+	}
+
+	if obj.RunQuery != nil {
+		return *obj.RunQuery
+	}
+
+	if obj.TestCaseQuery != nil {
+		return *obj.TestCaseQuery
 	}
 
 	// all schemas are nil

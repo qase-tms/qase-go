@@ -398,7 +398,7 @@ Name | Type | Description  | Notes
 
 ## RunUpdateExternalIssue
 
-> RunUpdateExternalIssue(ctx, code).RunexternalIssues(runexternalIssues).Execute()
+> RunUpdateExternalIssue(ctx, code).RunExternalIssues(runExternalIssues).Execute()
 
 Update external issues for runs
 
@@ -418,11 +418,11 @@ import (
 
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
-	runexternalIssues := *openapiclient.NewRunexternalIssues("Type_example", []openapiclient.RunexternalIssuesLinksInner{*openapiclient.NewRunexternalIssuesLinksInner(int64(123))}) // RunexternalIssues | 
+	runExternalIssues := *openapiclient.NewRunExternalIssues("Type_example", []openapiclient.RunExternalIssuesLinksInner{*openapiclient.NewRunExternalIssuesLinksInner(int64(123))}) // RunExternalIssues | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	r, err := apiClient.RunsAPI.RunUpdateExternalIssue(context.Background(), code).RunexternalIssues(runexternalIssues).Execute()
+	r, err := apiClient.RunsAPI.RunUpdateExternalIssue(context.Background(), code).RunExternalIssues(runExternalIssues).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `RunsAPI.RunUpdateExternalIssue``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -446,7 +446,7 @@ Other parameters are passed through a pointer to a apiRunUpdateExternalIssueRequ
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **runexternalIssues** | [**RunexternalIssues**](RunexternalIssues.md) |  | 
+ **runExternalIssues** | [**RunExternalIssues**](RunExternalIssues.md) |  | 
 
 ### Return type
 

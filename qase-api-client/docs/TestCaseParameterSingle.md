@@ -6,13 +6,13 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SharedId** | Pointer to **NullableString** |  | [optional] 
 **Type** | **string** |  | 
-**Items** | **map[string]interface{}** |  | 
+**Item** | [**ParameterSingle**](ParameterSingle.md) |  | 
 
 ## Methods
 
 ### NewTestCaseParameterSingle
 
-`func NewTestCaseParameterSingle(type_ string, items map[string]interface{}, ) *TestCaseParameterSingle`
+`func NewTestCaseParameterSingle(type_ string, item ParameterSingle, ) *TestCaseParameterSingle`
 
 NewTestCaseParameterSingle instantiates a new TestCaseParameterSingle object
 This constructor will assign default values to properties that have it defined,
@@ -82,24 +82,24 @@ and a boolean to check if the value has been set.
 SetType sets Type field to given value.
 
 
-### GetItems
+### GetItem
 
-`func (o *TestCaseParameterSingle) GetItems() map[string]interface{}`
+`func (o *TestCaseParameterSingle) GetItem() ParameterSingle`
 
-GetItems returns the Items field if non-nil, zero value otherwise.
+GetItem returns the Item field if non-nil, zero value otherwise.
 
-### GetItemsOk
+### GetItemOk
 
-`func (o *TestCaseParameterSingle) GetItemsOk() (*map[string]interface{}, bool)`
+`func (o *TestCaseParameterSingle) GetItemOk() (*ParameterSingle, bool)`
 
-GetItemsOk returns a tuple with the Items field if it's non-nil, zero value otherwise
+GetItemOk returns a tuple with the Item field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetItems
+### SetItem
 
-`func (o *TestCaseParameterSingle) SetItems(v map[string]interface{})`
+`func (o *TestCaseParameterSingle) SetItem(v ParameterSingle)`
 
-SetItems sets Items field to given value.
+SetItem sets Item field to given value.
 
 
 

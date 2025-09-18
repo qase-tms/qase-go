@@ -6,13 +6,14 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SharedId** | Pointer to **NullableString** |  | [optional] 
 **Type** | **string** |  | 
-**Items** | **map[string]interface{}** |  | 
+**Item** | [**ParameterSingle**](ParameterSingle.md) |  | 
+**Items** | [**[]ParameterSingle**](ParameterSingle.md) |  | 
 
 ## Methods
 
 ### NewTestCaseParameter
 
-`func NewTestCaseParameter(type_ string, items map[string]interface{}, ) *TestCaseParameter`
+`func NewTestCaseParameter(type_ string, item ParameterSingle, items []ParameterSingle, ) *TestCaseParameter`
 
 NewTestCaseParameter instantiates a new TestCaseParameter object
 This constructor will assign default values to properties that have it defined,
@@ -82,22 +83,42 @@ and a boolean to check if the value has been set.
 SetType sets Type field to given value.
 
 
+### GetItem
+
+`func (o *TestCaseParameter) GetItem() ParameterSingle`
+
+GetItem returns the Item field if non-nil, zero value otherwise.
+
+### GetItemOk
+
+`func (o *TestCaseParameter) GetItemOk() (*ParameterSingle, bool)`
+
+GetItemOk returns a tuple with the Item field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetItem
+
+`func (o *TestCaseParameter) SetItem(v ParameterSingle)`
+
+SetItem sets Item field to given value.
+
+
 ### GetItems
 
-`func (o *TestCaseParameter) GetItems() map[string]interface{}`
+`func (o *TestCaseParameter) GetItems() []ParameterSingle`
 
 GetItems returns the Items field if non-nil, zero value otherwise.
 
 ### GetItemsOk
 
-`func (o *TestCaseParameter) GetItemsOk() (*map[string]interface{}, bool)`
+`func (o *TestCaseParameter) GetItemsOk() (*[]ParameterSingle, bool)`
 
 GetItemsOk returns a tuple with the Items field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetItems
 
-`func (o *TestCaseParameter) SetItems(v map[string]interface{})`
+`func (o *TestCaseParameter) SetItems(v []ParameterSingle)`
 
 SetItems sets Items field to given value.
 

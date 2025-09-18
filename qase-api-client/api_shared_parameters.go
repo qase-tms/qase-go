@@ -152,7 +152,7 @@ type ApiDeleteSharedParameterRequest struct {
 	id         string
 }
 
-func (r ApiDeleteSharedParameterRequest) Execute() (*UuidResponse, *http.Response, error) {
+func (r ApiDeleteSharedParameterRequest) Execute() (*UuidResponse1, *http.Response, error) {
 	return r.ApiService.DeleteSharedParameterExecute(r)
 }
 
@@ -175,13 +175,13 @@ func (a *SharedParametersAPIService) DeleteSharedParameter(ctx context.Context, 
 
 // Execute executes the request
 //
-//	@return UuidResponse
-func (a *SharedParametersAPIService) DeleteSharedParameterExecute(r ApiDeleteSharedParameterRequest) (*UuidResponse, *http.Response, error) {
+//	@return UuidResponse1
+func (a *SharedParametersAPIService) DeleteSharedParameterExecute(r ApiDeleteSharedParameterRequest) (*UuidResponse1, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodDelete
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *UuidResponse
+		localVarReturnValue *UuidResponse1
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SharedParametersAPIService.DeleteSharedParameter")
@@ -457,25 +457,25 @@ func (a *SharedParametersAPIService) GetSharedParametersExecute(r ApiGetSharedPa
 	localVarFormParams := url.Values{}
 
 	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
 		r.offset = &defaultValue
 	}
 	if r.filtersSearch != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[search]", r.filtersSearch, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[search]", r.filtersSearch, "", "")
 	}
 	if r.filtersType != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[type]", r.filtersType, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[type]", r.filtersType, "", "")
 	}
 	if r.filtersProjectCodes != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[project_codes][]", r.filtersProjectCodes, "csv")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "filters[project_codes][]", r.filtersProjectCodes, "", "csv")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -557,7 +557,7 @@ func (r ApiUpdateSharedParameterRequest) SharedParameterUpdate(sharedParameterUp
 	return r
 }
 
-func (r ApiUpdateSharedParameterRequest) Execute() (*UuidResponse, *http.Response, error) {
+func (r ApiUpdateSharedParameterRequest) Execute() (*UuidResponse1, *http.Response, error) {
 	return r.ApiService.UpdateSharedParameterExecute(r)
 }
 
@@ -578,13 +578,13 @@ func (a *SharedParametersAPIService) UpdateSharedParameter(ctx context.Context, 
 
 // Execute executes the request
 //
-//	@return UuidResponse
-func (a *SharedParametersAPIService) UpdateSharedParameterExecute(r ApiUpdateSharedParameterRequest) (*UuidResponse, *http.Response, error) {
+//	@return UuidResponse1
+func (a *SharedParametersAPIService) UpdateSharedParameterExecute(r ApiUpdateSharedParameterRequest) (*UuidResponse1, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPatch
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *UuidResponse
+		localVarReturnValue *UuidResponse1
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SharedParametersAPIService.UpdateSharedParameter")

@@ -22,9 +22,9 @@ var _ MappedNullable = &TestCaseParameterSingle{}
 
 // TestCaseParameterSingle struct for TestCaseParameterSingle
 type TestCaseParameterSingle struct {
-	SharedId NullableString         `json:"shared_id,omitempty"`
-	Type     string                 `json:"type"`
-	Items    map[string]interface{} `json:"items"`
+	SharedId NullableString  `json:"shared_id,omitempty"`
+	Type     string          `json:"type"`
+	Item     ParameterSingle `json:"item"`
 }
 
 type _TestCaseParameterSingle TestCaseParameterSingle
@@ -33,10 +33,10 @@ type _TestCaseParameterSingle TestCaseParameterSingle
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTestCaseParameterSingle(type_ string, items map[string]interface{}) *TestCaseParameterSingle {
+func NewTestCaseParameterSingle(type_ string, item ParameterSingle) *TestCaseParameterSingle {
 	this := TestCaseParameterSingle{}
 	this.Type = type_
-	this.Items = items
+	this.Item = item
 	return &this
 }
 
@@ -115,28 +115,28 @@ func (o *TestCaseParameterSingle) SetType(v string) {
 	o.Type = v
 }
 
-// GetItems returns the Items field value
-func (o *TestCaseParameterSingle) GetItems() map[string]interface{} {
+// GetItem returns the Item field value
+func (o *TestCaseParameterSingle) GetItem() ParameterSingle {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret ParameterSingle
 		return ret
 	}
 
-	return o.Items
+	return o.Item
 }
 
-// GetItemsOk returns a tuple with the Items field value
+// GetItemOk returns a tuple with the Item field value
 // and a boolean to check if the value has been set.
-func (o *TestCaseParameterSingle) GetItemsOk() (map[string]interface{}, bool) {
+func (o *TestCaseParameterSingle) GetItemOk() (*ParameterSingle, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
-	return o.Items, true
+	return &o.Item, true
 }
 
-// SetItems sets field value
-func (o *TestCaseParameterSingle) SetItems(v map[string]interface{}) {
-	o.Items = v
+// SetItem sets field value
+func (o *TestCaseParameterSingle) SetItem(v ParameterSingle) {
+	o.Item = v
 }
 
 func (o TestCaseParameterSingle) MarshalJSON() ([]byte, error) {
@@ -153,7 +153,7 @@ func (o TestCaseParameterSingle) ToMap() (map[string]interface{}, error) {
 		toSerialize["shared_id"] = o.SharedId.Get()
 	}
 	toSerialize["type"] = o.Type
-	toSerialize["items"] = o.Items
+	toSerialize["item"] = o.Item
 	return toSerialize, nil
 }
 
@@ -163,7 +163,7 @@ func (o *TestCaseParameterSingle) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"type",
-		"items",
+		"item",
 	}
 
 	allProperties := make(map[string]interface{})
