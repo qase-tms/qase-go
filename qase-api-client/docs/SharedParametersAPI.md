@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 ## DeleteSharedParameter
 
-> UuidResponse DeleteSharedParameter(ctx, id).Execute()
+> UuidResponse1 DeleteSharedParameter(ctx, id).Execute()
 
 Delete shared parameter
 
@@ -106,7 +106,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `SharedParametersAPI.DeleteSharedParameter``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeleteSharedParameter`: UuidResponse
+	// response from `DeleteSharedParameter`: UuidResponse1
 	fmt.Fprintf(os.Stdout, "Response from `SharedParametersAPI.DeleteSharedParameter`: %v\n", resp)
 }
 ```
@@ -130,7 +130,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**UuidResponse**](UuidResponse.md)
+[**UuidResponse1**](UuidResponse1.md)
 
 ### Authorization
 
@@ -288,7 +288,7 @@ Name | Type | Description  | Notes
 
 ## UpdateSharedParameter
 
-> UuidResponse UpdateSharedParameter(ctx, id).SharedParameterUpdate(sharedParameterUpdate).Execute()
+> UuidResponse1 UpdateSharedParameter(ctx, id).SharedParameterUpdate(sharedParameterUpdate).Execute()
 
 Update shared parameter
 
@@ -315,7 +315,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `SharedParametersAPI.UpdateSharedParameter``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateSharedParameter`: UuidResponse
+	// response from `UpdateSharedParameter`: UuidResponse1
 	fmt.Fprintf(os.Stdout, "Response from `SharedParametersAPI.UpdateSharedParameter`: %v\n", resp)
 }
 ```
@@ -340,7 +340,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**UuidResponse**](UuidResponse.md)
+[**UuidResponse1**](UuidResponse1.md)
 
 ### Authorization
 

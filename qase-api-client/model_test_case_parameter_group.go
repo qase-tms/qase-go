@@ -22,9 +22,9 @@ var _ MappedNullable = &TestCaseParameterGroup{}
 
 // TestCaseParameterGroup struct for TestCaseParameterGroup
 type TestCaseParameterGroup struct {
-	SharedId NullableString         `json:"shared_id,omitempty"`
-	Type     string                 `json:"type"`
-	Items    map[string]interface{} `json:"items"`
+	SharedId NullableString    `json:"shared_id,omitempty"`
+	Type     string            `json:"type"`
+	Items    []ParameterSingle `json:"items"`
 }
 
 type _TestCaseParameterGroup TestCaseParameterGroup
@@ -33,7 +33,7 @@ type _TestCaseParameterGroup TestCaseParameterGroup
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTestCaseParameterGroup(type_ string, items map[string]interface{}) *TestCaseParameterGroup {
+func NewTestCaseParameterGroup(type_ string, items []ParameterSingle) *TestCaseParameterGroup {
 	this := TestCaseParameterGroup{}
 	this.Type = type_
 	this.Items = items
@@ -116,9 +116,9 @@ func (o *TestCaseParameterGroup) SetType(v string) {
 }
 
 // GetItems returns the Items field value
-func (o *TestCaseParameterGroup) GetItems() map[string]interface{} {
+func (o *TestCaseParameterGroup) GetItems() []ParameterSingle {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret []ParameterSingle
 		return ret
 	}
 
@@ -127,15 +127,15 @@ func (o *TestCaseParameterGroup) GetItems() map[string]interface{} {
 
 // GetItemsOk returns a tuple with the Items field value
 // and a boolean to check if the value has been set.
-func (o *TestCaseParameterGroup) GetItemsOk() (map[string]interface{}, bool) {
+func (o *TestCaseParameterGroup) GetItemsOk() ([]ParameterSingle, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
 	return o.Items, true
 }
 
 // SetItems sets field value
-func (o *TestCaseParameterGroup) SetItems(v map[string]interface{}) {
+func (o *TestCaseParameterGroup) SetItems(v []ParameterSingle) {
 	o.Items = v
 }
 

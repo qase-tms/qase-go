@@ -162,11 +162,11 @@ type ApiCaseAttachExternalIssueRequest struct {
 	ctx                    context.Context
 	ApiService             *CasesAPIService
 	code                   string
-	testCaseexternalIssues *TestCaseexternalIssues
+	testCaseExternalIssues *TestCaseExternalIssues
 }
 
-func (r ApiCaseAttachExternalIssueRequest) TestCaseexternalIssues(testCaseexternalIssues TestCaseexternalIssues) ApiCaseAttachExternalIssueRequest {
-	r.testCaseexternalIssues = &testCaseexternalIssues
+func (r ApiCaseAttachExternalIssueRequest) TestCaseExternalIssues(testCaseExternalIssues TestCaseExternalIssues) ApiCaseAttachExternalIssueRequest {
+	r.testCaseExternalIssues = &testCaseExternalIssues
 	return r
 }
 
@@ -217,8 +217,8 @@ func (a *CasesAPIService) CaseAttachExternalIssueExecute(r ApiCaseAttachExternal
 	if strlen(r.code) > 10 {
 		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
 	}
-	if r.testCaseexternalIssues == nil {
-		return localVarReturnValue, nil, reportError("testCaseexternalIssues is required and must be specified")
+	if r.testCaseExternalIssues == nil {
+		return localVarReturnValue, nil, reportError("testCaseExternalIssues is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -239,7 +239,7 @@ func (a *CasesAPIService) CaseAttachExternalIssueExecute(r ApiCaseAttachExternal
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.testCaseexternalIssues
+	localVarPostBody = r.testCaseExternalIssues
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -295,11 +295,11 @@ type ApiCaseDetachExternalIssueRequest struct {
 	ctx                    context.Context
 	ApiService             *CasesAPIService
 	code                   string
-	testCaseexternalIssues *TestCaseexternalIssues
+	testCaseExternalIssues *TestCaseExternalIssues
 }
 
-func (r ApiCaseDetachExternalIssueRequest) TestCaseexternalIssues(testCaseexternalIssues TestCaseexternalIssues) ApiCaseDetachExternalIssueRequest {
-	r.testCaseexternalIssues = &testCaseexternalIssues
+func (r ApiCaseDetachExternalIssueRequest) TestCaseExternalIssues(testCaseExternalIssues TestCaseExternalIssues) ApiCaseDetachExternalIssueRequest {
+	r.testCaseExternalIssues = &testCaseExternalIssues
 	return r
 }
 
@@ -350,8 +350,8 @@ func (a *CasesAPIService) CaseDetachExternalIssueExecute(r ApiCaseDetachExternal
 	if strlen(r.code) > 10 {
 		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
 	}
-	if r.testCaseexternalIssues == nil {
-		return localVarReturnValue, nil, reportError("testCaseexternalIssues is required and must be specified")
+	if r.testCaseExternalIssues == nil {
+		return localVarReturnValue, nil, reportError("testCaseExternalIssues is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -372,7 +372,7 @@ func (a *CasesAPIService) CaseDetachExternalIssueExecute(r ApiCaseDetachExternal
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.testCaseexternalIssues
+	localVarPostBody = r.testCaseExternalIssues
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -755,7 +755,7 @@ func (a *CasesAPIService) GetCaseExecute(r ApiGetCaseRequest) (*TestCaseResponse
 	}
 
 	if r.include != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -980,49 +980,49 @@ func (a *CasesAPIService) GetCasesExecute(r ApiGetCasesRequest) (*TestCaseListRe
 	}
 
 	if r.search != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "search", r.search, "", "")
 	}
 	if r.milestoneId != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "milestone_id", r.milestoneId, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "milestone_id", r.milestoneId, "", "")
 	}
 	if r.suiteId != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "suite_id", r.suiteId, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "suite_id", r.suiteId, "", "")
 	}
 	if r.severity != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "severity", r.severity, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "severity", r.severity, "", "")
 	}
 	if r.priority != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "priority", r.priority, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "priority", r.priority, "", "")
 	}
 	if r.type_ != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "type", r.type_, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "type", r.type_, "", "")
 	}
 	if r.behavior != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "behavior", r.behavior, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "behavior", r.behavior, "", "")
 	}
 	if r.automation != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "automation", r.automation, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "automation", r.automation, "", "")
 	}
 	if r.status != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "", "")
 	}
 	if r.externalIssuesType != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[type]", r.externalIssuesType, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[type]", r.externalIssuesType, "", "")
 	}
 	if r.externalIssuesIds != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[ids][]", r.externalIssuesIds, "csv")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[ids][]", r.externalIssuesIds, "", "csv")
 	}
 	if r.include != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "", "")
 	}
 	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
 		r.offset = &defaultValue

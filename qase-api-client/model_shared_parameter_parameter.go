@@ -14,6 +14,8 @@ package api_v1_client
 import (
 	"encoding/json"
 	"fmt"
+
+	"gopkg.in/validator.v2"
 )
 
 // SharedParameterParameter - struct for SharedParameterParameter
@@ -39,7 +41,11 @@ func (dst *SharedParameterParameter) UnmarshalJSON(data []byte) error {
 		if string(jsonArrayOfParameterSingle) == "{}" { // empty struct
 			dst.ArrayOfParameterSingle = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.ArrayOfParameterSingle); err != nil {
+				dst.ArrayOfParameterSingle = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.ArrayOfParameterSingle = nil
@@ -73,6 +79,16 @@ func (obj *SharedParameterParameter) GetActualInstance() interface{} {
 	}
 	if obj.ArrayOfParameterSingle != nil {
 		return obj.ArrayOfParameterSingle
+	}
+
+	// all schemas are nil
+	return nil
+}
+
+// Get the actual instance value
+func (obj SharedParameterParameter) GetActualInstanceValue() interface{} {
+	if obj.ArrayOfParameterSingle != nil {
+		return *obj.ArrayOfParameterSingle
 	}
 
 	// all schemas are nil

@@ -6,13 +6,13 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **SharedId** | Pointer to **NullableString** |  | [optional] 
 **Type** | **string** |  | 
-**Items** | **map[string]interface{}** |  | 
+**Items** | [**[]ParameterSingle**](ParameterSingle.md) |  | 
 
 ## Methods
 
 ### NewTestCaseParameterGroup
 
-`func NewTestCaseParameterGroup(type_ string, items map[string]interface{}, ) *TestCaseParameterGroup`
+`func NewTestCaseParameterGroup(type_ string, items []ParameterSingle, ) *TestCaseParameterGroup`
 
 NewTestCaseParameterGroup instantiates a new TestCaseParameterGroup object
 This constructor will assign default values to properties that have it defined,
@@ -84,20 +84,20 @@ SetType sets Type field to given value.
 
 ### GetItems
 
-`func (o *TestCaseParameterGroup) GetItems() map[string]interface{}`
+`func (o *TestCaseParameterGroup) GetItems() []ParameterSingle`
 
 GetItems returns the Items field if non-nil, zero value otherwise.
 
 ### GetItemsOk
 
-`func (o *TestCaseParameterGroup) GetItemsOk() (*map[string]interface{}, bool)`
+`func (o *TestCaseParameterGroup) GetItemsOk() (*[]ParameterSingle, bool)`
 
 GetItemsOk returns a tuple with the Items field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetItems
 
-`func (o *TestCaseParameterGroup) SetItems(v map[string]interface{})`
+`func (o *TestCaseParameterGroup) SetItems(v []ParameterSingle)`
 
 SetItems sets Items field to given value.
 

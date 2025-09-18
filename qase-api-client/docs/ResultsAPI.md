@@ -90,7 +90,7 @@ Name | Type | Description  | Notes
 
 ## CreateResultBulk
 
-> BaseResponse CreateResultBulk(ctx, code, id).ResultcreateBulk(resultcreateBulk).Execute()
+> BaseResponse CreateResultBulk(ctx, code, id).ResultCreateBulk(resultCreateBulk).Execute()
 
 Bulk create test run result
 
@@ -111,11 +111,11 @@ import (
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
 	id := int32(56) // int32 | Identifier.
-	resultcreateBulk := *openapiclient.NewResultcreateBulk([]openapiclient.ResultCreate{*openapiclient.NewResultCreate("Status_example")}) // ResultcreateBulk | 
+	resultCreateBulk := *openapiclient.NewResultCreateBulk([]openapiclient.ResultCreate{*openapiclient.NewResultCreate("Status_example")}) // ResultCreateBulk | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.ResultsAPI.CreateResultBulk(context.Background(), code, id).ResultcreateBulk(resultcreateBulk).Execute()
+	resp, r, err := apiClient.ResultsAPI.CreateResultBulk(context.Background(), code, id).ResultCreateBulk(resultCreateBulk).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `ResultsAPI.CreateResultBulk``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -143,7 +143,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **resultcreateBulk** | [**ResultcreateBulk**](ResultcreateBulk.md) |  | 
+ **resultCreateBulk** | [**ResultCreateBulk**](ResultCreateBulk.md) |  | 
 
 ### Return type
 

@@ -167,11 +167,11 @@ type ApiCreateResultBulkRequest struct {
 	ApiService       *ResultsAPIService
 	code             string
 	id               int32
-	resultcreateBulk *ResultcreateBulk
+	resultCreateBulk *ResultCreateBulk
 }
 
-func (r ApiCreateResultBulkRequest) ResultcreateBulk(resultcreateBulk ResultcreateBulk) ApiCreateResultBulkRequest {
-	r.resultcreateBulk = &resultcreateBulk
+func (r ApiCreateResultBulkRequest) ResultCreateBulk(resultCreateBulk ResultCreateBulk) ApiCreateResultBulkRequest {
+	r.resultCreateBulk = &resultCreateBulk
 	return r
 }
 
@@ -231,8 +231,8 @@ func (a *ResultsAPIService) CreateResultBulkExecute(r ApiCreateResultBulkRequest
 	if strlen(r.code) > 10 {
 		return localVarReturnValue, nil, reportError("code must have less than 10 elements")
 	}
-	if r.resultcreateBulk == nil {
-		return localVarReturnValue, nil, reportError("resultcreateBulk is required and must be specified")
+	if r.resultCreateBulk == nil {
+		return localVarReturnValue, nil, reportError("resultCreateBulk is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -253,7 +253,7 @@ func (a *ResultsAPIService) CreateResultBulkExecute(r ApiCreateResultBulkRequest
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.resultcreateBulk
+	localVarPostBody = r.resultCreateBulk
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -685,34 +685,34 @@ func (a *ResultsAPIService) GetResultsExecute(r ApiGetResultsRequest) (*ResultLi
 	}
 
 	if r.status != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "", "")
 	}
 	if r.run != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "run", r.run, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "run", r.run, "", "")
 	}
 	if r.caseId != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "case_id", r.caseId, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "case_id", r.caseId, "", "")
 	}
 	if r.member != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "member", r.member, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "member", r.member, "", "")
 	}
 	if r.api != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "api", r.api, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "api", r.api, "", "")
 	}
 	if r.fromEndTime != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "from_end_time", r.fromEndTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "from_end_time", r.fromEndTime, "", "")
 	}
 	if r.toEndTime != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "to_end_time", r.toEndTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "to_end_time", r.toEndTime, "", "")
 	}
 	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
 		r.offset = &defaultValue

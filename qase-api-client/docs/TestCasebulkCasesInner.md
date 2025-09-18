@@ -21,7 +21,8 @@ Name | Type | Description | Notes
 **Attachments** | Pointer to **[]string** | A list of Attachment hashes. | [optional] 
 **Steps** | Pointer to [**[]TestStepCreate**](TestStepCreate.md) |  | [optional] 
 **Tags** | Pointer to **[]string** |  | [optional] 
-**Params** | Pointer to **map[string][]string** |  | [optional] 
+**Params** | Pointer to **map[string][]string** | Deprecated, use &#x60;parameters&#x60; instead. | [optional] 
+**Parameters** | Pointer to [**[]TestCaseParameterCreate**](TestCaseParameterCreate.md) |  | [optional] 
 **CustomField** | Pointer to **map[string]string** | A map of custom fields values (id &#x3D;&gt; value) | [optional] 
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
@@ -501,6 +502,41 @@ HasParams returns a boolean if a field has been set.
 `func (o *TestCasebulkCasesInner) UnsetParams()`
 
 UnsetParams ensures that no value is present for Params, not even an explicit nil
+### GetParameters
+
+`func (o *TestCasebulkCasesInner) GetParameters() []TestCaseParameterCreate`
+
+GetParameters returns the Parameters field if non-nil, zero value otherwise.
+
+### GetParametersOk
+
+`func (o *TestCasebulkCasesInner) GetParametersOk() (*[]TestCaseParameterCreate, bool)`
+
+GetParametersOk returns a tuple with the Parameters field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetParameters
+
+`func (o *TestCasebulkCasesInner) SetParameters(v []TestCaseParameterCreate)`
+
+SetParameters sets Parameters field to given value.
+
+### HasParameters
+
+`func (o *TestCasebulkCasesInner) HasParameters() bool`
+
+HasParameters returns a boolean if a field has been set.
+
+### SetParametersNil
+
+`func (o *TestCasebulkCasesInner) SetParametersNil(b bool)`
+
+ SetParametersNil sets the value for Parameters to be an explicit nil
+
+### UnsetParameters
+`func (o *TestCasebulkCasesInner) UnsetParameters()`
+
+UnsetParameters ensures that no value is present for Parameters, not even an explicit nil
 ### GetCustomField
 
 `func (o *TestCasebulkCasesInner) GetCustomField() map[string]string`

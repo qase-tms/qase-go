@@ -18,36 +18,36 @@ import (
 	"gopkg.in/validator.v2"
 )
 
-// TestCaseParametercreate - struct for TestCaseParametercreate
-type TestCaseParametercreate struct {
+// TestCaseParameterCreate - struct for TestCaseParameterCreate
+type TestCaseParameterCreate struct {
 	ParameterGroup  *ParameterGroup
 	ParameterShared *ParameterShared
 	ParameterSingle *ParameterSingle
 }
 
-// ParameterGroupAsTestCaseParametercreate is a convenience function that returns ParameterGroup wrapped in TestCaseParametercreate
-func ParameterGroupAsTestCaseParametercreate(v *ParameterGroup) TestCaseParametercreate {
-	return TestCaseParametercreate{
+// ParameterGroupAsTestCaseParameterCreate is a convenience function that returns ParameterGroup wrapped in TestCaseParameterCreate
+func ParameterGroupAsTestCaseParameterCreate(v *ParameterGroup) TestCaseParameterCreate {
+	return TestCaseParameterCreate{
 		ParameterGroup: v,
 	}
 }
 
-// ParameterSharedAsTestCaseParametercreate is a convenience function that returns ParameterShared wrapped in TestCaseParametercreate
-func ParameterSharedAsTestCaseParametercreate(v *ParameterShared) TestCaseParametercreate {
-	return TestCaseParametercreate{
+// ParameterSharedAsTestCaseParameterCreate is a convenience function that returns ParameterShared wrapped in TestCaseParameterCreate
+func ParameterSharedAsTestCaseParameterCreate(v *ParameterShared) TestCaseParameterCreate {
+	return TestCaseParameterCreate{
 		ParameterShared: v,
 	}
 }
 
-// ParameterSingleAsTestCaseParametercreate is a convenience function that returns ParameterSingle wrapped in TestCaseParametercreate
-func ParameterSingleAsTestCaseParametercreate(v *ParameterSingle) TestCaseParametercreate {
-	return TestCaseParametercreate{
+// ParameterSingleAsTestCaseParameterCreate is a convenience function that returns ParameterSingle wrapped in TestCaseParameterCreate
+func ParameterSingleAsTestCaseParameterCreate(v *ParameterSingle) TestCaseParameterCreate {
+	return TestCaseParameterCreate{
 		ParameterSingle: v,
 	}
 }
 
 // Unmarshal JSON data into one of the pointers in the struct
-func (dst *TestCaseParametercreate) UnmarshalJSON(data []byte) error {
+func (dst *TestCaseParameterCreate) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into ParameterGroup
@@ -107,16 +107,16 @@ func (dst *TestCaseParametercreate) UnmarshalJSON(data []byte) error {
 		dst.ParameterShared = nil
 		dst.ParameterSingle = nil
 
-		return fmt.Errorf("data matches more than one schema in oneOf(TestCaseParametercreate)")
+		return fmt.Errorf("data matches more than one schema in oneOf(TestCaseParameterCreate)")
 	} else if match == 1 {
 		return nil // exactly one match
 	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(TestCaseParametercreate)")
+		return fmt.Errorf("data failed to match schemas in oneOf(TestCaseParameterCreate)")
 	}
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON
-func (src TestCaseParametercreate) MarshalJSON() ([]byte, error) {
+func (src TestCaseParameterCreate) MarshalJSON() ([]byte, error) {
 	if src.ParameterGroup != nil {
 		return json.Marshal(&src.ParameterGroup)
 	}
@@ -133,7 +133,7 @@ func (src TestCaseParametercreate) MarshalJSON() ([]byte, error) {
 }
 
 // Get the actual instance
-func (obj *TestCaseParametercreate) GetActualInstance() interface{} {
+func (obj *TestCaseParameterCreate) GetActualInstance() interface{} {
 	if obj == nil {
 		return nil
 	}
@@ -154,7 +154,7 @@ func (obj *TestCaseParametercreate) GetActualInstance() interface{} {
 }
 
 // Get the actual instance value
-func (obj TestCaseParametercreate) GetActualInstanceValue() interface{} {
+func (obj TestCaseParameterCreate) GetActualInstanceValue() interface{} {
 	if obj.ParameterGroup != nil {
 		return *obj.ParameterGroup
 	}
@@ -171,38 +171,38 @@ func (obj TestCaseParametercreate) GetActualInstanceValue() interface{} {
 	return nil
 }
 
-type NullableTestCaseParametercreate struct {
-	value *TestCaseParametercreate
+type NullableTestCaseParameterCreate struct {
+	value *TestCaseParameterCreate
 	isSet bool
 }
 
-func (v NullableTestCaseParametercreate) Get() *TestCaseParametercreate {
+func (v NullableTestCaseParameterCreate) Get() *TestCaseParameterCreate {
 	return v.value
 }
 
-func (v *NullableTestCaseParametercreate) Set(val *TestCaseParametercreate) {
+func (v *NullableTestCaseParameterCreate) Set(val *TestCaseParameterCreate) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTestCaseParametercreate) IsSet() bool {
+func (v NullableTestCaseParameterCreate) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTestCaseParametercreate) Unset() {
+func (v *NullableTestCaseParameterCreate) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTestCaseParametercreate(val *TestCaseParametercreate) *NullableTestCaseParametercreate {
-	return &NullableTestCaseParametercreate{value: val, isSet: true}
+func NewNullableTestCaseParameterCreate(val *TestCaseParameterCreate) *NullableTestCaseParameterCreate {
+	return &NullableTestCaseParameterCreate{value: val, isSet: true}
 }
 
-func (v NullableTestCaseParametercreate) MarshalJSON() ([]byte, error) {
+func (v NullableTestCaseParameterCreate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTestCaseParametercreate) UnmarshalJSON(src []byte) error {
+func (v *NullableTestCaseParameterCreate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

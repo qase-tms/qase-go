@@ -89,7 +89,7 @@ Name | Type | Description  | Notes
 
 ## CaseAttachExternalIssue
 
-> BaseResponse CaseAttachExternalIssue(ctx, code).TestCaseexternalIssues(testCaseexternalIssues).Execute()
+> BaseResponse CaseAttachExternalIssue(ctx, code).TestCaseExternalIssues(testCaseExternalIssues).Execute()
 
 Attach the external issues to the test cases
 
@@ -107,11 +107,11 @@ import (
 
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
-	testCaseexternalIssues := *openapiclient.NewTestCaseexternalIssues("Type_example", []openapiclient.TestCaseExternalIssuesLinksInner{*openapiclient.NewTestCaseExternalIssuesLinksInner(int64(123), []string{"ExternalIssues_example"})}) // TestCaseexternalIssues | 
+	testCaseExternalIssues := *openapiclient.NewTestCaseExternalIssues("Type_example", []openapiclient.TestCaseExternalIssuesLinksInner{*openapiclient.NewTestCaseExternalIssuesLinksInner(int64(123), []string{"ExternalIssues_example"})}) // TestCaseExternalIssues | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.CasesAPI.CaseAttachExternalIssue(context.Background(), code).TestCaseexternalIssues(testCaseexternalIssues).Execute()
+	resp, r, err := apiClient.CasesAPI.CaseAttachExternalIssue(context.Background(), code).TestCaseExternalIssues(testCaseExternalIssues).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `CasesAPI.CaseAttachExternalIssue``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -137,7 +137,7 @@ Other parameters are passed through a pointer to a apiCaseAttachExternalIssueReq
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **testCaseexternalIssues** | [**TestCaseexternalIssues**](TestCaseexternalIssues.md) |  | 
+ **testCaseExternalIssues** | [**TestCaseExternalIssues**](TestCaseExternalIssues.md) |  | 
 
 ### Return type
 
@@ -159,7 +159,7 @@ Name | Type | Description  | Notes
 
 ## CaseDetachExternalIssue
 
-> BaseResponse CaseDetachExternalIssue(ctx, code).TestCaseexternalIssues(testCaseexternalIssues).Execute()
+> BaseResponse CaseDetachExternalIssue(ctx, code).TestCaseExternalIssues(testCaseExternalIssues).Execute()
 
 Detach the external issues from the test cases
 
@@ -177,11 +177,11 @@ import (
 
 func main() {
 	code := "code_example" // string | Code of project, where to search entities.
-	testCaseexternalIssues := *openapiclient.NewTestCaseexternalIssues("Type_example", []openapiclient.TestCaseExternalIssuesLinksInner{*openapiclient.NewTestCaseExternalIssuesLinksInner(int64(123), []string{"ExternalIssues_example"})}) // TestCaseexternalIssues | 
+	testCaseExternalIssues := *openapiclient.NewTestCaseExternalIssues("Type_example", []openapiclient.TestCaseExternalIssuesLinksInner{*openapiclient.NewTestCaseExternalIssuesLinksInner(int64(123), []string{"ExternalIssues_example"})}) // TestCaseExternalIssues | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.CasesAPI.CaseDetachExternalIssue(context.Background(), code).TestCaseexternalIssues(testCaseexternalIssues).Execute()
+	resp, r, err := apiClient.CasesAPI.CaseDetachExternalIssue(context.Background(), code).TestCaseExternalIssues(testCaseExternalIssues).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `CasesAPI.CaseDetachExternalIssue``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -207,7 +207,7 @@ Other parameters are passed through a pointer to a apiCaseDetachExternalIssueReq
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **testCaseexternalIssues** | [**TestCaseexternalIssues**](TestCaseexternalIssues.md) |  | 
+ **testCaseExternalIssues** | [**TestCaseExternalIssues**](TestCaseExternalIssues.md) |  | 
 
 ### Return type
 

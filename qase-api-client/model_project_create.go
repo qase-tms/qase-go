@@ -25,7 +25,7 @@ type ProjectCreate struct {
 	// Project title.
 	Title string `json:"title"`
 	// Project code. Unique for team. Digits and special characters are not allowed.
-	Code string `json:"code"`
+	Code string `json:"code" validate:"regexp=^[a-zA-Z]{2,10}$"`
 	// Project description.
 	Description *string `json:"description,omitempty"`
 	Access      *string `json:"access,omitempty"`
