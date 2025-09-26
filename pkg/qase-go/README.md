@@ -12,6 +12,7 @@ Qase Go SDK provides comprehensive tools for integrating Go applications with Qa
 - **Rich Assertions**: Comprehensive assertion library with detailed error capture
 - **Test Organization**: Suite management and test metadata support
 - **Configuration Management**: Environment-based configuration with fallback support
+- **Status Mapping**: Transform test result statuses through configuration
 
 ## Installation
 
@@ -59,7 +60,10 @@ Create a `qase.config.json` file in your project root:
 {
   "mode": "testops",
   "fallback": "report",
-  
+  "statusMapping": {
+    "invalid": "failed",
+    "skipped": "passed"
+  },
   "testops": {
     "api": {
       "token": "your-api-token",
@@ -189,6 +193,7 @@ go test -v ./...
 | `QASE_TESTOPS_DEFECT` | Auto-create defects for failed tests | `false` |
 | `QASE_TESTOPS_BATCH_SIZE` | Batch size for result uploads | `100` |
 | `QASE_TESTOPS_STATUS_FILTER` | Comma-separated list of statuses to exclude from TestOps | - |
+| `QASE_STATUS_MAPPING` | Status mapping in format "from=to,from2=to2" | - |
 | `QASE_REPORT_DRIVER` | Report driver | `local` |
 | `QASE_REPORT_CONNECTION_PATH` | Local report path | `./build/qase-report` |
 | `QASE_REPORT_CONNECTION_FORMAT` | Report format | `json` |
