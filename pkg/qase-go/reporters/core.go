@@ -22,10 +22,11 @@ type Reporter interface {
 
 // CoreReporter manages a single reporter with fallback support
 type CoreReporter struct {
-	config   *config.Config
-	reporter Reporter
-	fallback Reporter
-	mutex    sync.RWMutex
+	config        *config.Config
+	reporter      Reporter
+	fallback      Reporter
+	statusMapping domain.StatusMapping
+	mutex         sync.RWMutex
 }
 
 // NewCoreReporter creates a new core reporter with the given configuration
@@ -38,12 +39,43 @@ func NewCoreReporter(cfg *config.Config) (*CoreReporter, error) {
 		config: cfg,
 	}
 
+	// Initialize status mapping
+	if err := reporter.initializeStatusMapping(); err != nil {
+		return nil, fmt.Errorf("failed to initialize status mapping: %w", err)
+	}
+
 	// Initialize reporter based on configuration
 	if err := reporter.initializeReporter(); err != nil {
 		return nil, fmt.Errorf("failed to initialize reporter: %w", err)
 	}
 
 	return reporter, nil
+}
+
+// initializeStatusMapping initializes the status mapping from configuration
+func (cr *CoreReporter) initializeStatusMapping() error {
+	statusMappingConfig := cr.config.GetStatusMapping()
+	
+	if len(statusMappingConfig) == 0 {
+		// No status mapping configured
+		cr.statusMapping = make(domain.StatusMapping)
+		return nil
+	}
+	
+	// Create status mapping from configuration
+	mapping, err := domain.NewStatusMapping(statusMappingConfig)
+	if err != nil {
+		return fmt.Errorf("invalid status mapping configuration: %w", err)
+	}
+	
+	cr.statusMapping = mapping
+	
+	// Log status mapping if debug is enabled
+	if cr.config.Debug {
+		logging.Info("Status mapping initialized: %s", mapping.String())
+	}
+	
+	return nil
 }
 
 // initializeReporter sets up the main reporter and fallback based on configuration
@@ -152,6 +184,16 @@ func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
 
 	if cr.reporter == nil {
 		return fmt.Errorf("no reporter configured")
+	}
+
+	// Apply status mapping before adding to reporter
+	originalStatus := result.Execution.Status
+	if cr.statusMapping.ApplyMappingToResult(result) {
+		// Status was mapped, log the change if debug is enabled
+		if cr.config.Debug {
+			logging.Info("Status mapped for test '%s': %s -> %s", 
+				result.Title, originalStatus, result.Execution.Status)
+		}
 	}
 
 	// Add to main reporter
@@ -267,4 +309,9 @@ func (cr *CoreReporter) CreateResultWithSteps(title string, status domain.TestRe
 // CreateStep creates a simple test step
 func (cr *CoreReporter) CreateStep(action string, status domain.StepStatus) domain.TestStep {
 	return CreateStep(action, status)
+}
+
+// GetStatusMapping returns the current status mapping
+func (cr *CoreReporter) GetStatusMapping() domain.StatusMapping {
+	return cr.statusMapping
 }

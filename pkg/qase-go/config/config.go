@@ -10,13 +10,14 @@ import (
 
 // Config represents the main configuration structure
 type Config struct {
-	Mode        string        `json:"mode"`
-	Fallback    string        `json:"fallback"`
-	Debug       bool          `json:"debug"`
-	Environment string        `json:"environment"`
-	CaptureLogs bool          `json:"captureLogs"`
-	Report      ReportConfig  `json:"report"`
-	TestOps     TestOpsConfig `json:"testops"`
+	Mode         string        `json:"mode"`
+	Fallback     string        `json:"fallback"`
+	Debug        bool          `json:"debug"`
+	Environment  string        `json:"environment"`
+	CaptureLogs  bool          `json:"captureLogs"`
+	StatusMapping map[string]string `json:"statusMapping,omitempty"`
+	Report       ReportConfig  `json:"report"`
+	TestOps      TestOpsConfig `json:"testops"`
 }
 
 // ReportConfig represents report configuration
@@ -165,6 +166,31 @@ func (c *Config) LoadFromEnvironment() {
 		}
 		c.TestOps.StatusFilter = statuses
 	}
+
+	// Status mapping configuration
+	if statusMapping := os.Getenv("QASE_STATUS_MAPPING"); statusMapping != "" {
+		// Parse comma-separated mapping pairs in format "from=to,from2=to2"
+		mappings := make(map[string]string)
+		pairs := strings.Split(statusMapping, ",")
+		for _, pair := range pairs {
+			pair = strings.TrimSpace(pair)
+			if pair == "" {
+				continue
+			}
+			
+			parts := strings.SplitN(pair, "=", 2)
+			if len(parts) == 2 {
+				from := strings.TrimSpace(parts[0])
+				to := strings.TrimSpace(parts[1])
+				if from != "" && to != "" {
+					mappings[from] = to
+				}
+			}
+		}
+		if len(mappings) > 0 {
+			c.StatusMapping = mappings
+		}
+	}
 }
 
 // LoadFromFile loads configuration from JSON file
@@ -239,7 +265,39 @@ func (c *Config) Validate() error {
 		}
 	}
 
+	// Validate status mapping if provided
+	if len(c.StatusMapping) > 0 {
+		validStatuses := []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
+		for from, to := range c.StatusMapping {
+			from = strings.ToLower(strings.TrimSpace(from))
+			to = strings.ToLower(strings.TrimSpace(to))
+			
+			// Check source status
+			if !contains(validStatuses, from) {
+				return fmt.Errorf("invalid source status '%s' in statusMapping, must be one of: %s", from, strings.Join(validStatuses, ", "))
+			}
+			
+			// Check target status
+			if !contains(validStatuses, to) {
+				return fmt.Errorf("invalid target status '%s' in statusMapping, must be one of: %s", to, strings.Join(validStatuses, ", "))
+			}
+			
+			// Prevent mapping to the same status
+			if from == to {
+				return fmt.Errorf("cannot map status '%s' to itself in statusMapping", from)
+			}
+		}
+	}
+
 	return nil
+}
+
+// GetStatusMapping returns the status mapping configuration
+func (c *Config) GetStatusMapping() map[string]string {
+	if c.StatusMapping == nil {
+		return make(map[string]string)
+	}
+	return c.StatusMapping
 }
 
 // helper function to check if slice contains a value
