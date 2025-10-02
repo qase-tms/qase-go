@@ -10,14 +10,15 @@ import (
 
 // Config represents the main configuration structure
 type Config struct {
-	Mode         string        `json:"mode"`
-	Fallback     string        `json:"fallback"`
-	Debug        bool          `json:"debug"`
-	Environment  string        `json:"environment"`
-	CaptureLogs  bool          `json:"captureLogs"`
+	Mode          string            `json:"mode"`
+	Fallback      string            `json:"fallback"`
+	Debug         bool              `json:"debug"`
+	Environment   string            `json:"environment"`
+	CaptureLogs   bool              `json:"captureLogs"`
 	StatusMapping map[string]string `json:"statusMapping,omitempty"`
-	Report       ReportConfig  `json:"report"`
-	TestOps      TestOpsConfig `json:"testops"`
+	Logging       LoggingConfig     `json:"logging,omitempty"`
+	Report        ReportConfig      `json:"report"`
+	TestOps       TestOpsConfig     `json:"testops"`
 }
 
 // ReportConfig represents report configuration
@@ -63,7 +64,11 @@ type BatchConfig struct {
 	Size int `json:"size"`
 }
 
-// LoggingConfig is no longer needed - logging is always enabled
+// LoggingConfig represents logging configuration
+type LoggingConfig struct {
+	Console bool `json:"console"`
+	File    bool `json:"file"`
+}
 
 // NewConfig creates a new configuration with default values
 func NewConfig() *Config {
@@ -73,7 +78,10 @@ func NewConfig() *Config {
 		Debug:       false,
 		Environment: "local",
 		CaptureLogs: false,
-		// Logging is always enabled - no configuration needed
+		Logging: LoggingConfig{
+			Console: true,
+			File:    true,
+		},
 		Report: ReportConfig{
 			Driver: "local",
 			Connection: ConnectionConfig{
@@ -118,7 +126,13 @@ func (c *Config) LoadFromEnvironment() {
 		c.CaptureLogs = strings.ToLower(captureLogs) == "true"
 	}
 
-	// Logging configuration - always enabled to both console and file
+	// Logging configuration
+	if console := os.Getenv("QASE_LOGGING_CONSOLE"); console != "" {
+		c.Logging.Console = strings.ToLower(console) == "true"
+	}
+	if file := os.Getenv("QASE_LOGGING_FILE"); file != "" {
+		c.Logging.File = strings.ToLower(file) == "true"
+	}
 
 	// Report configuration
 	if driver := os.Getenv("QASE_REPORT_DRIVER"); driver != "" {
@@ -177,7 +191,7 @@ func (c *Config) LoadFromEnvironment() {
 			if pair == "" {
 				continue
 			}
-			
+
 			parts := strings.SplitN(pair, "=", 2)
 			if len(parts) == 2 {
 				from := strings.TrimSpace(parts[0])
@@ -253,7 +267,7 @@ func (c *Config) Validate() error {
 		if c.TestOps.Run.ID == nil || *c.TestOps.Run.ID == 0 {
 			return fmt.Errorf("run ID is required when mode is 'testops'")
 		}
-		
+
 		// Validate status filter if provided
 		if len(c.TestOps.StatusFilter) > 0 {
 			validStatuses := []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
@@ -271,17 +285,17 @@ func (c *Config) Validate() error {
 		for from, to := range c.StatusMapping {
 			from = strings.ToLower(strings.TrimSpace(from))
 			to = strings.ToLower(strings.TrimSpace(to))
-			
+
 			// Check source status
 			if !contains(validStatuses, from) {
 				return fmt.Errorf("invalid source status '%s' in statusMapping, must be one of: %s", from, strings.Join(validStatuses, ", "))
 			}
-			
+
 			// Check target status
 			if !contains(validStatuses, to) {
 				return fmt.Errorf("invalid target status '%s' in statusMapping, must be one of: %s", to, strings.Join(validStatuses, ", "))
 			}
-			
+
 			// Prevent mapping to the same status
 			if from == to {
 				return fmt.Errorf("cannot map status '%s' to itself in statusMapping", from)

@@ -38,11 +38,17 @@ func init() {
 		}
 
 		// Initialize logging system
-		loggingConfig := &logging.Config{Debug: cfg.Debug}
+		loggingConfig := &logging.Config{
+			Debug: cfg.Debug,
+			Logging: logging.LoggingConfig{
+				Console: cfg.Logging.Console,
+				File:    cfg.Logging.File,
+			},
+		}
 		if err := logging.InitFromConfig(loggingConfig); err != nil {
 			logging.Warn("Warning: Failed to initialize logging system: %v", err)
 		} else {
-			logging.Info("Logging system initialized successfully")
+			logging.Debug("Logging system initialized successfully")
 		}
 
 		// Log configuration as JSON
@@ -60,7 +66,7 @@ func init() {
 		}
 
 		reporter = r
-		logging.Info("Qase reporter initialized successfully")
+		logging.Debug("Qase reporter initialized successfully")
 	})
 }
 
@@ -276,13 +282,13 @@ func AddMessage(message string) {
 	currentResult := getCurrentTestResult()
 	if currentResult == nil {
 		// No current test result, just log the message
-		logging.Info("Test message: %s (no current test result)", message)
+		logging.Debug("Test message: %s (no current test result)", message)
 		return
 	}
 
 	// Add message to current test result
 	currentResult.AddMessage(message)
-	logging.Info("Test message: %s", message)
+	logging.Debug("Test message: %s", message)
 }
 
 // Step executes a test step with metadata
@@ -291,9 +297,9 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 	currentResult := getCurrentTestResult()
 	if currentResult == nil {
 		// No current test result, just log and execute
-		logging.Info("Executing step: %s (no current test result)", meta.Name)
+		logging.Debug("Executing step: %s (no current test result)", meta.Name)
 		if meta.ExpectedResult != "" {
-			logging.Info("Step expected result: %s", meta.ExpectedResult)
+			logging.Debug("Step expected result: %s", meta.ExpectedResult)
 		}
 		fn()
 		return
@@ -347,9 +353,9 @@ func Step(t *testing.T, meta StepMetadata, fn func()) {
 	}()
 
 	// Log step execution
-	logging.Info("Executing step: %s", meta.Name)
+	logging.Debug("Executing step: %s", meta.Name)
 	if meta.ExpectedResult != "" {
-		logging.Info("Step expected result: %s", meta.ExpectedResult)
+		logging.Debug("Step expected result: %s", meta.ExpectedResult)
 	}
 
 	// Execute the step function
@@ -367,7 +373,7 @@ func AddAttachments(filePaths ...string) {
 	if currentResult == nil {
 		// No current test result, just log the attachments
 		for _, path := range filePaths {
-			logging.Info("Adding attachment: %s (no current test result)", path)
+			logging.Debug("Adding attachment: %s (no current test result)", path)
 		}
 		return
 	}
@@ -379,7 +385,7 @@ func AddAttachments(filePaths ...string) {
 		}
 		attachment.SetFilePath(path)
 		currentResult.AddAttachment(attachment)
-		logging.Info("Adding attachment: %s", path)
+		logging.Debug("Adding attachment: %s", path)
 	}
 }
 
@@ -393,7 +399,7 @@ func AttachContent(name, content, mimeType string) {
 	currentResult := getCurrentTestResult()
 	if currentResult == nil {
 		// No current test result, just log the content attachment
-		logging.Info("Adding content attachment: %s (type: %s) (no current test result)", name, mimeType)
+		logging.Debug("Adding content attachment: %s (type: %s) (no current test result)", name, mimeType)
 		return
 	}
 
@@ -404,7 +410,7 @@ func AttachContent(name, content, mimeType string) {
 		MimeType: mimeType,
 	}
 	currentResult.AddAttachment(attachment)
-	logging.Info("Adding content attachment: %s (type: %s)", name, mimeType)
+	logging.Debug("Adding content attachment: %s (type: %s)", name, mimeType)
 }
 
 // setCurrentTestResult sets the current test result for step collection

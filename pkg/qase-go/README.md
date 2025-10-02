@@ -60,6 +60,11 @@ Create a `qase.config.json` file in your project root:
 {
   "mode": "testops",
   "fallback": "report",
+  "debug": false,
+  "logging": {
+    "console": true,
+    "file": true
+  },
   "statusMapping": {
     "invalid": "failed",
     "skipped": "passed"
@@ -83,7 +88,7 @@ Create a `qase.config.json` file in your project root:
         "format": "json"
       }
     }
-    }
+  }
 }
 ```
 
@@ -197,6 +202,8 @@ go test -v ./...
 | `QASE_REPORT_DRIVER` | Report driver | `local` |
 | `QASE_REPORT_CONNECTION_PATH` | Local report path | `./build/qase-report` |
 | `QASE_REPORT_CONNECTION_FORMAT` | Report format | `json` |
+| `QASE_LOGGING_CONSOLE` | Enable console logging | `true` |
+| `QASE_LOGGING_FILE` | Enable file logging | `true` |
 
 ## Documentation
 

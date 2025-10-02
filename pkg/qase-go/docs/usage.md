@@ -43,6 +43,10 @@ Create a `qase.config.json` file in your project root:
   "debug": false,
   "environment": "staging",
   "captureLogs": true,
+  "logging": {
+    "console": true,
+    "file": true
+  },
   "testops": {
     "api": {
       "token": "your-api-token",
@@ -77,6 +81,8 @@ Create a `qase.config.json` file in your project root:
 - `debug`: Enable debug logging
 - `environment`: Environment name
 - `captureLogs`: Capture test logs
+- `logging.console`: Enable console logging (default: true)
+- `logging.file`: Enable file logging (default: true)
 - `testops.api.host`: "qase.io" or "api.qase.io" for self-hosted
 - `testops.run.id`: **Required** - specific test run ID (must be created beforehand)
 - `testops.defect`: Auto-create defects for failed tests
@@ -95,6 +101,10 @@ export QASE_FALLBACK=report
 export QASE_DEBUG=false
 export QASE_ENVIRONMENT=staging
 export QASE_CAPTURE_LOGS=true
+
+# Logging Configuration
+export QASE_LOGGING_CONSOLE=true
+export QASE_LOGGING_FILE=true
 
 # TestOps Configuration
 export QASE_TESTOPS_API_TOKEN=your-api-token
@@ -120,6 +130,10 @@ cfg := &config.Config{
     Mode:     "testops",
     Fallback: "report",
     Debug:    true,
+    Logging: config.LoggingConfig{
+        Console: true,
+        File:    true,
+    },
     TestOps: config.TestOpsConfig{
         API: config.APIConfig{
             Token: "your-api-token",
@@ -727,3 +741,37 @@ cfg := &config.Config{
     // ... other config
 }
 ```
+
+### 8. Configure Logging
+
+The SDK provides flexible logging configuration to control where logs are output:
+
+**File-based configuration:**
+
+```json
+{
+  "debug": true,
+  "logging": {
+    "console": true,
+    "file": false
+  }
+}
+```
+
+**Environment variables:**
+
+```bash
+# Disable console logging
+export QASE_LOGGING_CONSOLE=false
+
+# Enable debug mode
+export QASE_DEBUG=true
+```
+
+**Logging scenarios:**
+
+- **Default**: Both console and file enabled
+- **Debug mode**: All logs including debug information
+- **File only**: Logs written to file, no console output
+- **Console only**: Logs written to console, no file output
+- **Disabled**: No logging output

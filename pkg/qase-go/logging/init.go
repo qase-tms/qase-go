@@ -9,9 +9,15 @@ import (
 )
 
 // Config represents a simplified configuration structure for logging
-// Only needs the Debug flag from main config
 type Config struct {
-	Debug bool
+	Debug   bool
+	Logging LoggingConfig
+}
+
+// LoggingConfig represents logging configuration
+type LoggingConfig struct {
+	Console bool
+	File    bool
 }
 
 // InitFromConfig initializes the global logger from the main configuration
@@ -20,6 +26,18 @@ func InitFromConfig(cfg *Config) error {
 	logLevel := INFO
 	if cfg.Debug {
 		logLevel = DEBUG
+	}
+
+	// Determine console and file logging settings
+	// Default values: console=true, file=true
+	logToConsole := true
+	logToFile := true
+
+	// If logging config is provided, use it
+	if cfg.Logging.Console || cfg.Logging.File {
+		// At least one logging option is explicitly set
+		logToConsole = cfg.Logging.Console
+		logToFile = cfg.Logging.File
 	}
 
 	// Generate filename with current timestamp
@@ -31,8 +49,8 @@ func InitFromConfig(cfg *Config) error {
 	logDir := filepath.Join(projectRoot, "logs")
 
 	loggerConfig := LoggerConfig{
-		LogToConsole: true,     // Always enabled
-		LogToFile:    true,     // Always enabled
+		LogToConsole: logToConsole,
+		LogToFile:    logToFile,
 		LogDir:       logDir,   // Use project root logs directory
 		LogFileName:  filename, // Generated filename with timestamp
 		LogLevel:     logLevel,
@@ -52,6 +70,18 @@ func GetLoggerFromConfig(cfg *Config) (*Logger, error) {
 		logLevel = DEBUG
 	}
 
+	// Determine console and file logging settings
+	// Default values: console=true, file=true
+	logToConsole := true
+	logToFile := true
+
+	// If logging config is provided, use it
+	if cfg.Logging.Console || cfg.Logging.File {
+		// At least one logging option is explicitly set
+		logToConsole = cfg.Logging.Console
+		logToFile = cfg.Logging.File
+	}
+
 	// Generate filename with current timestamp
 	timestamp := time.Now().Format("2006-01-02_15-04-05")
 	filename := fmt.Sprintf("logs_%s.log", timestamp)
@@ -61,8 +91,8 @@ func GetLoggerFromConfig(cfg *Config) (*Logger, error) {
 	logDir := filepath.Join(projectRoot, "logs")
 
 	loggerConfig := LoggerConfig{
-		LogToConsole: true,     // Always enabled
-		LogToFile:    true,     // Always enabled
+		LogToConsole: logToConsole,
+		LogToFile:    logToFile,
 		LogDir:       logDir,   // Use project root logs directory
 		LogFileName:  filename, // Generated filename with timestamp
 		LogLevel:     logLevel,
