@@ -349,7 +349,7 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 
 // setAttachments converts domain attachments to API format
 func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_client.ResultCreate, attachments []domain.Attachment) error {
-	logging.Info("Converting %d attachments", len(attachments))
+	logging.Debug("Converting %d attachments", len(attachments))
 
 	attachmentIDs, err := c.processAttachmentsGracefully(ctx, attachments)
 	if err != nil {
@@ -359,10 +359,10 @@ func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_clie
 	}
 
 	if len(attachmentIDs) > 0 {
-		logging.Info("Processed attachments, got %d IDs: %v", len(attachmentIDs), attachmentIDs)
+		logging.Debug("Processed attachments, got %d IDs: %v", len(attachmentIDs), attachmentIDs)
 		apiResult.SetAttachments(attachmentIDs)
 	} else {
-		logging.Info("No attachments could be processed, continuing without attachments")
+		logging.Debug("No attachments could be processed, continuing without attachments")
 	}
 
 	return nil // Don't fail the entire result due to attachment issues
@@ -370,8 +370,8 @@ func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_clie
 
 // processAttachmentsGracefully processes attachments, skipping problematic ones instead of failing
 func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
-	logging.Info("Processing %d attachments gracefully", len(attachments))
-	logging.Info("Uploader available: %v, project code: %s", c.uploader != nil, c.projectCode)
+	logging.Debug("Processing %d attachments gracefully", len(attachments))
+	logging.Debug("Uploader available: %v, project code: %s", c.uploader != nil, c.projectCode)
 
 	var attachmentIDs []string
 	var errors []string
@@ -379,11 +379,11 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 	for _, attachment := range attachments {
 		var attachmentID string
 
-		logging.Info("Processing attachment: %s, has file path: %v", attachment.String(), attachment.HasFilePath())
+		logging.Debug("Processing attachment: %s, has file path: %v", attachment.String(), attachment.HasFilePath())
 
 		// If attachment has a file path and uploader is available, upload the file
 		if attachment.HasFilePath() && c.uploader != nil && c.projectCode != "" {
-			logging.Info("Uploading attachment file: %s", attachment.GetFilePath())
+			logging.Debug("Uploading attachment file: %s", attachment.GetFilePath())
 
 			file, err := os.Open(attachment.GetFilePath())
 			if err != nil {
@@ -402,10 +402,10 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 			}
 
 			attachmentID = uploadedHash
-			logging.Info("Successfully uploaded attachment, got hash: %s", uploadedHash)
+			logging.Debug("Successfully uploaded attachment, got hash: %s", uploadedHash)
 		} else if len(attachment.Content) > 0 && c.uploader != nil && c.projectCode != "" {
 			// Handle content attachments - create temporary file
-			logging.Info("Creating temporary file for content attachment: %s", attachment.FileName)
+			logging.Debug("Creating temporary file for content attachment: %s", attachment.FileName)
 
 			// Extract file extension to preserve it
 			ext := filepath.Ext(attachment.FileName)
@@ -449,12 +449,12 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 			}
 
 			attachmentID = uploadedHash
-			logging.Info("Successfully uploaded content attachment, got hash: %s", uploadedHash)
+			logging.Debug("Successfully uploaded content attachment, got hash: %s", uploadedHash)
 		} else {
 			// Use existing ID if no file path or uploader not available
 			if attachment.ID != "" {
 				attachmentID = attachment.ID
-				logging.Info("Using existing attachment ID: %s (no upload)", attachmentID)
+				logging.Debug("Using existing attachment ID: %s (no upload)", attachmentID)
 			} else {
 				// No ID available and no uploader - skip this attachment
 				logging.Warn("Warning: Attachment '%s' has no ID and no uploader available, skipping", attachment.FileName)
@@ -471,7 +471,7 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 		logging.Warn("Warning: %d attachments had errors and were skipped: %v", len(errors), errors)
 	}
 
-	logging.Info("Final attachment IDs: %v (processed: %d, skipped: %d)", attachmentIDs, len(attachmentIDs), len(errors))
+	logging.Debug("Final attachment IDs: %v (processed: %d, skipped: %d)", attachmentIDs, len(attachmentIDs), len(errors))
 
 	// Return error only if no attachments could be processed at all
 	if len(attachmentIDs) == 0 && len(errors) > 0 {

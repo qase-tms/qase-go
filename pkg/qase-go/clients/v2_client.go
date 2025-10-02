@@ -86,9 +86,9 @@ func (c *V2Client) logResultPretty(prefix string, result *api_v2_client.ResultCr
 
 	// Convert to JSON for pretty printing
 	if jsonData, err := json.MarshalIndent(logData, "", "  "); err == nil {
-		logging.Info("%s: %s", prefix, string(jsonData))
+		logging.Debug("%s: %s", prefix, string(jsonData))
 	} else {
-		logging.Info("%s: %+v", prefix, logData)
+		logging.Debug("%s: %+v", prefix, logData)
 	}
 }
 
@@ -243,9 +243,9 @@ func (c *V2Client) logBatchRequestPretty(batchRequest *api_v2_client.CreateResul
 
 	// Output the entire batch request in one JSON
 	if jsonData, err := json.MarshalIndent(batchLogData, "", "  "); err == nil {
-		logging.Info("Batch request:\n%s", string(jsonData))
+		logging.Debug("Batch request:\n%s", string(jsonData))
 	} else {
-		logging.Info("Batch request: %+v", batchLogData)
+		logging.Debug("Batch request: %+v", batchLogData)
 	}
 }
 
@@ -256,8 +256,8 @@ func (c *V2Client) SetConverter(converter *V2Converter) {
 
 // SendResult sends a single test result to Qase using API v2
 func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error {
-	logging.Info("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
-	logging.Info("Domain result: %s", result.String())
+	logging.Debug("Sending result to Qase API v2: project=%s, run=%d, result=%s", projectCode, runID, result.Title)
+	logging.Debug("Domain result: %s", result.String())
 
 	// Convert domain model to API v2 model
 	apiResult, err := c.converter.ConvertTestResult(result)
@@ -302,26 +302,26 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 		if c.config.Debug {
 			logging.Error("API request failed with error: %v", err)
 			if httpResp != nil {
-				logging.Info("HTTP response status: %s", httpResp.Status)
-				logging.Info("HTTP response headers: %v", httpResp.Header)
+				logging.Debug("HTTP response status: %s", httpResp.Status)
+				logging.Debug("HTTP response headers: %v", httpResp.Header)
 				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					logging.Info("HTTP response body: %s", string(body))
+					logging.Debug("HTTP response body: %s", string(body))
 				}
 			}
 		}
 		return fmt.Errorf("failed to send result to Qase API v2: %w", err)
 	}
 
-	logging.Info("Successfully sent result: HTTP status=%s", httpResp.Status)
+	logging.Debug("Successfully sent result: HTTP status=%s", httpResp.Status)
 
 	return nil
 }
 
 // SendResults sends multiple test results to Qase using API v2 batch endpoint
 func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error {
-	logging.Info("Sending batch results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
+	logging.Debug("Sending batch results to Qase API v2: count=%d, project=%s, run=%d", len(results), projectCode, runID)
 	for i, result := range results {
-		logging.Info("Result %d: %s", i, result.String())
+		logging.Debug("Result %d: %s", i, result.String())
 	}
 
 	// Convert all domain models to API v2 models, attempting to convert all results
@@ -365,7 +365,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 		return fmt.Errorf("no results could be converted for batch upload")
 	}
 
-	logging.Info("Converted API results count: %d (warnings: %d)", len(apiResults), len(conversionWarnings))
+	logging.Debug("Converted API results count: %d (warnings: %d)", len(apiResults), len(conversionWarnings))
 	for i, result := range apiResults {
 		c.logResultPretty(fmt.Sprintf("Result %d", i), &result)
 	}
@@ -391,17 +391,17 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 		if c.config.Debug {
 			logging.Error("API request failed with error: %v", err)
 			if httpResp != nil {
-				logging.Info("HTTP response status: %s", httpResp.Status)
-				logging.Info("HTTP response headers: %v", httpResp.Header)
+				logging.Debug("HTTP response status: %s", httpResp.Status)
+				logging.Debug("HTTP response headers: %v", httpResp.Header)
 				if body, readErr := io.ReadAll(httpResp.Body); readErr == nil {
-					logging.Info("HTTP response body: %s", string(body))
+					logging.Debug("HTTP response body: %s", string(body))
 				}
 			}
 		}
 		return fmt.Errorf("failed to send batch results to Qase API v2: %w", err)
 	}
 
-	logging.Info("Successfully sent batch results: HTTP status=%s", httpResp.Status)
+	logging.Debug("Successfully sent batch results: HTTP status=%s", httpResp.Status)
 
 	return nil
 }

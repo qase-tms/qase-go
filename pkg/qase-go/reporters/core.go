@@ -55,26 +55,26 @@ func NewCoreReporter(cfg *config.Config) (*CoreReporter, error) {
 // initializeStatusMapping initializes the status mapping from configuration
 func (cr *CoreReporter) initializeStatusMapping() error {
 	statusMappingConfig := cr.config.GetStatusMapping()
-	
+
 	if len(statusMappingConfig) == 0 {
 		// No status mapping configured
 		cr.statusMapping = make(domain.StatusMapping)
 		return nil
 	}
-	
+
 	// Create status mapping from configuration
 	mapping, err := domain.NewStatusMapping(statusMappingConfig)
 	if err != nil {
 		return fmt.Errorf("invalid status mapping configuration: %w", err)
 	}
-	
+
 	cr.statusMapping = mapping
-	
+
 	// Log status mapping if debug is enabled
 	if cr.config.Debug {
-		logging.Info("Status mapping initialized: %s", mapping.String())
+		logging.Debug("Status mapping initialized: %s", mapping.String())
 	}
-	
+
 	return nil
 }
 
@@ -191,7 +191,7 @@ func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
 	if cr.statusMapping.ApplyMappingToResult(result) {
 		// Status was mapped, log the change if debug is enabled
 		if cr.config.Debug {
-			logging.Info("Status mapped for test '%s': %s -> %s", 
+			logging.Debug("Status mapped for test '%s': %s -> %s",
 				result.Title, originalStatus, result.Execution.Status)
 		}
 	}
@@ -201,7 +201,7 @@ func (cr *CoreReporter) AddResult(result *domain.TestResult) error {
 		logging.Warn("Warning: Failed to add result: %v", err)
 		// Try fallback if available
 		if cr.fallback != nil {
-			logging.Info("Trying fallback reporter")
+			logging.Debug("Trying fallback reporter")
 			if fallbackErr := cr.fallback.AddResult(result); fallbackErr != nil {
 				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
 			}
@@ -229,7 +229,7 @@ func (cr *CoreReporter) CompleteTestRun(ctx context.Context) error {
 		logging.Warn("Warning: Failed to complete test run: %v", err)
 		// Try fallback if available
 		if cr.fallback != nil {
-			logging.Info("Trying fallback reporter")
+			logging.Debug("Trying fallback reporter")
 			if fallbackErr := cr.fallback.CompleteTestRun(ctx); fallbackErr != nil {
 				return fmt.Errorf("both main reporter and fallback failed: %w, fallback: %v", err, fallbackErr)
 			}

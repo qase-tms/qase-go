@@ -100,7 +100,7 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 
 	// Log summary
 	if failedUploads > 0 {
-		logging.Info("Upload summary: %d successful, %d failed", successfulUploads, failedUploads)
+		logging.Debug("Upload summary: %d successful, %d failed", successfulUploads, failedUploads)
 		if successfulUploads == 0 {
 			// If no results were uploaded at all, return error
 			return fmt.Errorf("failed to upload any results: %w", lastError)

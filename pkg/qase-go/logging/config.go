@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
@@ -20,8 +21,8 @@ func DefaultLoggerConfig() LoggerConfig {
 	logDir := filepath.Join(projectRoot, "logs")
 
 	return LoggerConfig{
-		LogToConsole: true,
-		LogToFile:    true,
+		LogToConsole: true, // Default: console enabled
+		LogToFile:    true, // Default: file enabled
 		LogDir:       logDir,
 		LogFileName:  filename,
 		LogLevel:     INFO,
@@ -29,9 +30,16 @@ func DefaultLoggerConfig() LoggerConfig {
 }
 
 // LoadLoggerConfigFromEnvironment loads logger configuration from environment variables
-// Note: Logging is always enabled to both console and file
 func LoadLoggerConfigFromEnvironment(config *LoggerConfig) {
-	// No environment variables needed - logging is always enabled
+	// Load console setting from environment
+	if console := os.Getenv("QASE_LOGGING_CONSOLE"); console != "" {
+		config.LogToConsole = strings.ToLower(console) == "true"
+	}
+
+	// Load file setting from environment
+	if file := os.Getenv("QASE_LOGGING_FILE"); file != "" {
+		config.LogToFile = strings.ToLower(file) == "true"
+	}
 }
 
 // CreateLogsDirectory creates the logs directory if it doesn't exist
