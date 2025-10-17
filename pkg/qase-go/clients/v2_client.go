@@ -410,3 +410,8 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 func (c *V2Client) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
 	return "", fmt.Errorf("UploadAttachment is not supported in API v2 client. Please use V1Client instead")
 }
+
+// GetAPIClient returns the underlying API v2 client
+func (c *V2Client) GetAPIClient() *api_v2_client.APIClient {
+	return c.client
+}

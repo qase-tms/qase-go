@@ -51,8 +51,6 @@ func (c *V1Client) SendResults(ctx context.Context, projectCode string, runID in
 
 // UploadAttachment uploads attachments to Qase API v1
 func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
-	const op = "client.clientv1.uploadattachment"
-
 	if len(file) == 0 {
 		return "", fmt.Errorf("no files provided")
 	}
@@ -100,4 +98,9 @@ func extractBody(resp *http.Response) []byte {
 	}
 
 	return body
+}
+
+// GetClient returns the underlying API v1 client
+func (c *V1Client) GetAPIClient() *api_v1_client.APIClient {
+	return c.client
 }
