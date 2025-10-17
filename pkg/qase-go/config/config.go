@@ -110,69 +110,69 @@ func NewConfig() *Config {
 // Using the same environment variable names as qase-java-commons
 func (c *Config) LoadFromEnvironment() {
 	// Main configuration
-	if mode := os.Getenv("QASE_MODE"); mode != "" {
+	if mode := os.Getenv(QaseModeEnvVar); mode != "" {
 		c.Mode = mode
 	}
-	if fallback := os.Getenv("QASE_FALLBACK"); fallback != "" {
+	if fallback := os.Getenv(QaseFallbackEnvVar); fallback != "" {
 		c.Fallback = fallback
 	}
-	if debug := os.Getenv("QASE_DEBUG"); debug != "" {
+	if debug := os.Getenv(QaseDebugEnvVar); debug != "" {
 		c.Debug = strings.ToLower(debug) == "true"
 	}
-	if env := os.Getenv("QASE_ENVIRONMENT"); env != "" {
+	if env := os.Getenv(QaseEnvironmentEnvVar); env != "" {
 		c.Environment = env
 	}
-	if captureLogs := os.Getenv("QASE_CAPTURE_LOGS"); captureLogs != "" {
+	if captureLogs := os.Getenv(QaseCaptureLogsEnvVar); captureLogs != "" {
 		c.CaptureLogs = strings.ToLower(captureLogs) == "true"
 	}
 
 	// Logging configuration
-	if console := os.Getenv("QASE_LOGGING_CONSOLE"); console != "" {
+	if console := os.Getenv(QaseLoggingConsoleEnvVar); console != "" {
 		c.Logging.Console = strings.ToLower(console) == "true"
 	}
-	if file := os.Getenv("QASE_LOGGING_FILE"); file != "" {
+	if file := os.Getenv(QaseLoggingFileEnvVar); file != "" {
 		c.Logging.File = strings.ToLower(file) == "true"
 	}
 
 	// Report configuration
-	if driver := os.Getenv("QASE_REPORT_DRIVER"); driver != "" {
+	if driver := os.Getenv(QaseReportDriverEnvVar); driver != "" {
 		c.Report.Driver = driver
 	}
-	if path := os.Getenv("QASE_REPORT_CONNECTION_PATH"); path != "" {
+	if path := os.Getenv(QaseReportConnectionPathEnvVar); path != "" {
 		c.Report.Connection.Local.Path = path
 	}
-	if format := os.Getenv("QASE_REPORT_CONNECTION_FORMAT"); format != "" {
+	if format := os.Getenv(QaseReportConnectionFormatEnvVar); format != "" {
 		c.Report.Connection.Local.Format = format
 	}
 
 	// TestOps API configuration
-	if token := os.Getenv("QASE_TESTOPS_API_TOKEN"); token != "" {
+	if token := os.Getenv(QaseTestOpsAPITokenEnvVar); token != "" {
 		c.TestOps.API.Token = token
 	}
-	if host := os.Getenv("QASE_TESTOPS_API_HOST"); host != "" {
+	if host := os.Getenv(QaseTestOpsAPIHostEnvVar); host != "" {
 		c.TestOps.API.Host = host
 	}
 
 	// TestOps Run configuration
-	if runID := os.Getenv("QASE_TESTOPS_RUN_ID"); runID != "" {
+	if runID := os.Getenv(QaseTestOpsRunIDEnvVar); runID != "" {
 		if id, err := strconv.ParseInt(runID, 10, 64); err == nil {
 			c.TestOps.Run.ID = &id
 		}
 	}
 
 	// TestOps other configuration
-	if defect := os.Getenv("QASE_TESTOPS_DEFECT"); defect != "" {
+	if defect := os.Getenv(QaseTestOpsDefectEnvVar); defect != "" {
 		c.TestOps.Defect = strings.ToLower(defect) == "true"
 	}
-	if project := os.Getenv("QASE_TESTOPS_PROJECT"); project != "" {
+	if project := os.Getenv(QaseTestOpsProjectEnvVar); project != "" {
 		c.TestOps.Project = project
 	}
-	if batchSize := os.Getenv("QASE_TESTOPS_BATCH_SIZE"); batchSize != "" {
+	if batchSize := os.Getenv(QaseTestOpsBatchSizeEnvVar); batchSize != "" {
 		if size, err := strconv.Atoi(batchSize); err == nil {
 			c.TestOps.Batch.Size = size
 		}
 	}
-	if statusFilter := os.Getenv("QASE_TESTOPS_STATUS_FILTER"); statusFilter != "" {
+	if statusFilter := os.Getenv(QaseTestOpsStatusFilterEnvVar); statusFilter != "" {
 		// Parse comma-separated status values
 		statuses := strings.Split(statusFilter, ",")
 		for i, status := range statuses {
@@ -182,7 +182,7 @@ func (c *Config) LoadFromEnvironment() {
 	}
 
 	// Status mapping configuration
-	if statusMapping := os.Getenv("QASE_STATUS_MAPPING"); statusMapping != "" {
+	if statusMapping := os.Getenv(QaseStatusMappingEnvVar); statusMapping != "" {
 		// Parse comma-separated mapping pairs in format "from=to,from2=to2"
 		mappings := make(map[string]string)
 		pairs := strings.Split(statusMapping, ",")

@@ -94,7 +94,7 @@ func (cr *CoreReporter) initializeReporter() error {
 	case "testops":
 		// Check if run ID is provided
 		if cr.config.TestOps.Run.ID == nil {
-			return fmt.Errorf("test run ID is required for TestOps mode - set QASE_TESTOPS_RUN_ID environment variable or id in run config")
+			return fmt.Errorf("test run ID is required for TestOps mode - set %s environment variable or id in run config", config.QaseTestOpsRunIDEnvVar)
 		}
 
 		// Try to create TestOps reporter

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qase-tms/qase-go/pkg/qase-go/config"
+	qase_config "github.com/qase-tms/qase-go/pkg/qase-go/config"
 )
 
 // DefaultLoggerConfig returns a default logger configuration
@@ -17,7 +17,7 @@ func DefaultLoggerConfig() LoggerConfig {
 	filename := fmt.Sprintf("logs_%s.log", timestamp)
 
 	// Find project root directory (where qase.config.json is located)
-	projectRoot := config.FindProjectRootWithParentSearch()
+	projectRoot := qase_config.FindProjectRootWithParentSearch()
 	logDir := filepath.Join(projectRoot, "logs")
 
 	return LoggerConfig{
@@ -32,12 +32,12 @@ func DefaultLoggerConfig() LoggerConfig {
 // LoadLoggerConfigFromEnvironment loads logger configuration from environment variables
 func LoadLoggerConfigFromEnvironment(config *LoggerConfig) {
 	// Load console setting from environment
-	if console := os.Getenv("QASE_LOGGING_CONSOLE"); console != "" {
+	if console := os.Getenv(qase_config.QaseLoggingConsoleEnvVar); console != "" {
 		config.LogToConsole = strings.ToLower(console) == "true"
 	}
 
 	// Load file setting from environment
-	if file := os.Getenv("QASE_LOGGING_FILE"); file != "" {
+	if file := os.Getenv(qase_config.QaseLoggingFileEnvVar); file != "" {
 		config.LogToFile = strings.ToLower(file) == "true"
 	}
 }
@@ -46,7 +46,7 @@ func LoadLoggerConfigFromEnvironment(config *LoggerConfig) {
 func CreateLogsDirectory(logDir string) error {
 	if logDir == "" {
 		// Find project root directory (where qase.config.json is located)
-		projectRoot := config.FindProjectRootWithParentSearch()
+		projectRoot := qase_config.FindProjectRootWithParentSearch()
 		logDir = filepath.Join(projectRoot, "logs")
 	}
 
