@@ -8,8 +8,8 @@ import (
 // createValidConfig creates a valid configuration with the given status mapping
 func createValidConfig(statusMapping map[string]string) *Config {
 	return &Config{
-		Mode:         "report",
-		Fallback:     "off",
+		Mode:          "report",
+		Fallback:      "off",
 		StatusMapping: statusMapping,
 		Report: ReportConfig{
 			Driver: "local",
@@ -25,8 +25,8 @@ func createValidConfig(statusMapping map[string]string) *Config {
 
 func TestConfig_StatusMapping(t *testing.T) {
 	tests := []struct {
-		name           string
-		config         *Config
+		name            string
+		config          *Config
 		expectedMapping map[string]string
 	}{
 		{
@@ -65,11 +65,11 @@ func TestConfig_StatusMapping(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mapping := tt.config.GetStatusMapping()
-			
+
 			if len(mapping) != len(tt.expectedMapping) {
 				t.Errorf("Expected mapping length %d, got %d", len(tt.expectedMapping), len(mapping))
 			}
-			
+
 			for from, to := range tt.expectedMapping {
 				if mapping[from] != to {
 					t.Errorf("Expected mapping %s->%s, got %s->%s", from, to, from, mapping[from])
@@ -81,14 +81,14 @@ func TestConfig_StatusMapping(t *testing.T) {
 
 func TestConfig_LoadFromEnvironment_StatusMapping(t *testing.T) {
 	tests := []struct {
-		name           string
-		envValue       string
+		name            string
+		envValue        string
 		expectedMapping map[string]string
-		expectError    bool
+		expectError     bool
 	}{
 		{
-			name:           "valid env format",
-			envValue:       "invalid=failed,skipped=passed",
+			name:     "valid env format",
+			envValue: "invalid=failed,skipped=passed",
 			expectedMapping: map[string]string{
 				"invalid": "failed",
 				"skipped": "passed",
@@ -96,22 +96,22 @@ func TestConfig_LoadFromEnvironment_StatusMapping(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:           "single mapping",
-			envValue:       "invalid=failed",
+			name:     "single mapping",
+			envValue: "invalid=failed",
 			expectedMapping: map[string]string{
 				"invalid": "failed",
 			},
 			expectError: false,
 		},
 		{
-			name:           "empty env value",
-			envValue:       "",
+			name:            "empty env value",
+			envValue:        "",
 			expectedMapping: map[string]string{},
-			expectError:    false,
+			expectError:     false,
 		},
 		{
-			name:           "whitespace handling",
-			envValue:       " invalid = failed , skipped = passed ",
+			name:     "whitespace handling",
+			envValue: " invalid = failed , skipped = passed ",
 			expectedMapping: map[string]string{
 				"invalid": "failed",
 				"skipped": "passed",
@@ -119,8 +119,8 @@ func TestConfig_LoadFromEnvironment_StatusMapping(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:           "empty pairs",
-			envValue:       "invalid=failed,,skipped=passed,",
+			name:     "empty pairs",
+			envValue: "invalid=failed,,skipped=passed,",
 			expectedMapping: map[string]string{
 				"invalid": "failed",
 				"skipped": "passed",
@@ -133,8 +133,8 @@ func TestConfig_LoadFromEnvironment_StatusMapping(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set environment variable
 			if tt.envValue != "" {
-				os.Setenv("QASE_STATUS_MAPPING", tt.envValue)
-				defer os.Unsetenv("QASE_STATUS_MAPPING")
+				os.Setenv(QaseStatusMappingEnvVar, tt.envValue)
+				defer os.Unsetenv(QaseStatusMappingEnvVar)
 			}
 
 			config := NewConfig()
@@ -228,10 +228,10 @@ func TestConfig_Validate_StatusMapping(t *testing.T) {
 
 // helper function to check if string contains substring
 func containsString(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 || 
-		(len(s) > len(substr) && (s[:len(substr)] == substr || 
-		s[len(s)-len(substr):] == substr || 
-		containsSubstring(s, substr))))
+	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
+		(len(s) > len(substr) && (s[:len(substr)] == substr ||
+			s[len(s)-len(substr):] == substr ||
+			containsSubstring(s, substr))))
 }
 
 func containsSubstring(s, substr string) bool {
