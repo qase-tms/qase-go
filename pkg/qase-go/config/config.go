@@ -239,13 +239,13 @@ func (c *Config) SaveToFile(filename string) error {
 // Validate validates the configuration
 func (c *Config) Validate() error {
 	// Validate mode
-	validModes := []string{"testops", "report", "off"}
+	var validModes = VALID_MODES[:]
 	if !contains(validModes, c.Mode) {
 		return fmt.Errorf("invalid mode '%s', must be one of: %s", c.Mode, strings.Join(validModes, ", "))
 	}
 
 	// Validate fallback
-	validFallbacks := []string{"report", "off"}
+	validFallbacks := VALID_FALLBACKS[:]
 	if !contains(validFallbacks, c.Fallback) {
 		return fmt.Errorf("invalid fallback '%s', must be one of: %s", c.Fallback, strings.Join(validFallbacks, ", "))
 	}
@@ -257,20 +257,20 @@ func (c *Config) Validate() error {
 	}
 
 	// Validate TestOps configuration if mode is testops
-	if c.Mode == "testops" {
+	if c.Mode == MODE_TESTOPS {
 		if c.TestOps.API.Token == "" {
-			return fmt.Errorf("API token is required when mode is 'testops'")
+			return fmt.Errorf("API token is required when mode is %s", MODE_TESTOPS)
 		}
 		if c.TestOps.Project == "" {
-			return fmt.Errorf("project code is required when mode is 'testops'")
+			return fmt.Errorf("project code is required when mode is %s", MODE_TESTOPS)
 		}
 		if c.TestOps.Run.ID == nil || *c.TestOps.Run.ID == 0 {
-			return fmt.Errorf("run ID is required when mode is 'testops'")
+			return fmt.Errorf("run ID is required when mode is %s", MODE_TESTOPS)
 		}
 
 		// Validate status filter if provided
 		if len(c.TestOps.StatusFilter) > 0 {
-			validStatuses := []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
+			validStatuses := VALID_STATUSES[:]
 			for _, status := range c.TestOps.StatusFilter {
 				if !contains(validStatuses, status) {
 					return fmt.Errorf("invalid status '%s' in statusFilter, must be one of: %s", status, strings.Join(validStatuses, ", "))
@@ -281,7 +281,7 @@ func (c *Config) Validate() error {
 
 	// Validate status mapping if provided
 	if len(c.StatusMapping) > 0 {
-		validStatuses := []string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
+		validStatuses := VALID_STATUSES[:]
 		for from, to := range c.StatusMapping {
 			from = strings.ToLower(strings.TrimSpace(from))
 			to = strings.ToLower(strings.TrimSpace(to))

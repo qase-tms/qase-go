@@ -27,3 +27,23 @@ const (
 	QaseLoggingConsoleEnvVar = "QASE_LOGGING_CONSOLE"
 	QaseLoggingFileEnvVar    = "QASE_LOGGING_FILE"
 )
+
+const (
+	MODE_TESTOPS = "testops"
+	MODE_REPORT  = "report"
+	MODE_OFF     = "off"
+)
+
+var VALID_MODES [3]string = [3]string{MODE_TESTOPS, MODE_REPORT, MODE_OFF}
+var VALID_FALLBACKS [2]string = [2]string{MODE_REPORT, MODE_OFF}
+
+const (
+	STATUS_PASSED      = "passed"
+	STATUS_FAILED      = "failed"
+	STATUS_BLOCKED     = "blocked"
+	STATUS_SKIPPED     = "skipped"
+	STATUS_IN_PROGRESS = "in_progress"
+	STATUS_INVALID     = "invalid"
+)
+
+var VALID_STATUSES [6]string = [6]string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
