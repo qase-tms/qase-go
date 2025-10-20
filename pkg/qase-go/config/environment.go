@@ -46,4 +46,5 @@ const (
 	STATUS_INVALID     = "invalid"
 )
 
-var VALID_STATUSES [6]string = [6]string{"passed", "failed", "blocked", "skipped", "in_progress", "invalid"}
+var VALID_STATUSES [6]string = [6]string{STATUS_PASSED, STATUS_FAILED,
+	STATUS_BLOCKED, STATUS_SKIPPED, STATUS_IN_PROGRESS, STATUS_INVALID}
