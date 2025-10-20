@@ -148,17 +148,17 @@ func (b *ConfigBuilder) BuildUnsafe() *Config {
 
 // TestOpsMode configures builder for TestOps mode
 func (b *ConfigBuilder) TestOpsMode() *ConfigBuilder {
-	return b.WithMode("testops")
+	return b.WithMode(MODE_TESTOPS)
 }
 
 // ReportMode configures builder for Report mode
 func (b *ConfigBuilder) ReportMode() *ConfigBuilder {
-	return b.WithMode("report")
+	return b.WithMode(MODE_REPORT)
 }
 
 // OffMode configures builder for Off mode
 func (b *ConfigBuilder) OffMode() *ConfigBuilder {
-	return b.WithMode("off")
+	return b.WithMode(MODE_OFF)
 }
 
 // JSONReport configures builder for JSON report format
