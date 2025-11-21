@@ -1,7 +1,7 @@
 /*
 Qase.io TestOps API v2
 
-Testing ResultsAPIService
+Testing CustomFieldsAPIService
 
 */
 
@@ -18,35 +18,33 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_api_v2_client_ResultsAPIService(t *testing.T) {
+func Test_api_v2_client_CustomFieldsAPIService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test ResultsAPIService CreateResultV2", func(t *testing.T) {
+	t.Run("Test CustomFieldsAPIService GetCustomFieldV2", func(t *testing.T) {
 
 		t.Skip("skip test") // remove to run test
 
-		var projectCode string
-		var runId int64
+		var id int32
 
-		_, httpRes, err := apiClient.ResultsAPI.CreateResultV2(context.Background(), projectCode, runId).Execute()
+		resp, httpRes, err := apiClient.CustomFieldsAPI.GetCustomFieldV2(context.Background(), id).Execute()
 
 		require.Nil(t, err)
+		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
-	t.Run("Test ResultsAPIService CreateResultsV2", func(t *testing.T) {
+	t.Run("Test CustomFieldsAPIService GetCustomFieldsV2", func(t *testing.T) {
 
 		t.Skip("skip test") // remove to run test
 
-		var projectCode string
-		var runId int64
-
-		_, httpRes, err := apiClient.ResultsAPI.CreateResultsV2(context.Background(), projectCode, runId).Execute()
+		resp, httpRes, err := apiClient.CustomFieldsAPI.GetCustomFieldsV2(context.Background()).Execute()
 
 		require.Nil(t, err)
+		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})

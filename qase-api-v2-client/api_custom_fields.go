@@ -20,76 +20,61 @@ import (
 	"strings"
 )
 
-// ResultsAPIService ResultsAPI service
-type ResultsAPIService service
+// CustomFieldsAPIService CustomFieldsAPI service
+type CustomFieldsAPIService service
 
-type ApiCreateResultV2Request struct {
-	ctx          context.Context
-	ApiService   *ResultsAPIService
-	projectCode  string
-	runId        int64
-	resultCreate *ResultCreate
+type ApiGetCustomFieldV2Request struct {
+	ctx        context.Context
+	ApiService *CustomFieldsAPIService
+	id         int32
 }
 
-func (r ApiCreateResultV2Request) ResultCreate(resultCreate ResultCreate) ApiCreateResultV2Request {
-	r.resultCreate = &resultCreate
-	return r
-}
-
-func (r ApiCreateResultV2Request) Execute() (*ResultCreateResponse, *http.Response, error) {
-	return r.ApiService.CreateResultV2Execute(r)
+func (r ApiGetCustomFieldV2Request) Execute() (*CustomFieldResponse, *http.Response, error) {
+	return r.ApiService.GetCustomFieldV2Execute(r)
 }
 
 /*
-CreateResultV2 Create test run result
+GetCustomFieldV2 Get Custom Field
 
-This method allows to create single test run result.
-
-If there is no free space left in your team account, when attempting to upload an attachment, e.g., through reporters, you will receive an error with code 507 - Insufficient Storage.
+This method allows to retrieve custom field.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param projectCode
-	@param runId
-	@return ApiCreateResultV2Request
+	@param id Identifier.
+	@return ApiGetCustomFieldV2Request
 */
-func (a *ResultsAPIService) CreateResultV2(ctx context.Context, projectCode string, runId int64) ApiCreateResultV2Request {
-	return ApiCreateResultV2Request{
-		ApiService:  a,
-		ctx:         ctx,
-		projectCode: projectCode,
-		runId:       runId,
+func (a *CustomFieldsAPIService) GetCustomFieldV2(ctx context.Context, id int32) ApiGetCustomFieldV2Request {
+	return ApiGetCustomFieldV2Request{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ResultCreateResponse
-func (a *ResultsAPIService) CreateResultV2Execute(r ApiCreateResultV2Request) (*ResultCreateResponse, *http.Response, error) {
+//	@return CustomFieldResponse
+func (a *CustomFieldsAPIService) GetCustomFieldV2Execute(r ApiGetCustomFieldV2Request) (*CustomFieldResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
+		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ResultCreateResponse
+		localVarReturnValue *CustomFieldResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ResultsAPIService.CreateResultV2")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CustomFieldsAPIService.GetCustomFieldV2")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/{project_code}/run/{run_id}/result"
-	localVarPath = strings.Replace(localVarPath, "{"+"project_code"+"}", url.PathEscape(parameterValueToString(r.projectCode, "projectCode")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"run_id"+"}", url.PathEscape(parameterValueToString(r.runId, "runId")), -1)
+	localVarPath := localBasePath + "/custom_field/{id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.resultCreate == nil {
-		return localVarReturnValue, nil, reportError("resultCreate is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -105,8 +90,6 @@ func (a *ResultsAPIService) CreateResultV2Execute(r ApiCreateResultV2Request) (*
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.resultCreate
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -158,73 +141,98 @@ func (a *ResultsAPIService) CreateResultV2Execute(r ApiCreateResultV2Request) (*
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiCreateResultsV2Request struct {
-	ctx                    context.Context
-	ApiService             *ResultsAPIService
-	projectCode            string
-	runId                  int64
-	createResultsRequestV2 *CreateResultsRequestV2
+type ApiGetCustomFieldsV2Request struct {
+	ctx        context.Context
+	ApiService *CustomFieldsAPIService
+	entity     *string
+	type_      *string
+	limit      *int32
+	offset     *int32
 }
 
-func (r ApiCreateResultsV2Request) CreateResultsRequestV2(createResultsRequestV2 CreateResultsRequestV2) ApiCreateResultsV2Request {
-	r.createResultsRequestV2 = &createResultsRequestV2
+func (r ApiGetCustomFieldsV2Request) Entity(entity string) ApiGetCustomFieldsV2Request {
+	r.entity = &entity
 	return r
 }
 
-func (r ApiCreateResultsV2Request) Execute() (*ResultCreateBulkResponse, *http.Response, error) {
-	return r.ApiService.CreateResultsV2Execute(r)
+func (r ApiGetCustomFieldsV2Request) Type_(type_ string) ApiGetCustomFieldsV2Request {
+	r.type_ = &type_
+	return r
+}
+
+// A number of entities in result set.
+func (r ApiGetCustomFieldsV2Request) Limit(limit int32) ApiGetCustomFieldsV2Request {
+	r.limit = &limit
+	return r
+}
+
+// How many entities should be skipped.
+func (r ApiGetCustomFieldsV2Request) Offset(offset int32) ApiGetCustomFieldsV2Request {
+	r.offset = &offset
+	return r
+}
+
+func (r ApiGetCustomFieldsV2Request) Execute() (*CustomFieldListResponse, *http.Response, error) {
+	return r.ApiService.GetCustomFieldsV2Execute(r)
 }
 
 /*
-CreateResultsV2 Bulk create test run result
+GetCustomFieldsV2 Get all Custom Fields
 
-This method allows to create several test run results at once.
-
-If there is no free space left in your team account, when attempting to upload an attachment, e.g., through reporters, you will receive an error with code 507 - Insufficient Storage.
+This method allows to retrieve and filter custom fields.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param projectCode
-	@param runId
-	@return ApiCreateResultsV2Request
+	@return ApiGetCustomFieldsV2Request
 */
-func (a *ResultsAPIService) CreateResultsV2(ctx context.Context, projectCode string, runId int64) ApiCreateResultsV2Request {
-	return ApiCreateResultsV2Request{
-		ApiService:  a,
-		ctx:         ctx,
-		projectCode: projectCode,
-		runId:       runId,
+func (a *CustomFieldsAPIService) GetCustomFieldsV2(ctx context.Context) ApiGetCustomFieldsV2Request {
+	return ApiGetCustomFieldsV2Request{
+		ApiService: a,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ResultCreateBulkResponse
-func (a *ResultsAPIService) CreateResultsV2Execute(r ApiCreateResultsV2Request) (*ResultCreateBulkResponse, *http.Response, error) {
+//	@return CustomFieldListResponse
+func (a *CustomFieldsAPIService) GetCustomFieldsV2Execute(r ApiGetCustomFieldsV2Request) (*CustomFieldListResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
+		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ResultCreateBulkResponse
+		localVarReturnValue *CustomFieldListResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ResultsAPIService.CreateResultsV2")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CustomFieldsAPIService.GetCustomFieldsV2")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/{project_code}/run/{run_id}/results"
-	localVarPath = strings.Replace(localVarPath, "{"+"project_code"+"}", url.PathEscape(parameterValueToString(r.projectCode, "projectCode")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"run_id"+"}", url.PathEscape(parameterValueToString(r.runId, "runId")), -1)
+	localVarPath := localBasePath + "/custom_field"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.createResultsRequestV2 == nil {
-		return localVarReturnValue, nil, reportError("createResultsRequestV2 is required and must be specified")
-	}
 
+	if r.entity != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "entity", r.entity, "", "")
+	}
+	if r.type_ != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "type", r.type_, "", "")
+	}
+	if r.limit != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
+	} else {
+		var defaultValue int32 = 10
+		r.limit = &defaultValue
+	}
+	if r.offset != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
+	} else {
+		var defaultValue int32 = 0
+		r.offset = &defaultValue
+	}
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -240,8 +248,6 @@ func (a *ResultsAPIService) CreateResultsV2Execute(r ApiCreateResultsV2Request) 
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.createResultsRequestV2
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

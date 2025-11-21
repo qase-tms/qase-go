@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## CreateResultV2
 
-> CreateResultV2(ctx, projectCode, runId).ResultCreate(resultCreate).Execute()
+> ResultCreateResponse CreateResultV2(ctx, projectCode, runId).ResultCreate(resultCreate).Execute()
 
 Create test run result
 
@@ -36,11 +36,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	r, err := apiClient.ResultsAPI.CreateResultV2(context.Background(), projectCode, runId).ResultCreate(resultCreate).Execute()
+	resp, r, err := apiClient.ResultsAPI.CreateResultV2(context.Background(), projectCode, runId).ResultCreate(resultCreate).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `ResultsAPI.CreateResultV2``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
+	// response from `CreateResultV2`: ResultCreateResponse
+	fmt.Fprintf(os.Stdout, "Response from `ResultsAPI.CreateResultV2`: %v\n", resp)
 }
 ```
 
@@ -66,7 +68,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+[**ResultCreateResponse**](ResultCreateResponse.md)
 
 ### Authorization
 
@@ -75,7 +77,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -84,7 +86,7 @@ Name | Type | Description  | Notes
 
 ## CreateResultsV2
 
-> CreateResultsV2(ctx, projectCode, runId).CreateResultsRequestV2(createResultsRequestV2).Execute()
+> ResultCreateBulkResponse CreateResultsV2(ctx, projectCode, runId).CreateResultsRequestV2(createResultsRequestV2).Execute()
 
 Bulk create test run result
 
@@ -109,11 +111,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	r, err := apiClient.ResultsAPI.CreateResultsV2(context.Background(), projectCode, runId).CreateResultsRequestV2(createResultsRequestV2).Execute()
+	resp, r, err := apiClient.ResultsAPI.CreateResultsV2(context.Background(), projectCode, runId).CreateResultsRequestV2(createResultsRequestV2).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `ResultsAPI.CreateResultsV2``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
+	// response from `CreateResultsV2`: ResultCreateBulkResponse
+	fmt.Fprintf(os.Stdout, "Response from `ResultsAPI.CreateResultsV2`: %v\n", resp)
 }
 ```
 
@@ -139,7 +143,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+[**ResultCreateBulkResponse**](ResultCreateBulkResponse.md)
 
 ### Authorization
 
@@ -148,7 +152,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
