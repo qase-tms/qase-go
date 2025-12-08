@@ -297,7 +297,7 @@ func (c *V2Client) SendResult(ctx context.Context, projectCode string, runID int
 	})
 
 	// Send result to API
-	httpResp, err := c.client.ResultsAPI.CreateResultV2(authCtx, projectCode, runID).ResultCreate(*apiResult).Execute()
+	_, httpResp, err := c.client.ResultsAPI.CreateResultV2(authCtx, projectCode, runID).ResultCreate(*apiResult).Execute()
 	if err != nil {
 		if c.config.Debug {
 			logging.Error("API request failed with error: %v", err)
@@ -386,7 +386,7 @@ func (c *V2Client) SendResults(ctx context.Context, projectCode string, runID in
 	})
 
 	// Send batch results to API
-	httpResp, err := c.client.ResultsAPI.CreateResultsV2(authCtx, projectCode, runID).CreateResultsRequestV2(*batchRequest).Execute()
+	_, httpResp, err := c.client.ResultsAPI.CreateResultsV2(authCtx, projectCode, runID).CreateResultsRequestV2(*batchRequest).Execute()
 	if err != nil {
 		if c.config.Debug {
 			logging.Error("API request failed with error: %v", err)

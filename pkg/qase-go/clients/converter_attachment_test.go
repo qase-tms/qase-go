@@ -15,16 +15,42 @@ import (
 type MockAttachmentUploader struct {
 	ShouldFail bool
 	ReturnHash string
+	ReturnHashes []string // If set, returns these hashes instead of generating them
 }
 
-func (m *MockAttachmentUploader) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
+func (m *MockAttachmentUploader) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) ([]string, error) {
 	if m.ShouldFail {
-		return "", fmt.Errorf("mock upload failed")
+		return nil, fmt.Errorf("mock upload failed")
 	}
+	
+	// If ReturnHashes is set, use it (truncate or pad as needed)
+	if len(m.ReturnHashes) > 0 {
+		hashes := make([]string, len(file))
+		for i := range file {
+			if i < len(m.ReturnHashes) {
+				hashes[i] = m.ReturnHashes[i]
+			} else {
+				hashes[i] = fmt.Sprintf("mock-hash-%d", i)
+			}
+		}
+		return hashes, nil
+	}
+	
+	// If ReturnHash is set, return one hash per file
 	if m.ReturnHash != "" {
-		return m.ReturnHash, nil
+		hashes := make([]string, len(file))
+		for i := range file {
+			hashes[i] = m.ReturnHash
+		}
+		return hashes, nil
 	}
-	return "mock-hash-123", nil
+	
+	// Generate hashes for each file
+	hashes := make([]string, len(file))
+	for i := range file {
+		hashes[i] = fmt.Sprintf("mock-hash-%d", i)
+	}
+	return hashes, nil
 }
 
 func TestV2Converter_ProcessAttachments(t *testing.T) {
@@ -211,5 +237,55 @@ func TestV2Converter_ProcessAttachments_ContentAttachmentPreservesExtension(t *t
 
 	if result[0] != "content-uploaded-hash" {
 		t.Errorf("Expected uploaded hash 'content-uploaded-hash', got '%s'", result[0])
+	}
+}
+
+func TestV2Converter_ProcessAttachments_BatchUpload(t *testing.T) {
+	// Create temporary files for testing
+	tmpDir := t.TempDir()
+	
+	files := []struct {
+		name    string
+		content string
+	}{
+		{"file1.txt", "content 1"},
+		{"file2.txt", "content 2"},
+		{"file3.txt", "content 3"},
+	}
+
+	var attachments []domain.Attachment
+	for _, f := range files {
+		filePath := filepath.Join(tmpDir, f.name)
+		err := os.WriteFile(filePath, []byte(f.content), 0644)
+		if err != nil {
+			t.Fatalf("Failed to create test file %s: %v", f.name, err)
+		}
+		attachments = append(attachments, domain.Attachment{
+			ID:       "temp-id",
+			FilePath: &filePath,
+			FileName: f.name,
+		})
+	}
+
+	uploader := &MockAttachmentUploader{ReturnHashes: []string{"hash1", "hash2", "hash3"}}
+	converter := &V2Converter{
+		uploader:    uploader,
+		projectCode: "TEST",
+	}
+
+	result, err := converter.processAttachmentsGracefully(context.Background(), attachments)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if len(result) != 3 {
+		t.Fatalf("Expected 3 attachments, got %d", len(result))
+	}
+
+	expected := []string{"hash1", "hash2", "hash3"}
+	for i, expectedHash := range expected {
+		if result[i] != expectedHash {
+			t.Errorf("Expected hash %s at index %d, got %s", expectedHash, i, result[i])
+		}
 	}
 }

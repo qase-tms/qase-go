@@ -49,10 +49,11 @@ func (c *V1Client) SendResults(ctx context.Context, projectCode string, runID in
 	return fmt.Errorf("SendResults is not supported in API v1 client. Please use V2Client instead. You can create it with clients.NewV2Client()")
 }
 
-// UploadAttachment uploads attachments to Qase API v1
-func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
+// uploadAttachmentsInternal uploads attachments and returns all hashes
+// This is used internally by AttachmentUploader interface
+func (c *V1Client) uploadAttachmentsInternal(ctx context.Context, projectCode string, file []*os.File) ([]string, error) {
 	if len(file) == 0 {
-		return "", fmt.Errorf("no files provided")
+		return nil, fmt.Errorf("no files provided")
 	}
 
 	// Set API token in context
@@ -68,14 +69,36 @@ func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, fil
 		Execute()
 
 	if err != nil {
-		return "", NewQaseApiError(err.Error(), extractBody(r))
+		return nil, NewQaseApiError(err.Error(), extractBody(r))
 	}
 
 	if len(resp.Result) == 0 {
-		return "", fmt.Errorf("no attachment hash returned from API")
+		return nil, fmt.Errorf("no attachment hash returned from API")
 	}
 
-	return *resp.Result[0].Hash, nil
+	// Extract all hashes from the response
+	hashes := make([]string, 0, len(resp.Result))
+	for _, result := range resp.Result {
+		if result.Hash != nil {
+			hashes = append(hashes, *result.Hash)
+		}
+	}
+
+	if len(hashes) == 0 {
+		return nil, fmt.Errorf("no valid attachment hash returned from API")
+	}
+
+	return hashes, nil
+}
+
+// UploadAttachment uploads attachments to Qase API v1
+// Implements Client interface - returns only the first hash for backward compatibility
+func (c *V1Client) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error) {
+	hashes, err := c.uploadAttachmentsInternal(ctx, projectCode, file)
+	if err != nil {
+		return "", err
+	}
+	return hashes[0], nil
 }
 
 // NewQaseApiError creates a new Qase API error
