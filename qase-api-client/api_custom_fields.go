@@ -159,7 +159,7 @@ func (r ApiDeleteCustomFieldRequest) Execute() (*BaseResponse, *http.Response, e
 }
 
 /*
-DeleteCustomField Delete Custom Field by id
+DeleteCustomField Delete Custom Field
 
 This method allows to delete custom field.
 
@@ -277,7 +277,7 @@ func (r ApiGetCustomFieldRequest) Execute() (*CustomFieldResponse, *http.Respons
 }
 
 /*
-GetCustomField Get Custom Field by id
+GetCustomField Get Custom Field
 
 This method allows to retrieve custom field.
 
@@ -559,7 +559,7 @@ func (r ApiUpdateCustomFieldRequest) Execute() (*BaseResponse, *http.Response, e
 }
 
 /*
-UpdateCustomField Update Custom Field by id
+UpdateCustomField Update Custom Field
 
 This method allows to update custom field.
 

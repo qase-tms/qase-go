@@ -490,7 +490,7 @@ func (a *AttachmentsAPIService) UploadAttachmentExecute(r ApiUploadAttachmentReq
 	var fileLocalVarFileName string
 	var fileLocalVarFileBytes []byte
 
-	fileLocalVarFormFileName = "file"
+	fileLocalVarFormFileName = "file[]"
 	fileLocalVarFile := r.file
 
 	if fileLocalVarFile != nil {

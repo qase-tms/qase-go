@@ -5,10 +5,10 @@ All URIs are relative to *https://api.qase.io/v1*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateCustomField**](CustomFieldsAPI.md#CreateCustomField) | **Post** /custom_field | Create new Custom Field
-[**DeleteCustomField**](CustomFieldsAPI.md#DeleteCustomField) | **Delete** /custom_field/{id} | Delete Custom Field by id
-[**GetCustomField**](CustomFieldsAPI.md#GetCustomField) | **Get** /custom_field/{id} | Get Custom Field by id
+[**DeleteCustomField**](CustomFieldsAPI.md#DeleteCustomField) | **Delete** /custom_field/{id} | Delete Custom Field
+[**GetCustomField**](CustomFieldsAPI.md#GetCustomField) | **Get** /custom_field/{id} | Get Custom Field
 [**GetCustomFields**](CustomFieldsAPI.md#GetCustomFields) | **Get** /custom_field | Get all Custom Fields
-[**UpdateCustomField**](CustomFieldsAPI.md#UpdateCustomField) | **Patch** /custom_field/{id} | Update Custom Field by id
+[**UpdateCustomField**](CustomFieldsAPI.md#UpdateCustomField) | **Patch** /custom_field/{id} | Update Custom Field
 
 
 
@@ -82,7 +82,7 @@ Name | Type | Description  | Notes
 
 > BaseResponse DeleteCustomField(ctx, id).Execute()
 
-Delete Custom Field by id
+Delete Custom Field
 
 
 
@@ -152,7 +152,7 @@ Name | Type | Description  | Notes
 
 > CustomFieldResponse GetCustomField(ctx, id).Execute()
 
-Get Custom Field by id
+Get Custom Field
 
 
 
@@ -294,7 +294,7 @@ Name | Type | Description  | Notes
 
 > BaseResponse UpdateCustomField(ctx, id).CustomFieldUpdate(customFieldUpdate).Execute()
 
-Update Custom Field by id
+Update Custom Field
 
 
 
