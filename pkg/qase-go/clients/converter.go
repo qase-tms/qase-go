@@ -14,8 +14,24 @@ import (
 )
 
 // AttachmentUploader interface for uploading attachments
+// Returns a slice of hashes corresponding to the uploaded files
 type AttachmentUploader interface {
-	UploadAttachment(ctx context.Context, projectCode string, file []*os.File) (string, error)
+	UploadAttachment(ctx context.Context, projectCode string, file []*os.File) ([]string, error)
+}
+
+// v1ClientAdapter adapts V1Client to AttachmentUploader interface
+type v1ClientAdapter struct {
+	client *V1Client
+}
+
+// UploadAttachment implements AttachmentUploader interface
+func (a *v1ClientAdapter) UploadAttachment(ctx context.Context, projectCode string, file []*os.File) ([]string, error) {
+	return a.client.uploadAttachmentsInternal(ctx, projectCode, file)
+}
+
+// NewV1ClientAdapter creates an adapter for V1Client to implement AttachmentUploader
+func NewV1ClientAdapter(client *V1Client) AttachmentUploader {
+	return &v1ClientAdapter{client: client}
 }
 
 // V2Converter handles conversion from domain models to API v2 models
@@ -368,7 +384,18 @@ func (c *V2Converter) setAttachments(ctx context.Context, apiResult *api_v2_clie
 	return nil // Don't fail the entire result due to attachment issues
 }
 
+// attachmentToUpload represents an attachment that needs to be uploaded
+type attachmentToUpload struct {
+	attachment domain.Attachment
+	file       *os.File
+	isTempFile bool // true if this is a temporary file that needs cleanup
+}
+
 // processAttachmentsGracefully processes attachments, skipping problematic ones instead of failing
+// Groups attachments into batches respecting API limits:
+// - Up to 32 MB per file
+// - Up to 128 MB per single request
+// - Up to 20 files per single request
 func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachments []domain.Attachment) ([]string, error) {
 	logging.Debug("Processing %d attachments gracefully", len(attachments))
 	logging.Debug("Uploader available: %v, project code: %s", c.uploader != nil, c.projectCode)
@@ -376,35 +403,47 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 	var attachmentIDs []string
 	var errors []string
 
+	// Separate attachments into those that need upload and those with existing IDs
+
+	var toUpload []attachmentToUpload
+	var existingIDs []string
+
 	for _, attachment := range attachments {
-		var attachmentID string
+		// If attachment has existing ID and no file path/content, use it directly
+		if attachment.ID != "" && !attachment.HasFilePath() && len(attachment.Content) == 0 {
+			existingIDs = append(existingIDs, attachment.ID)
+			logging.Debug("Using existing attachment ID: %s (no upload)", attachment.ID)
+			continue
+		}
 
-		logging.Debug("Processing attachment: %s, has file path: %v", attachment.String(), attachment.HasFilePath())
+		// If no uploader available, try to use existing ID or skip
+		if c.uploader == nil || c.projectCode == "" {
+			if attachment.ID != "" {
+				existingIDs = append(existingIDs, attachment.ID)
+				logging.Debug("Using existing attachment ID: %s (no uploader available)", attachment.ID)
+			} else {
+				logging.Warn("Warning: Attachment '%s' has no ID and no uploader available, skipping", attachment.FileName)
+				errors = append(errors, fmt.Sprintf("no ID and no uploader for %s", attachment.FileName))
+			}
+			continue
+		}
 
-		// If attachment has a file path and uploader is available, upload the file
-		if attachment.HasFilePath() && c.uploader != nil && c.projectCode != "" {
-			logging.Debug("Uploading attachment file: %s", attachment.GetFilePath())
+		// Prepare file for upload
+		var file *os.File
+		var isTempFile bool
+		var err error
 
-			file, err := os.Open(attachment.GetFilePath())
+		if attachment.HasFilePath() {
+			// Open file from path
+			file, err = os.Open(attachment.GetFilePath())
 			if err != nil {
 				logging.Warn("Warning: Failed to open attachment file %s: %v, skipping", attachment.GetFilePath(), err)
 				errors = append(errors, fmt.Sprintf("file open failed for %s: %v", attachment.GetFilePath(), err))
-				continue // Skip this attachment and continue with others
+				continue
 			}
-
-			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{file})
-			file.Close() // Always close the file
-
-			if err != nil {
-				logging.Warn("Warning: Failed to upload attachment %s: %v, skipping", attachment.GetFilePath(), err)
-				errors = append(errors, fmt.Sprintf("upload failed for %s: %v", attachment.GetFilePath(), err))
-				continue // Skip this attachment and continue with others
-			}
-
-			attachmentID = uploadedHash
-			logging.Debug("Successfully uploaded attachment, got hash: %s", uploadedHash)
-		} else if len(attachment.Content) > 0 && c.uploader != nil && c.projectCode != "" {
-			// Handle content attachments - create temporary file
+			isTempFile = false
+		} else if len(attachment.Content) > 0 {
+			// Create temporary file for content
 			logging.Debug("Creating temporary file for content attachment: %s", attachment.FileName)
 
 			// Extract file extension to preserve it
@@ -416,7 +455,7 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 			if err != nil {
 				logging.Warn("Warning: Failed to create temporary file for content attachment %s: %v, skipping", attachment.FileName, err)
 				errors = append(errors, fmt.Sprintf("temp file creation failed for %s: %v", attachment.FileName, err))
-				continue // Skip this attachment and continue with others
+				continue
 			}
 
 			// Write content to temporary file
@@ -425,7 +464,7 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 				os.Remove(tmpFile.Name()) // Clean up
 				tmpFile.Close()
 				errors = append(errors, fmt.Sprintf("content write failed for %s: %v", attachment.FileName, err))
-				continue // Skip this attachment and continue with others
+				continue
 			}
 
 			// Reset file pointer to beginning
@@ -434,36 +473,61 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 				os.Remove(tmpFile.Name()) // Clean up
 				tmpFile.Close()
 				errors = append(errors, fmt.Sprintf("file seek failed for %s: %v", attachment.FileName, err))
-				continue // Skip this attachment and continue with others
-			}
-
-			// Upload temporary file
-			uploadedHash, err := c.uploader.UploadAttachment(ctx, c.projectCode, []*os.File{tmpFile})
-			os.Remove(tmpFile.Name()) // Clean up
-			tmpFile.Close()
-
-			if err != nil {
-				logging.Warn("Warning: Failed to upload content attachment %s: %v, skipping", attachment.FileName, err)
-				errors = append(errors, fmt.Sprintf("content upload failed for %s: %v", attachment.FileName, err))
-				continue // Skip this attachment and continue with others
-			}
-
-			attachmentID = uploadedHash
-			logging.Debug("Successfully uploaded content attachment, got hash: %s", uploadedHash)
-		} else {
-			// Use existing ID if no file path or uploader not available
-			if attachment.ID != "" {
-				attachmentID = attachment.ID
-				logging.Debug("Using existing attachment ID: %s (no upload)", attachmentID)
-			} else {
-				// No ID available and no uploader - skip this attachment
-				logging.Warn("Warning: Attachment '%s' has no ID and no uploader available, skipping", attachment.FileName)
-				errors = append(errors, fmt.Sprintf("no ID and no uploader for %s", attachment.FileName))
 				continue
 			}
+
+			file = tmpFile
+			isTempFile = true
+		} else {
+			// No file path, no content, but has ID - use it
+			if attachment.ID != "" {
+				existingIDs = append(existingIDs, attachment.ID)
+				logging.Debug("Using existing attachment ID: %s", attachment.ID)
+			} else {
+				logging.Warn("Warning: Attachment '%s' has no file path, content, or ID, skipping", attachment.FileName)
+				errors = append(errors, fmt.Sprintf("no file path, content, or ID for %s", attachment.FileName))
+			}
+			continue
 		}
 
-		attachmentIDs = append(attachmentIDs, attachmentID)
+		// Check file size (32 MB limit per file)
+		fileInfo, err := file.Stat()
+		if err != nil {
+			logging.Warn("Warning: Failed to get file info for %s: %v, skipping", attachment.FileName, err)
+			if isTempFile {
+				os.Remove(file.Name())
+			}
+			file.Close()
+			errors = append(errors, fmt.Sprintf("file stat failed for %s: %v", attachment.FileName, err))
+			continue
+		}
+
+		const maxFileSize = 32 * 1024 * 1024 // 32 MB
+		if fileInfo.Size() > maxFileSize {
+			logging.Warn("Warning: File %s exceeds 32 MB limit (%d bytes), skipping", attachment.FileName, fileInfo.Size())
+			if isTempFile {
+				os.Remove(file.Name())
+			}
+			file.Close()
+			errors = append(errors, fmt.Sprintf("file %s exceeds 32 MB limit", attachment.FileName))
+			continue
+		}
+
+		toUpload = append(toUpload, attachmentToUpload{
+			attachment: attachment,
+			file:       file,
+			isTempFile: isTempFile,
+		})
+	}
+
+	// Add existing IDs to result
+	attachmentIDs = append(attachmentIDs, existingIDs...)
+
+	// Upload files in batches
+	if len(toUpload) > 0 {
+		uploadedIDs, uploadErrors := c.uploadAttachmentsInBatches(ctx, toUpload)
+		attachmentIDs = append(attachmentIDs, uploadedIDs...)
+		errors = append(errors, uploadErrors...)
 	}
 
 	// Log summary
@@ -479,6 +543,127 @@ func (c *V2Converter) processAttachmentsGracefully(ctx context.Context, attachme
 	}
 
 	return attachmentIDs, nil
+}
+
+// uploadAttachmentsInBatches uploads attachments in batches respecting API limits
+// Returns uploaded IDs and errors
+func (c *V2Converter) uploadAttachmentsInBatches(ctx context.Context, toUpload []attachmentToUpload) ([]string, []string) {
+	const (
+		maxFileSize      = 32 * 1024 * 1024  // 32 MB per file
+		maxRequestSize   = 128 * 1024 * 1024 // 128 MB per request
+		maxFilesPerBatch = 20                // 20 files per request
+	)
+
+	var uploadedIDs []string
+	var errors []string
+
+	// Group files into batches
+	var currentBatch []attachmentToUpload
+	var currentBatchSize int64
+
+	uploadBatch := func(batch []attachmentToUpload) {
+		if len(batch) == 0 {
+			return
+		}
+
+		files := make([]*os.File, 0, len(batch))
+		for _, item := range batch {
+			files = append(files, item.file)
+		}
+
+		logging.Debug("Uploading batch of %d files (total size: %d bytes)", len(files), currentBatchSize)
+
+		hashes, err := c.uploader.UploadAttachment(ctx, c.projectCode, files)
+		if err != nil {
+			logging.Warn("Warning: Failed to upload batch of %d files: %v", len(files), err)
+			for _, item := range batch {
+				errors = append(errors, fmt.Sprintf("batch upload failed for %s: %v", item.attachment.FileName, err))
+				if item.isTempFile {
+					os.Remove(item.file.Name())
+				}
+				item.file.Close()
+			}
+			return
+		}
+
+		// Match hashes to files (API returns hashes in the same order as files were sent)
+		if len(hashes) != len(batch) {
+			logging.Warn("Warning: Expected %d hashes from API, got %d", len(batch), len(hashes))
+			// Use available hashes, mark missing ones as errors
+			for i, item := range batch {
+				if i < len(hashes) {
+					uploadedIDs = append(uploadedIDs, hashes[i])
+					logging.Debug("Successfully uploaded attachment, got hash: %s", hashes[i])
+				} else {
+					errors = append(errors, fmt.Sprintf("no hash returned for %s", item.attachment.FileName))
+				}
+				if item.isTempFile {
+					os.Remove(item.file.Name())
+				}
+				item.file.Close()
+			}
+		} else {
+			uploadedIDs = append(uploadedIDs, hashes...)
+			for i, hash := range hashes {
+				logging.Debug("Successfully uploaded attachment %s, got hash: %s", batch[i].attachment.FileName, hash)
+				if batch[i].isTempFile {
+					os.Remove(batch[i].file.Name())
+				}
+				batch[i].file.Close()
+			}
+		}
+	}
+
+	// Process files and create batches
+	for _, item := range toUpload {
+		fileInfo, err := item.file.Stat()
+		if err != nil {
+			logging.Warn("Warning: Failed to get file info for %s: %v, skipping", item.attachment.FileName, err)
+			if item.isTempFile {
+				os.Remove(item.file.Name())
+			}
+			item.file.Close()
+			errors = append(errors, fmt.Sprintf("file stat failed for %s: %v", item.attachment.FileName, err))
+			continue
+		}
+
+		fileSize := fileInfo.Size()
+
+		// Check if adding this file would exceed limits
+		wouldExceedSize := currentBatchSize+fileSize > maxRequestSize
+		wouldExceedCount := len(currentBatch) >= maxFilesPerBatch
+
+		// If current batch is full or would exceed limits, upload it first
+		if wouldExceedSize || wouldExceedCount {
+			if len(currentBatch) > 0 {
+				uploadBatch(currentBatch)
+				currentBatch = nil
+				currentBatchSize = 0
+			}
+
+			// If single file exceeds request size limit, skip it (already checked file size limit)
+			if fileSize > maxRequestSize {
+				logging.Warn("Warning: File %s exceeds 128 MB request limit (%d bytes), skipping", item.attachment.FileName, fileSize)
+				if item.isTempFile {
+					os.Remove(item.file.Name())
+				}
+				item.file.Close()
+				errors = append(errors, fmt.Sprintf("file %s exceeds 128 MB request limit", item.attachment.FileName))
+				continue
+			}
+		}
+
+		// Add file to current batch
+		currentBatch = append(currentBatch, item)
+		currentBatchSize += fileSize
+	}
+
+	// Upload remaining batch
+	if len(currentBatch) > 0 {
+		uploadBatch(currentBatch)
+	}
+
+	return uploadedIDs, errors
 }
 
 // convertSteps converts all steps from domain to API format

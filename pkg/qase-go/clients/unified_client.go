@@ -39,7 +39,9 @@ func NewUnifiedClient(cfg *config.Config) (*UnifiedClient, error) {
 	}
 
 	// Update v2 client converter to use v1 client for attachment uploads
-	v2Client.SetConverter(NewV2ConverterWithUploader(v1Client, cfg.TestOps.Project))
+	// Use adapter to convert V1Client to AttachmentUploader interface
+	uploader := NewV1ClientAdapter(v1Client)
+	v2Client.SetConverter(NewV2ConverterWithUploader(uploader, cfg.TestOps.Project))
 
 	return &UnifiedClient{
 		v1Client:    v1Client,
