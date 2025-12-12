@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 
@@ -26,6 +27,7 @@ type CoreReporter struct {
 	reporter      Reporter
 	fallback      Reporter
 	statusMapping domain.StatusMapping
+	hostData      *clients.HostData
 	mutex         sync.RWMutex
 }
 
@@ -35,8 +37,25 @@ func NewCoreReporter(cfg *config.Config) (*CoreReporter, error) {
 		return nil, fmt.Errorf("configuration cannot be nil")
 	}
 
+	// Create host data with default values
+	// Framework: "go" (Go's built-in testing package)
+	// Reporter: "qase-go"
+	// Versions from domain package and go.mod (read automatically)
+	hostData := clients.GetHostInfo()
+	// Commons version is automatically set from domain.Version in GetHostInfo
+	// APIClientV1 and APIClientV2 are automatically set from go.mod in GetHostInfo
+
+	// Log host data as JSON
+	hostDataJSON, err := json.Marshal(hostData)
+	if err != nil {
+		logging.Warn("Warning: Failed to marshal host data to JSON: %v", err)
+	} else {
+		logging.Debug("Host data: %s", string(hostDataJSON))
+	}
+
 	reporter := &CoreReporter{
-		config: cfg,
+		config:   cfg,
+		hostData: hostData,
 	}
 
 	// Initialize status mapping
@@ -160,7 +179,8 @@ func (a *TestOpsClientAdapter) UploadResults(ctx context.Context, runID int64, r
 // createTestOpsClient creates a TestOps client based on configuration
 func (cr *CoreReporter) createTestOpsClient() (TestOpsClient, error) {
 	// Use the existing UnifiedClient from the clients package
-	client, err := clients.NewUnifiedClient(cr.config)
+	// Pass hostData from CoreReporter
+	client, err := clients.NewUnifiedClientWithHostData(cr.config, cr.hostData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create unified client: %w", err)
 	}
@@ -314,4 +334,9 @@ func (cr *CoreReporter) CreateStep(action string, status domain.StepStatus) doma
 // GetStatusMapping returns the current status mapping
 func (cr *CoreReporter) GetStatusMapping() domain.StatusMapping {
 	return cr.statusMapping
+}
+
+// GetHostData returns the host data information
+func (cr *CoreReporter) GetHostData() *clients.HostData {
+	return cr.hostData
 }

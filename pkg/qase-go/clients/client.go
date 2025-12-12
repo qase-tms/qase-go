@@ -42,6 +42,10 @@ type ClientConfig struct {
 	
 	// UseAPIv2 determines whether to use API v2 (default: true)
 	UseAPIv2 bool
+	
+	// HostData contains information about the host system and package versions
+	// Used for setting X-Client and X-Platform headers
+	HostData *HostData
 }
 
 // NewClient creates a new Qase client based on configuration
