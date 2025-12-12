@@ -41,6 +41,19 @@ func NewV2Client(config ClientConfig) (*V2Client, error) {
 		}
 	}
 
+	// Set X-Client and X-Platform headers if HostData is provided
+	if config.HostData != nil {
+		xClientHeader := buildXClientHeader(config.HostData)
+		if xClientHeader != "" {
+			cfg.AddDefaultHeader("X-Client", xClientHeader)
+		}
+
+		xPlatformHeader := buildXPlatformHeader(config.HostData)
+		if xPlatformHeader != "" {
+			cfg.AddDefaultHeader("X-Platform", xPlatformHeader)
+		}
+	}
+
 	client := api_v2_client.NewAPIClient(cfg)
 
 	return &V2Client{

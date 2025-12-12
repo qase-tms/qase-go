@@ -18,12 +18,26 @@ type UnifiedClient struct {
 }
 
 // NewUnifiedClient creates a new unified client that uses v1 for runs and v2 for results
+// This function creates HostData internally for backward compatibility
 func NewUnifiedClient(cfg *config.Config) (*UnifiedClient, error) {
+	hostData := GetHostInfo()
+	return NewUnifiedClientWithHostData(cfg, hostData)
+}
+
+// NewUnifiedClientWithHostData creates a new unified client with provided HostData
+// This allows passing HostData from CoreReporter to avoid duplicate creation
+func NewUnifiedClientWithHostData(cfg *config.Config, hostData *HostData) (*UnifiedClient, error) {
+	if hostData == nil {
+		// Fallback: create host data if not provided
+		hostData = GetHostInfo()
+	}
+
 	// Create client config from main config
 	clientConfig := ClientConfig{
 		BaseURL:  buildAPIBaseURL(cfg.TestOps.API.Host),
 		APIToken: cfg.TestOps.API.Token,
 		Debug:    cfg.Debug,
+		HostData: hostData,
 	}
 
 	// Create v1 client for run management
