@@ -42,8 +42,7 @@ func GetHostInfo() *HostData {
 	arch := runtime.GOARCH
 
 	// Get Go version and remove "go" prefix
-	goVersion := runtime.Version()
-	goVersion = strings.TrimPrefix(goVersion, "go")
+	goVersion := strings.TrimPrefix(runtime.Version(), "go")
 
 	// Try to get module versions from go.mod
 	apiClientV1Version, apiClientV2Version := getModuleVersionsFromGoMod()
@@ -130,10 +129,8 @@ func getModuleVersionsFromGoMod() (string, string) {
 		version := req.Mod.Version
 
 		if strings.Contains(modulePath, "qase-api-client") && !strings.Contains(modulePath, "qase-api-v2-client") {
-			// Remove "v" prefix if present, we'll add it later in buildXClientHeader
 			apiClientV1Version = strings.TrimPrefix(version, "v")
 		} else if strings.Contains(modulePath, "qase-api-v2-client") {
-			// Remove "v" prefix if present, we'll add it later in buildXClientHeader
 			apiClientV2Version = strings.TrimPrefix(version, "v")
 		}
 	}
@@ -155,10 +152,7 @@ func buildXClientHeader(hostData *HostData) string {
 	}
 
 	if hostData.ReporterVersion != "" {
-		version := hostData.ReporterVersion
-		if !strings.HasPrefix(version, "v") {
-			version = "v" + version
-		}
+		version := strings.TrimPrefix(hostData.ReporterVersion, "v")
 		parts = append(parts, "reporter_version="+version)
 	}
 
@@ -167,15 +161,12 @@ func buildXClientHeader(hostData *HostData) string {
 	}
 
 	if hostData.FrameworkVersion != "" {
-		version := hostData.FrameworkVersion
-		if !strings.HasPrefix(version, "v") {
-			version = "v" + version
-		}
+		version := strings.TrimPrefix(hostData.FrameworkVersion, "v")
 		parts = append(parts, "framework_version="+version)
 	}
 
 	if hostData.APIClientV1 != "" {
-		version := hostData.APIClientV1
+		version := strings.TrimPrefix(hostData.APIClientV1, "v")
 		if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
@@ -183,7 +174,7 @@ func buildXClientHeader(hostData *HostData) string {
 	}
 
 	if hostData.APIClientV2 != "" {
-		version := hostData.APIClientV2
+		version := strings.TrimPrefix(hostData.APIClientV2, "v")
 		if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
@@ -191,7 +182,7 @@ func buildXClientHeader(hostData *HostData) string {
 	}
 
 	if hostData.Commons != "" {
-		version := hostData.Commons
+		version := strings.TrimPrefix(hostData.Commons, "v")
 		if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
