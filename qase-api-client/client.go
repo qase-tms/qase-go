@@ -20,9 +20,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
+	"net/textproto"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -381,7 +383,11 @@ func (c *APIClient) prepareRequest(
 		for _, formFile := range formFiles {
 			if len(formFile.fileBytes) > 0 && formFile.fileName != "" {
 				w.Boundary()
-				part, err := w.CreateFormFile(formFile.formFileName, filepath.Base(formFile.fileName))
+				h := make(textproto.MIMEHeader)
+				var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
+				h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`,quoteEscaper.Replace(formFile.formFileName), quoteEscaper.Replace(filepath.Base(formFile.fileName))))
+				h.Set("Content-Type", mime.TypeByExtension(filepath.Ext(formFile.fileName)))
+				part, err := w.CreatePart(h)
 				if err != nil {
 					return nil, err
 				}
