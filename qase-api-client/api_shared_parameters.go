@@ -460,12 +460,14 @@ func (a *SharedParametersAPIService) GetSharedParametersExecute(r ApiGetSharedPa
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "", "")
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "", "")
 		r.offset = &defaultValue
 	}
 	if r.filtersSearch != nil {

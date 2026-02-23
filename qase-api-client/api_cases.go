@@ -1019,12 +1019,14 @@ func (a *CasesAPIService) GetCasesExecute(r ApiGetCasesRequest) (*TestCaseListRe
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "", "")
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "", "")
 		r.offset = &defaultValue
 	}
 	// to determine the Content-Type header
