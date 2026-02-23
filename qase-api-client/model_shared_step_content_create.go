@@ -28,6 +28,8 @@ type SharedStepContentCreate struct {
 	Data           *string `json:"data,omitempty"`
 	// A list of Attachment hashes.
 	Attachments []string `json:"attachments,omitempty"`
+	// Nested steps will be here. The same structure is used for them.
+	Steps []map[string]interface{} `json:"steps,omitempty"`
 }
 
 type _SharedStepContentCreate SharedStepContentCreate
@@ -202,6 +204,38 @@ func (o *SharedStepContentCreate) SetAttachments(v []string) {
 	o.Attachments = v
 }
 
+// GetSteps returns the Steps field value if set, zero value otherwise.
+func (o *SharedStepContentCreate) GetSteps() []map[string]interface{} {
+	if o == nil || IsNil(o.Steps) {
+		var ret []map[string]interface{}
+		return ret
+	}
+	return o.Steps
+}
+
+// GetStepsOk returns a tuple with the Steps field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SharedStepContentCreate) GetStepsOk() ([]map[string]interface{}, bool) {
+	if o == nil || IsNil(o.Steps) {
+		return nil, false
+	}
+	return o.Steps, true
+}
+
+// HasSteps returns a boolean if a field has been set.
+func (o *SharedStepContentCreate) HasSteps() bool {
+	if o != nil && !IsNil(o.Steps) {
+		return true
+	}
+
+	return false
+}
+
+// SetSteps gets a reference to the given []map[string]interface{} and assigns it to the Steps field.
+func (o *SharedStepContentCreate) SetSteps(v []map[string]interface{}) {
+	o.Steps = v
+}
+
 func (o SharedStepContentCreate) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -224,6 +258,9 @@ func (o SharedStepContentCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Attachments) {
 		toSerialize["attachments"] = o.Attachments
+	}
+	if !IsNil(o.Steps) {
+		toSerialize["steps"] = o.Steps
 	}
 	return toSerialize, nil
 }

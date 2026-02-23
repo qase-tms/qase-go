@@ -103,12 +103,14 @@ func (a *SearchAPIService) SearchExecute(r ApiSearchRequest) (*SearchResponse, *
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "", "")
 	} else {
 		var defaultValue int32 = 10
+		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "", "")
 		r.limit = &defaultValue
 	}
 	if r.offset != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "", "")
 	} else {
 		var defaultValue int32 = 0
+		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "", "")
 		r.offset = &defaultValue
 	}
 	parameterAddToHeaderOrQuery(localVarQueryParams, "query", r.query, "", "")

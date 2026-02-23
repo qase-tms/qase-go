@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **Action** | Pointer to **string** |  | [optional] 
 **ExpectedResult** | Pointer to **string** |  | [optional] 
 **Attachments** | Pointer to [**[]AttachmentHash**](AttachmentHash.md) |  | [optional] 
+**Steps** | Pointer to **[]map[string]interface{}** | Nested steps will be here. The same structure is used for them. | [optional] 
 
 ## Methods
 
@@ -153,6 +154,31 @@ SetAttachments sets Attachments field to given value.
 `func (o *SharedStepContent) HasAttachments() bool`
 
 HasAttachments returns a boolean if a field has been set.
+
+### GetSteps
+
+`func (o *SharedStepContent) GetSteps() []map[string]interface{}`
+
+GetSteps returns the Steps field if non-nil, zero value otherwise.
+
+### GetStepsOk
+
+`func (o *SharedStepContent) GetStepsOk() (*[]map[string]interface{}, bool)`
+
+GetStepsOk returns a tuple with the Steps field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetSteps
+
+`func (o *SharedStepContent) SetSteps(v []map[string]interface{})`
+
+SetSteps sets Steps field to given value.
+
+### HasSteps
+
+`func (o *SharedStepContent) HasSteps() bool`
+
+HasSteps returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
