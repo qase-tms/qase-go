@@ -12,10 +12,9 @@ Contact: support@qase.io
 package api_v1_client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"gopkg.in/validator.v2"
 )
 
 // SearchResponseAllOfResultEntities - struct for SearchResponseAllOfResultEntities
@@ -72,125 +71,71 @@ func TestCaseQueryAsSearchResponseAllOfResultEntities(v *TestCaseQuery) SearchRe
 
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *SearchResponseAllOfResultEntities) UnmarshalJSON(data []byte) error {
-	var err error
-	match := 0
-	// try to unmarshal data into DefectQuery
-	err = newStrictDecoder(data).Decode(&dst.DefectQuery)
-	if err == nil {
-		jsonDefectQuery, _ := json.Marshal(dst.DefectQuery)
-		if string(jsonDefectQuery) == "{}" { // empty struct
-			dst.DefectQuery = nil
-		} else {
-			if err = validator.Validate(dst.DefectQuery); err != nil {
-				dst.DefectQuery = nil
-			} else {
-				match++
-			}
+	// Parse JSON keys to determine entity type
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("failed to parse SearchResponseAllOfResultEntities: %w", err)
+	}
+
+	// Discriminate by unique required field.
+	// Order matters: result_hash before run_id (ResultQuery has optional run_id),
+	// run_id before plan_id (RunQuery has optional plan_id).
+	if _, ok := raw["result_hash"]; ok {
+		var temp _ResultQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal ResultQuery: %w", err)
 		}
-	} else {
-		dst.DefectQuery = nil
+		result := ResultQuery(temp)
+		dst.ResultQuery = &result
+		return nil
 	}
-
-	// try to unmarshal data into PlanQuery
-	err = newStrictDecoder(data).Decode(&dst.PlanQuery)
-	if err == nil {
-		jsonPlanQuery, _ := json.Marshal(dst.PlanQuery)
-		if string(jsonPlanQuery) == "{}" { // empty struct
-			dst.PlanQuery = nil
-		} else {
-			if err = validator.Validate(dst.PlanQuery); err != nil {
-				dst.PlanQuery = nil
-			} else {
-				match++
-			}
+	if _, ok := raw["test_case_id"]; ok {
+		var temp _TestCaseQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal TestCaseQuery: %w", err)
 		}
-	} else {
-		dst.PlanQuery = nil
+		result := TestCaseQuery(temp)
+		dst.TestCaseQuery = &result
+		return nil
 	}
-
-	// try to unmarshal data into RequirementQuery
-	err = newStrictDecoder(data).Decode(&dst.RequirementQuery)
-	if err == nil {
-		jsonRequirementQuery, _ := json.Marshal(dst.RequirementQuery)
-		if string(jsonRequirementQuery) == "{}" { // empty struct
-			dst.RequirementQuery = nil
-		} else {
-			if err = validator.Validate(dst.RequirementQuery); err != nil {
-				dst.RequirementQuery = nil
-			} else {
-				match++
-			}
+	if _, ok := raw["defect_id"]; ok {
+		var temp _DefectQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal DefectQuery: %w", err)
 		}
-	} else {
-		dst.RequirementQuery = nil
+		result := DefectQuery(temp)
+		dst.DefectQuery = &result
+		return nil
 	}
-
-	// try to unmarshal data into ResultQuery
-	err = newStrictDecoder(data).Decode(&dst.ResultQuery)
-	if err == nil {
-		jsonResultQuery, _ := json.Marshal(dst.ResultQuery)
-		if string(jsonResultQuery) == "{}" { // empty struct
-			dst.ResultQuery = nil
-		} else {
-			if err = validator.Validate(dst.ResultQuery); err != nil {
-				dst.ResultQuery = nil
-			} else {
-				match++
-			}
+	if _, ok := raw["requirement_id"]; ok {
+		var temp _RequirementQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal RequirementQuery: %w", err)
 		}
-	} else {
-		dst.ResultQuery = nil
+		result := RequirementQuery(temp)
+		dst.RequirementQuery = &result
+		return nil
 	}
-
-	// try to unmarshal data into RunQuery
-	err = newStrictDecoder(data).Decode(&dst.RunQuery)
-	if err == nil {
-		jsonRunQuery, _ := json.Marshal(dst.RunQuery)
-		if string(jsonRunQuery) == "{}" { // empty struct
-			dst.RunQuery = nil
-		} else {
-			if err = validator.Validate(dst.RunQuery); err != nil {
-				dst.RunQuery = nil
-			} else {
-				match++
-			}
+	if _, ok := raw["run_id"]; ok {
+		var temp _RunQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal RunQuery: %w", err)
 		}
-	} else {
-		dst.RunQuery = nil
+		result := RunQuery(temp)
+		dst.RunQuery = &result
+		return nil
 	}
-
-	// try to unmarshal data into TestCaseQuery
-	err = newStrictDecoder(data).Decode(&dst.TestCaseQuery)
-	if err == nil {
-		jsonTestCaseQuery, _ := json.Marshal(dst.TestCaseQuery)
-		if string(jsonTestCaseQuery) == "{}" { // empty struct
-			dst.TestCaseQuery = nil
-		} else {
-			if err = validator.Validate(dst.TestCaseQuery); err != nil {
-				dst.TestCaseQuery = nil
-			} else {
-				match++
-			}
+	if _, ok := raw["plan_id"]; ok {
+		var temp _PlanQuery
+		if err := json.NewDecoder(bytes.NewReader(data)).Decode(&temp); err != nil {
+			return fmt.Errorf("failed to unmarshal PlanQuery: %w", err)
 		}
-	} else {
-		dst.TestCaseQuery = nil
+		result := PlanQuery(temp)
+		dst.PlanQuery = &result
+		return nil
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.DefectQuery = nil
-		dst.PlanQuery = nil
-		dst.RequirementQuery = nil
-		dst.ResultQuery = nil
-		dst.RunQuery = nil
-		dst.TestCaseQuery = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(SearchResponseAllOfResultEntities)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(SearchResponseAllOfResultEntities)")
-	}
+	return fmt.Errorf("data failed to match schemas in oneOf(SearchResponseAllOfResultEntities): no discriminator field found")
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON
