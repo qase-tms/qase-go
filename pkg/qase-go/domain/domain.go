@@ -5,7 +5,7 @@ package domain
 
 const (
 	// Version is the current version of the domain package
-	Version = "1.0.0"
+	Version = "1.1.0"
 	
 	// PackageName is the name of this package
 	PackageName = "qase-go-domain"
