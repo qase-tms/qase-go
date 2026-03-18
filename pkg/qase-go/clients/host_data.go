@@ -2,6 +2,7 @@ package clients
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -10,36 +11,29 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-// HostData contains information about the host system and package versions
+// HostData contains information about the host system and package versions.
+// Field names are unified across all Qase reporter languages.
 type HostData struct {
-	System           string // OS name (e.g., "Linux", "Darwin", "Windows")
-	MachineName      string // Machine/hostname
-	Release          string // OS release version
-	Version          string // OS version
-	Arch             string // Architecture (e.g., "amd64", "arm64")
-	Framework        string // Testing framework name (e.g., "testing", "testify")
-	FrameworkVersion string // Testing framework version
-	Reporter         string // Reporter name (e.g., "qase-go")
-	ReporterVersion  string // Reporter version
-	Commons          string // Commons/core version
-	APIClientV1      string // API client v1 version
-	APIClientV2      string // API client v2 version
+	System         string `json:"system"`         // OS name: "linux", "darwin", "windows"
+	MachineName    string `json:"machineName"`    // Machine/hostname
+	Release        string `json:"release"`        // OS kernel/release version (uname -r)
+	Version        string `json:"version"`        // Detailed OS version (e.g., macOS 15.4, Ubuntu 22.04)
+	Arch           string `json:"arch"`           // CPU architecture (e.g., "amd64", "arm64")
+	Language       string `json:"language"`       // Runtime version (Go version without "go" prefix)
+	PackageManager string `json:"packageManager"` // Package manager version (empty for Go)
+	Framework      string `json:"framework"`      // Test framework version (empty for Go stdlib)
+	Reporter       string `json:"reporter"`       // Reporter version
+	Commons        string `json:"commons"`        // Commons/core version
+	ApiClientV1    string `json:"apiClientV1"`    // API client v1 version
+	ApiClientV2    string `json:"apiClientV2"`    // API client v2 version
 }
 
 // GetHostInfo collects system information and package versions
-// frameworkPackage: name of the testing framework (e.g., "testing", "testify")
-// frameworkVersion: version of the testing framework
-// reporterName: name of the reporter (e.g., "qase-go")
-// reporterVersion: version of the reporter
 func GetHostInfo() *HostData {
 	hostname, _ := os.Hostname()
 	if hostname == "" {
 		hostname = "unknown"
 	}
-
-	// Get OS information
-	osName := runtime.GOOS
-	arch := runtime.GOARCH
 
 	// Get Go version and remove "go" prefix
 	goVersion := strings.TrimPrefix(runtime.Version(), "go")
@@ -48,18 +42,58 @@ func GetHostInfo() *HostData {
 	apiClientV1Version, apiClientV2Version := getModuleVersionsFromGoMod()
 
 	return &HostData{
-		System:           osName,
-		MachineName:      hostname,
-		Release:          "",
-		Version:          "",
-		Arch:             arch,
-		Framework:        "go",
-		FrameworkVersion: goVersion,
-		Reporter:         "qase-go",
-		ReporterVersion:  domain.Version,
-		Commons:          domain.Version,
-		APIClientV1:      apiClientV1Version,
-		APIClientV2:      apiClientV2Version,
+		System:         runtime.GOOS,
+		MachineName:    hostname,
+		Release:        getOSRelease(),
+		Version:        getOSVersion(),
+		Arch:           runtime.GOARCH,
+		Language:       goVersion,
+		PackageManager: "",
+		Framework:      "",
+		Reporter:       domain.Version,
+		Commons:        domain.Version,
+		ApiClientV1:    apiClientV1Version,
+		ApiClientV2:    apiClientV2Version,
+	}
+}
+
+// getOSRelease returns the OS kernel/release version (uname -r on Unix systems)
+func getOSRelease() string {
+	switch runtime.GOOS {
+	case "linux", "darwin":
+		out, err := exec.Command("uname", "-r").Output()
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(out))
+	default:
+		return ""
+	}
+}
+
+// getOSVersion returns a detailed OS version string
+func getOSVersion() string {
+	switch runtime.GOOS {
+	case "darwin":
+		out, err := exec.Command("sw_vers", "-productVersion").Output()
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(out))
+	case "linux":
+		data, err := os.ReadFile("/etc/os-release")
+		if err != nil {
+			return ""
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "PRETTY_NAME=") {
+				val := strings.TrimPrefix(line, "PRETTY_NAME=")
+				return strings.Trim(val, "\"")
+			}
+		}
+		return ""
+	default:
+		return ""
 	}
 }
 
@@ -139,7 +173,7 @@ func getModuleVersionsFromGoMod() (string, string) {
 }
 
 // buildXClientHeader builds the X-Client header value from HostData
-// Format: reporter={reporter_name};reporter_version=v{reporter_version};framework={framework};framework_version={framework_version};client_version_v1=v{api_client_v1_version};client_version_v2=v{api_client_v2_version};core_version=v{commons_version}
+// Format: reporter=qase-go;reporter_version=<version>;framework=go;framework_version=<version>;client_version_v1=<version>;client_version_v2=<version>;core_version=<version>
 func buildXClientHeader(hostData *HostData) string {
 	if hostData == nil {
 		return ""
@@ -147,53 +181,35 @@ func buildXClientHeader(hostData *HostData) string {
 
 	var parts []string
 
+	parts = append(parts, "reporter=qase-go")
+
 	if hostData.Reporter != "" {
-		parts = append(parts, "reporter="+hostData.Reporter)
+		parts = append(parts, "reporter_version="+hostData.Reporter)
 	}
 
-	if hostData.ReporterVersion != "" {
-		version := strings.TrimPrefix(hostData.ReporterVersion, "v")
-		parts = append(parts, "reporter_version="+version)
-	}
+	parts = append(parts, "framework=go")
 
 	if hostData.Framework != "" {
-		parts = append(parts, "framework="+hostData.Framework)
+		parts = append(parts, "framework_version="+hostData.Framework)
 	}
 
-	if hostData.FrameworkVersion != "" {
-		version := strings.TrimPrefix(hostData.FrameworkVersion, "v")
-		parts = append(parts, "framework_version="+version)
+	if hostData.ApiClientV1 != "" {
+		parts = append(parts, "client_version_v1="+hostData.ApiClientV1)
 	}
 
-	if hostData.APIClientV1 != "" {
-		version := strings.TrimPrefix(hostData.APIClientV1, "v")
-		if !strings.HasPrefix(version, "v") {
-			version = "v" + version
-		}
-		parts = append(parts, "client_version_v1="+version)
-	}
-
-	if hostData.APIClientV2 != "" {
-		version := strings.TrimPrefix(hostData.APIClientV2, "v")
-		if !strings.HasPrefix(version, "v") {
-			version = "v" + version
-		}
-		parts = append(parts, "client_version_v2="+version)
+	if hostData.ApiClientV2 != "" {
+		parts = append(parts, "client_version_v2="+hostData.ApiClientV2)
 	}
 
 	if hostData.Commons != "" {
-		version := strings.TrimPrefix(hostData.Commons, "v")
-		if !strings.HasPrefix(version, "v") {
-			version = "v" + version
-		}
-		parts = append(parts, "core_version="+version)
+		parts = append(parts, "core_version="+hostData.Commons)
 	}
 
 	return strings.Join(parts, ";")
 }
 
 // buildXPlatformHeader builds the X-Platform header value from HostData
-// Format: os={os_name};arch={arch};{language}={language_version};{package_manager}={package_manager_version}
+// Format: os={os_name};arch={arch};go={language_version}
 func buildXPlatformHeader(hostData *HostData) string {
 	if hostData == nil {
 		return ""
@@ -209,15 +225,9 @@ func buildXPlatformHeader(hostData *HostData) string {
 		parts = append(parts, "arch="+hostData.Arch)
 	}
 
-	// For Go, we use "go" as the language
-	// Go version from runtime.Version() includes "go" prefix (e.g., "go1.21.0")
-	goVersion := runtime.Version()
-	if goVersion != "" {
-		parts = append(parts, "go="+goVersion)
+	if hostData.Language != "" {
+		parts = append(parts, "go="+hostData.Language)
 	}
-
-	// Package manager for Go would be "go" with version, but we can't easily get it at runtime
-	// So we'll skip it for now
 
 	return strings.Join(parts, ";")
 }

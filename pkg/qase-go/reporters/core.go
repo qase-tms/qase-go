@@ -43,7 +43,7 @@ func NewCoreReporter(cfg *config.Config) (*CoreReporter, error) {
 	// Versions from domain package and go.mod (read automatically)
 	hostData := clients.GetHostInfo()
 	// Commons version is automatically set from domain.Version in GetHostInfo
-	// APIClientV1 and APIClientV2 are automatically set from go.mod in GetHostInfo
+	// ApiClientV1 and ApiClientV2 are automatically set from go.mod in GetHostInfo
 
 	// Log host data as JSON
 	hostDataJSON, err := json.Marshal(hostData)
