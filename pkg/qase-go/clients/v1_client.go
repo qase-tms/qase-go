@@ -20,7 +20,6 @@ type V1Client struct {
 // NewV1Client creates a new API v1 client
 func NewV1Client(config ClientConfig) (*V1Client, error) {
 	cfg := api_v1_client.NewConfiguration()
-	cfg.UserAgent = "qase-api-client-go/" + domain.Version
 
 	if config.BaseURL != "" {
 		// Set the base URL for the API client

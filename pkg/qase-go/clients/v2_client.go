@@ -22,7 +22,6 @@ type V2Client struct {
 // NewV2Client creates a new API v2 client
 func NewV2Client(config ClientConfig) (*V2Client, error) {
 	cfg := api_v2_client.NewConfiguration()
-	cfg.UserAgent = "qase-api-client-go/" + domain.Version
 
 	if config.BaseURL != "" {
 		// Override default base URL if provided
