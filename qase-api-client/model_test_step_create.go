@@ -20,9 +20,12 @@ var _ MappedNullable = &TestStepCreate{}
 
 // TestStepCreate struct for TestStepCreate
 type TestStepCreate struct {
+	// Step action text. Used for classic steps. For gherkin steps, use the \"value\" property instead.
 	Action         *string `json:"action,omitempty"`
 	ExpectedResult *string `json:"expected_result,omitempty"`
 	Data           *string `json:"data,omitempty"`
+	// Gherkin scenario text. Used when steps_type is \"gherkin\". Example: \"Given a user exists\\nWhen they log in\\nThen they see the dashboard\"
+	Value *string `json:"value,omitempty"`
 	// Deprecated
 	Position *int32 `json:"position,omitempty"`
 	// A list of Attachment hashes.
@@ -144,6 +147,38 @@ func (o *TestStepCreate) SetData(v string) {
 	o.Data = &v
 }
 
+// GetValue returns the Value field value if set, zero value otherwise.
+func (o *TestStepCreate) GetValue() string {
+	if o == nil || IsNil(o.Value) {
+		var ret string
+		return ret
+	}
+	return *o.Value
+}
+
+// GetValueOk returns a tuple with the Value field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestStepCreate) GetValueOk() (*string, bool) {
+	if o == nil || IsNil(o.Value) {
+		return nil, false
+	}
+	return o.Value, true
+}
+
+// HasValue returns a boolean if a field has been set.
+func (o *TestStepCreate) HasValue() bool {
+	if o != nil && !IsNil(o.Value) {
+		return true
+	}
+
+	return false
+}
+
+// SetValue gets a reference to the given string and assigns it to the Value field.
+func (o *TestStepCreate) SetValue(v string) {
+	o.Value = &v
+}
+
 // GetPosition returns the Position field value if set, zero value otherwise.
 // Deprecated
 func (o *TestStepCreate) GetPosition() int32 {
@@ -261,6 +296,9 @@ func (o TestStepCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
+	}
+	if !IsNil(o.Value) {
+		toSerialize["value"] = o.Value
 	}
 	if !IsNil(o.Position) {
 		toSerialize["position"] = o.Position

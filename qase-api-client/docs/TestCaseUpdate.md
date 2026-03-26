@@ -18,6 +18,7 @@ Name | Type | Description | Notes
 **MilestoneId** | Pointer to **int64** |  | [optional] 
 **Automation** | Pointer to **int32** |  | [optional] 
 **Status** | Pointer to **int32** |  | [optional] 
+**StepsType** | Pointer to **string** | Determines the format of the steps field. When \&quot;classic\&quot;, steps use the standard action/expected_result/data format. When \&quot;gherkin\&quot;, steps use the {value: \&quot;Given...\\nWhen...\\nThen...\&quot;} format. | [optional] [default to "classic"]
 **Attachments** | Pointer to **[]string** | A list of Attachment hashes. | [optional] 
 **Steps** | Pointer to [**[]TestStepCreate**](TestStepCreate.md) |  | [optional] 
 **Tags** | Pointer to **[]string** |  | [optional] 
@@ -393,6 +394,31 @@ SetStatus sets Status field to given value.
 `func (o *TestCaseUpdate) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
+
+### GetStepsType
+
+`func (o *TestCaseUpdate) GetStepsType() string`
+
+GetStepsType returns the StepsType field if non-nil, zero value otherwise.
+
+### GetStepsTypeOk
+
+`func (o *TestCaseUpdate) GetStepsTypeOk() (*string, bool)`
+
+GetStepsTypeOk returns a tuple with the StepsType field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStepsType
+
+`func (o *TestCaseUpdate) SetStepsType(v string)`
+
+SetStepsType sets StepsType field to given value.
+
+### HasStepsType
+
+`func (o *TestCaseUpdate) HasStepsType() bool`
+
+HasStepsType returns a boolean if a field has been set.
 
 ### GetAttachments
 

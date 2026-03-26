@@ -4,9 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Action** | Pointer to **string** |  | [optional] 
+**Action** | Pointer to **string** | Step action text. Used for classic steps. For gherkin steps, use the \&quot;value\&quot; property instead. | [optional] 
 **ExpectedResult** | Pointer to **string** |  | [optional] 
 **Data** | Pointer to **string** |  | [optional] 
+**Value** | Pointer to **string** | Gherkin scenario text. Used when steps_type is \&quot;gherkin\&quot;. Example: \&quot;Given a user exists\\nWhen they log in\\nThen they see the dashboard\&quot; | [optional] 
 **Position** | Pointer to **int32** |  | [optional] 
 **Attachments** | Pointer to **[]string** | A list of Attachment hashes. | [optional] 
 **Steps** | Pointer to **[]map[string]interface{}** | Nested steps may be passed here. Use same structure for them. | [optional] 
@@ -104,6 +105,31 @@ SetData sets Data field to given value.
 `func (o *TestStepCreate) HasData() bool`
 
 HasData returns a boolean if a field has been set.
+
+### GetValue
+
+`func (o *TestStepCreate) GetValue() string`
+
+GetValue returns the Value field if non-nil, zero value otherwise.
+
+### GetValueOk
+
+`func (o *TestStepCreate) GetValueOk() (*string, bool)`
+
+GetValueOk returns a tuple with the Value field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetValue
+
+`func (o *TestStepCreate) SetValue(v string)`
+
+SetValue sets Value field to given value.
+
+### HasValue
+
+`func (o *TestStepCreate) HasValue() bool`
+
+HasValue returns a boolean if a field has been set.
 
 ### GetPosition
 

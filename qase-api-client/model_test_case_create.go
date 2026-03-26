@@ -36,6 +36,8 @@ type TestCaseCreate struct {
 	MilestoneId    *int64  `json:"milestone_id,omitempty"`
 	Automation     *int32  `json:"automation,omitempty"`
 	Status         *int32  `json:"status,omitempty"`
+	// Determines the format of the steps field. When \"classic\", steps use the standard action/expected_result/data format. When \"gherkin\", steps use the {value: \"Given...\\nWhen...\\nThen...\"} format.
+	StepsType *string `json:"steps_type,omitempty"`
 	// A list of Attachment hashes.
 	Attachments []string         `json:"attachments,omitempty"`
 	Steps       []TestStepCreate `json:"steps,omitempty"`
@@ -59,6 +61,8 @@ type _TestCaseCreate TestCaseCreate
 func NewTestCaseCreate(title string) *TestCaseCreate {
 	this := TestCaseCreate{}
 	this.Title = title
+	var stepsType string = "classic"
+	this.StepsType = &stepsType
 	return &this
 }
 
@@ -67,6 +71,8 @@ func NewTestCaseCreate(title string) *TestCaseCreate {
 // but it doesn't guarantee that properties required by API are set
 func NewTestCaseCreateWithDefaults() *TestCaseCreate {
 	this := TestCaseCreate{}
+	var stepsType string = "classic"
+	this.StepsType = &stepsType
 	return &this
 }
 
@@ -510,6 +516,38 @@ func (o *TestCaseCreate) SetStatus(v int32) {
 	o.Status = &v
 }
 
+// GetStepsType returns the StepsType field value if set, zero value otherwise.
+func (o *TestCaseCreate) GetStepsType() string {
+	if o == nil || IsNil(o.StepsType) {
+		var ret string
+		return ret
+	}
+	return *o.StepsType
+}
+
+// GetStepsTypeOk returns a tuple with the StepsType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCaseCreate) GetStepsTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.StepsType) {
+		return nil, false
+	}
+	return o.StepsType, true
+}
+
+// HasStepsType returns a boolean if a field has been set.
+func (o *TestCaseCreate) HasStepsType() bool {
+	if o != nil && !IsNil(o.StepsType) {
+		return true
+	}
+
+	return false
+}
+
+// SetStepsType gets a reference to the given string and assigns it to the StepsType field.
+func (o *TestCaseCreate) SetStepsType(v string) {
+	o.StepsType = &v
+}
+
 // GetAttachments returns the Attachments field value if set, zero value otherwise.
 func (o *TestCaseCreate) GetAttachments() []string {
 	if o == nil || IsNil(o.Attachments) {
@@ -820,6 +858,9 @@ func (o TestCaseCreate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
+	}
+	if !IsNil(o.StepsType) {
+		toSerialize["steps_type"] = o.StepsType
 	}
 	if !IsNil(o.Attachments) {
 		toSerialize["attachments"] = o.Attachments
