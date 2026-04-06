@@ -109,22 +109,19 @@ func TestFileReporter_AddResult(t *testing.T) {
 }
 
 func TestFileReporter_CompleteTestRun(t *testing.T) {
-	// Create temporary directory for test
 	tmpDir := t.TempDir()
 
 	cfg := config.NewConfig()
 	cfg.Report.Connection.Local.Path = tmpDir
 	cfg.Report.Connection.Local.Format = "json"
 
-	config := FileReporterConfig{
-		Config:         cfg,
-		CustomFilename: "test-report",
+	reporterConfig := FileReporterConfig{
+		Config: cfg,
 	}
 
-	reporter := NewFileReporter(config)
+	reporter := NewFileReporter(reporterConfig)
 	ctx := context.Background()
 
-	// Start test run
 	err := reporter.StartTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to start test run: %v", err)
@@ -133,7 +130,7 @@ func TestFileReporter_CompleteTestRun(t *testing.T) {
 	// Add some test results
 	result1 := domain.NewTestResult("Test 1")
 	result1.Execution.Status = domain.StatusPassed
-	now := time.Now().Unix()
+	now := time.Now().UnixMilli()
 	result1.Execution.StartTime = &now
 	result1.Execution.EndTime = &now
 
@@ -152,259 +149,229 @@ func TestFileReporter_CompleteTestRun(t *testing.T) {
 		t.Fatalf("failed to add result 2: %v", err)
 	}
 
-	// Complete test run
 	err = reporter.CompleteTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to complete test run: %v", err)
 	}
 
-	// Check that report file was created
-	reportPath := filepath.Join(tmpDir, "test-report.json")
-	if _, err := os.Stat(reportPath); os.IsNotExist(err) {
-		t.Fatalf("report file was not created: %s", reportPath)
+	// Check run.json was created
+	runPath := filepath.Join(tmpDir, "run.json")
+	if _, err := os.Stat(runPath); os.IsNotExist(err) {
+		t.Fatalf("run.json was not created: %s", runPath)
 	}
 
-	// Read and validate report content
-	data, err := os.ReadFile(reportPath)
+	// Read and validate run.json
+	data, err := os.ReadFile(runPath)
 	if err != nil {
-		t.Fatalf("failed to read report file: %v", err)
+		t.Fatalf("failed to read run.json: %v", err)
 	}
 
-	var report Report
-	err = json.Unmarshal(data, &report)
+	var runReport RunReport
+	err = json.Unmarshal(data, &runReport)
 	if err != nil {
-		t.Fatalf("failed to unmarshal report: %v", err)
+		t.Fatalf("failed to unmarshal run.json: %v", err)
 	}
 
-	// Validate report structure
-	if report.QaseReport.Version != "1.0.0" {
-		t.Errorf("expected version 1.0.0, got %s", report.QaseReport.Version)
+	if runReport.Stats.Total != 2 {
+		t.Errorf("expected 2 total tests, got %d", runReport.Stats.Total)
+	}
+	if runReport.Stats.Passed != 1 {
+		t.Errorf("expected 1 passed test, got %d", runReport.Stats.Passed)
+	}
+	if runReport.Stats.Failed != 1 {
+		t.Errorf("expected 1 failed test, got %d", runReport.Stats.Failed)
+	}
+	if len(runReport.Results) != 2 {
+		t.Errorf("expected 2 result summaries, got %d", len(runReport.Results))
 	}
 
-	summary := report.QaseReport.Summary
-	if summary.TotalTests != 2 {
-		t.Errorf("expected 2 total tests, got %d", summary.TotalTests)
+	// Check result files were created
+	resultsDir := filepath.Join(tmpDir, "results")
+	result1Path := filepath.Join(resultsDir, result1.ID+".json")
+	result2Path := filepath.Join(resultsDir, result2.ID+".json")
+
+	if _, err := os.Stat(result1Path); os.IsNotExist(err) {
+		t.Fatalf("result file was not created: %s", result1Path)
 	}
-	if summary.PassedTests != 1 {
-		t.Errorf("expected 1 passed test, got %d", summary.PassedTests)
-	}
-	if summary.FailedTests != 1 {
-		t.Errorf("expected 1 failed test, got %d", summary.FailedTests)
-	}
-	if summary.Status != "failed" {
-		t.Errorf("expected status 'failed', got %s", summary.Status)
+	if _, err := os.Stat(result2Path); os.IsNotExist(err) {
+		t.Fatalf("result file was not created: %s", result2Path)
 	}
 
-	if len(report.QaseReport.Results) != 2 {
-		t.Errorf("expected 2 results, got %d", len(report.QaseReport.Results))
-	}
+	// Read and validate individual result files
+	for _, tc := range []struct {
+		domainResult *domain.TestResult
+		title        string
+		status       string
+	}{
+		{result1, "Test 1", "passed"},
+		{result2, "Test 2", "failed"},
+	} {
+		rPath := filepath.Join(resultsDir, tc.domainResult.ID+".json")
+		data, err = os.ReadFile(rPath)
+		if err != nil {
+			t.Fatalf("failed to read result file %s: %v", rPath, err)
+		}
 
-	// Validate first result
-	result1Report := report.QaseReport.Results[0]
-	if result1Report.Title != "Test 1" {
-		t.Errorf("expected title 'Test 1', got %s", result1Report.Title)
-	}
-	if result1Report.Execution.Status != "passed" {
-		t.Errorf("expected status 'passed', got %s", result1Report.Execution.Status)
-	}
+		var resultReport Result
+		err = json.Unmarshal(data, &resultReport)
+		if err != nil {
+			t.Fatalf("failed to unmarshal result: %v", err)
+		}
 
-	// Validate second result
-	result2Report := report.QaseReport.Results[1]
-	if result2Report.Title != "Test 2" {
-		t.Errorf("expected title 'Test 2', got %s", result2Report.Title)
-	}
-	if result2Report.Execution.Status != "failed" {
-		t.Errorf("expected status 'failed', got %s", result2Report.Execution.Status)
+		if resultReport.Title != tc.title {
+			t.Errorf("expected title %q, got %s", tc.title, resultReport.Title)
+		}
+		if resultReport.Execution.Status != tc.status {
+			t.Errorf("expected status %q, got %s", tc.status, resultReport.Execution.Status)
+		}
 	}
 }
 
 func TestFileReporter_CompleteTestRun_EmptyResults(t *testing.T) {
 	tmpDir := t.TempDir()
-	
-	cfg := config.NewConfig()
-	cfg.Report.Connection.Local.Path = tmpDir
-	
-	config := FileReporterConfig{
-		Config:         cfg,
-		CustomFilename: "empty-report",
-	}
-	
-	reporter := NewFileReporter(config)
-	ctx := context.Background()
-	
-	// Start test run
-	err := reporter.StartTestRun(ctx)
-	if err != nil {
-		t.Fatalf("failed to start test run: %v", err)
-	}
-	
-	// Complete test run without adding results
-	err = reporter.CompleteTestRun(ctx)
-	if err != nil {
-		t.Fatalf("failed to complete test run: %v", err)
-	}
-	
-	// Check that report file was created
-	reportPath := filepath.Join(tmpDir, "empty-report.json")
-	if _, err := os.Stat(reportPath); os.IsNotExist(err) {
-		t.Fatalf("report file was not created: %s", reportPath)
-	}
-	
-	// Read and validate report content
-	data, err := os.ReadFile(reportPath)
-	if err != nil {
-		t.Fatalf("failed to read report file: %v", err)
-	}
-	
-	var report Report
-	err = json.Unmarshal(data, &report)
-	if err != nil {
-		t.Fatalf("failed to unmarshal report: %v", err)
-	}
-	
-	summary := report.QaseReport.Summary
-	if summary.TotalTests != 0 {
-		t.Errorf("expected 0 total tests, got %d", summary.TotalTests)
-	}
-	if summary.Status != "skipped" {
-		t.Errorf("expected status 'skipped', got %s", summary.Status)
-	}
-}
 
-func TestFileReporter_CompleteTestRun_DefaultFilename(t *testing.T) {
-	tmpDir := t.TempDir()
-	
 	cfg := config.NewConfig()
 	cfg.Report.Connection.Local.Path = tmpDir
-	
-	config := FileReporterConfig{
+
+	reporterConfig := FileReporterConfig{
 		Config: cfg,
-		// CustomFilename not set, should use default
 	}
-	
-	reporter := NewFileReporter(config)
+
+	reporter := NewFileReporter(reporterConfig)
 	ctx := context.Background()
-	
+
 	err := reporter.StartTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to start test run: %v", err)
 	}
-	
+
 	err = reporter.CompleteTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to complete test run: %v", err)
 	}
-	
-	// Check that default filename was used
-	reportPath := filepath.Join(tmpDir, "qase-report.json")
-	if _, err := os.Stat(reportPath); os.IsNotExist(err) {
-		t.Fatalf("report file was not created with default name: %s", reportPath)
+
+	// Check run.json
+	runPath := filepath.Join(tmpDir, "run.json")
+	if _, err := os.Stat(runPath); os.IsNotExist(err) {
+		t.Fatalf("run.json was not created: %s", runPath)
+	}
+
+	data, err := os.ReadFile(runPath)
+	if err != nil {
+		t.Fatalf("failed to read run.json: %v", err)
+	}
+
+	var runReport RunReport
+	err = json.Unmarshal(data, &runReport)
+	if err != nil {
+		t.Fatalf("failed to unmarshal run.json: %v", err)
+	}
+
+	if runReport.Stats.Total != 0 {
+		t.Errorf("expected 0 total tests, got %d", runReport.Stats.Total)
 	}
 }
 
 func TestFileReporter_CompleteTestRun_CreateDirectory(t *testing.T) {
 	tmpDir := t.TempDir()
 	newDir := filepath.Join(tmpDir, "reports", "subdir")
-	
+
 	cfg := config.NewConfig()
 	cfg.Report.Connection.Local.Path = newDir
-	
-	config := FileReporterConfig{
-		Config:         cfg,
-		CustomFilename: "test-report",
+
+	reporterConfig := FileReporterConfig{
+		Config: cfg,
 	}
-	
-	reporter := NewFileReporter(config)
+
+	reporter := NewFileReporter(reporterConfig)
 	ctx := context.Background()
-	
+
 	err := reporter.StartTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to start test run: %v", err)
 	}
-	
+
 	err = reporter.CompleteTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to complete test run: %v", err)
 	}
-	
-	// Check that directory was created
-	if _, err := os.Stat(newDir); os.IsNotExist(err) {
-		t.Fatalf("directory was not created: %s", newDir)
-	}
-	
-	// Check that report file was created
-	reportPath := filepath.Join(newDir, "test-report.json")
-	if _, err := os.Stat(reportPath); os.IsNotExist(err) {
-		t.Fatalf("report file was not created: %s", reportPath)
+
+	// Check that directory and run.json were created
+	runPath := filepath.Join(newDir, "run.json")
+	if _, err := os.Stat(runPath); os.IsNotExist(err) {
+		t.Fatalf("run.json was not created: %s", runPath)
 	}
 }
 
 func TestFileReporter_WorkflowIntegration(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	cfg := config.NewConfig()
 	cfg.Report.Connection.Local.Path = tmpDir
-	
-	config := FileReporterConfig{
-		Config:         cfg,
-		CustomFilename: "workflow-test",
+
+	reporterConfig := FileReporterConfig{
+		Config: cfg,
 	}
-	
-	reporter := NewFileReporter(config)
+
+	reporter := NewFileReporter(reporterConfig)
 	ctx := context.Background()
-	
-	// Simulate complete workflow
+
 	err := reporter.StartTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to start test run: %v", err)
 	}
-	
+
 	// Add multiple results with different statuses
 	results := []*domain.TestResult{
 		CreateSimpleResult("Passing Test", domain.StatusPassed),
 		CreateSimpleResult("Failing Test", domain.StatusFailed),
 		CreateSimpleResult("Skipped Test", domain.StatusSkipped),
 	}
-	
+
 	for _, result := range results {
 		err = reporter.AddResult(result)
 		if err != nil {
 			t.Fatalf("failed to add result: %v", err)
 		}
 	}
-	
+
 	err = reporter.CompleteTestRun(ctx)
 	if err != nil {
 		t.Fatalf("failed to complete test run: %v", err)
 	}
-	
-	// Validate report
-	reportPath := filepath.Join(tmpDir, "workflow-test.json")
-	data, err := os.ReadFile(reportPath)
+
+	// Validate run.json
+	runPath := filepath.Join(tmpDir, "run.json")
+	data, err := os.ReadFile(runPath)
 	if err != nil {
-		t.Fatalf("failed to read report file: %v", err)
+		t.Fatalf("failed to read run.json: %v", err)
 	}
-	
-	var report Report
-	err = json.Unmarshal(data, &report)
+
+	var runReport RunReport
+	err = json.Unmarshal(data, &runReport)
 	if err != nil {
-		t.Fatalf("failed to unmarshal report: %v", err)
+		t.Fatalf("failed to unmarshal run.json: %v", err)
 	}
-	
-	summary := report.QaseReport.Summary
-	if summary.TotalTests != 3 {
-		t.Errorf("expected 3 total tests, got %d", summary.TotalTests)
+
+	if runReport.Stats.Total != 3 {
+		t.Errorf("expected 3 total tests, got %d", runReport.Stats.Total)
 	}
-	if summary.PassedTests != 1 {
-		t.Errorf("expected 1 passed test, got %d", summary.PassedTests)
+	if runReport.Stats.Passed != 1 {
+		t.Errorf("expected 1 passed test, got %d", runReport.Stats.Passed)
 	}
-	if summary.FailedTests != 1 {
-		t.Errorf("expected 1 failed test, got %d", summary.FailedTests)
+	if runReport.Stats.Failed != 1 {
+		t.Errorf("expected 1 failed test, got %d", runReport.Stats.Failed)
 	}
-	if summary.SkippedTests != 1 {
-		t.Errorf("expected 1 skipped test, got %d", summary.SkippedTests)
+	if runReport.Stats.Skipped != 1 {
+		t.Errorf("expected 1 skipped test, got %d", runReport.Stats.Skipped)
 	}
-	if summary.Status != "failed" {
-		t.Errorf("expected status 'failed', got %s", summary.Status)
+
+	// Check individual result files
+	resultsDir := filepath.Join(tmpDir, "results")
+	for _, r := range results {
+		resultPath := filepath.Join(resultsDir, r.ID+".json")
+		if _, err := os.Stat(resultPath); os.IsNotExist(err) {
+			t.Errorf("result file was not created: %s", resultPath)
+		}
 	}
 }
