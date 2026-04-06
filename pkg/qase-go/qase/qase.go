@@ -642,6 +642,13 @@ func GetTestFileInfo() (string, string) {
 
 // applyTestMetadata applies metadata from TestMetadata to TestResult
 func applyTestMetadata(result *domain.TestResult, meta TestMetadata) {
+	// Set QaseIDs (testops IDs)
+	if len(meta.QaseIDs) == 1 {
+		result.SetTestopsIDSingle(meta.QaseIDs[0])
+	} else if len(meta.QaseIDs) > 1 {
+		result.SetTestopsIDMultiple(meta.QaseIDs)
+	}
+
 	// Set description
 	if meta.Description != "" {
 		result.SetField("description", meta.Description)
@@ -716,4 +723,31 @@ func applyTestMetadata(result *domain.TestResult, meta TestMetadata) {
 	if len(suiteData) > 0 {
 		result.SetSuite(suiteData)
 	}
+
+	// Generate signature from QaseIDs, suite path, and title
+	result.Signature = generateSignature(meta.QaseIDs, suiteData, result.Title)
+}
+
+// generateSignature creates a unique signature for a test result.
+// Format: "qaseID::suite1::suite2::title" (all lowercase, spaces replaced with underscores)
+func generateSignature(qaseIDs []int64, suiteData []domain.SuiteData, title string) string {
+	var parts []string
+
+	if len(qaseIDs) > 0 {
+		ids := make([]string, len(qaseIDs))
+		for i, id := range qaseIDs {
+			ids[i] = fmt.Sprintf("%d", id)
+		}
+		parts = append(parts, strings.Join(ids, ","))
+	}
+
+	for _, s := range suiteData {
+		normalized := strings.ToLower(strings.ReplaceAll(s.Title, " ", "_"))
+		parts = append(parts, normalized)
+	}
+
+	normalizedTitle := strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+	parts = append(parts, normalizedTitle)
+
+	return strings.Join(parts, "::")
 }

@@ -1,0 +1,236 @@
+run:
+  stats:
+    total: 14
+    passed: 11
+    failed: 2
+    skipped: 0
+    blocked: 0
+    invalid: 1
+    muted: 0
+results:
+- title: Comprehensive test with all features
+  signature: 202::integration::allfeatures::comprehensive_test_with_all_features
+  testops_ids:
+  - 202
+  status: passed
+  fields:
+    description: Covers fields, params, suite, and steps
+    severity: normal
+  params:
+    env: staging
+  relations:
+    suite:
+      data:
+      - title: Integration
+      - title: AllFeatures
+  steps:
+  - data:
+      action: Setup phase
+      expected_result: Ready for test
+    execution:
+      status: passed
+  - data:
+      action: Execution phase
+      expected_result: Test logic runs
+    execution:
+      status: passed
+  - data:
+      action: Verification phase
+      expected_result: Assertions pass
+    execution:
+      status: passed
+  attachments:
+  - file_name: result.json
+    mime_type: application/json
+- title: Test with step input data
+  signature: 113::suite01::steps::test_with_step_input_data
+  testops_ids:
+  - 113
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: steps
+  steps:
+  - data:
+      action: Step with input data
+      expected_result: Data is processed
+      input_data: '{"key": "value"}'
+    execution:
+      status: passed
+- title: Test with nested steps
+  signature: 108::suite01::steps::test_with_nested_steps
+  testops_ids:
+  - 108
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: steps
+  steps:
+  - data:
+      action: Parent step
+      expected_result: Parent completes
+    execution:
+      status: passed
+    steps:
+    - data:
+        action: Child step 1
+        expected_result: Child 1 passes
+      execution:
+        status: passed
+    - data:
+        action: Child step 2
+        expected_result: Child 2 passes
+      execution:
+        status: passed
+- title: Test with attachments
+  signature: 109::suite01::simple::test_with_attachments
+  testops_ids:
+  - 109
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+  attachments:
+  - file_name: log.txt
+    mime_type: text/plain
+- title: Test with custom fields
+  signature: 105::suite01::simple::test_with_custom_fields
+  testops_ids:
+  - 105
+  status: passed
+  fields:
+    layer: unit
+    priority: high
+    severity: critical
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Test mapped to multiple Qase IDs
+  signature: 111,112::suite01::simple::test_mapped_to_multiple_qase_ids
+  testops_ids:
+  - 111
+  - 112
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Test with steps
+  signature: 107::suite01::steps::test_with_steps
+  testops_ids:
+  - 107
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: steps
+  steps:
+  - data:
+      action: 'Step 1: Setup'
+      expected_result: Setup completes
+    execution:
+      status: passed
+  - data:
+      action: 'Step 2: Verify'
+      expected_result: Verification passes
+    execution:
+      status: passed
+- title: Simple failing test
+  signature: 102::suite01::simple::simple_failing_test
+  testops_ids:
+  - 102
+  status: failed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Test with panic
+  signature: 103::suite01::simple::test_with_panic
+  testops_ids:
+  - 103
+  status: invalid
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Failing test with steps
+  signature: 110::suite01::steps::failing_test_with_steps
+  testops_ids:
+  - 110
+  status: failed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: steps
+  steps:
+  - data:
+      action: Setup step
+      expected_result: Setup succeeds
+    execution:
+      status: passed
+  - data:
+      action: Failing step
+      expected_result: This step fails
+    execution:
+      status: failed
+  - data:
+      action: Cleanup step
+      expected_result: Cleanup runs anyway
+    execution:
+      status: failed
+- title: Test with parameters
+  signature: 104::suite01::simple::test_with_parameters
+  testops_ids:
+  - 104
+  status: passed
+  params:
+    browser: chrome
+    version: '120'
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Simple passing test
+  signature: 101::suite01::simple::simple_passing_test
+  testops_ids:
+  - 101
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
+- title: Pass in suite02
+  signature: 201::suite02::parallel::pass_in_suite02
+  testops_ids:
+  - 201
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: suite02
+      - title: parallel
+- title: Test with explicit suite
+  signature: 106::custom_suite::child_suite::test_with_explicit_suite
+  testops_ids:
+  - 106
+  status: passed
+  relations:
+    suite:
+      data:
+      - title: Custom Suite
+      - title: Child Suite

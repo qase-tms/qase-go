@@ -14,6 +14,9 @@ type TestMetadata struct {
 	Description string
 	Comment     string
 
+	// Qase test case IDs
+	QaseIDs []int64
+
 	// Suite information
 	Suite []string
 
