@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **Type** | Pointer to **string** |  | [optional] 
 **Muted** | Pointer to **string** |  | [optional] 
 **IsFlaky** | Pointer to **string** |  | [optional] 
+**Tags** | Pointer to **string** | Comma-separated list of tag titles to assign to the test case | [optional] 
 **ExecutedBy** | Pointer to **string** | User who executed the test (member id, name or email) | [optional] 
 
 ## Methods
@@ -310,6 +311,31 @@ SetIsFlaky sets IsFlaky field to given value.
 `func (o *ResultCreateFields) HasIsFlaky() bool`
 
 HasIsFlaky returns a boolean if a field has been set.
+
+### GetTags
+
+`func (o *ResultCreateFields) GetTags() string`
+
+GetTags returns the Tags field if non-nil, zero value otherwise.
+
+### GetTagsOk
+
+`func (o *ResultCreateFields) GetTagsOk() (*string, bool)`
+
+GetTagsOk returns a tuple with the Tags field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTags
+
+`func (o *ResultCreateFields) SetTags(v string)`
+
+SetTags sets Tags field to given value.
+
+### HasTags
+
+`func (o *ResultCreateFields) HasTags() bool`
+
+HasTags returns a boolean if a field has been set.
 
 ### GetExecutedBy
 
