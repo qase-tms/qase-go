@@ -32,6 +32,8 @@ type ResultCreateFields struct {
 	Type           *string `json:"type,omitempty"`
 	Muted          *string `json:"muted,omitempty"`
 	IsFlaky        *string `json:"is_flaky,omitempty"`
+	// Comma-separated list of tag titles to assign to the test case
+	Tags *string `json:"tags,omitempty"`
 	// User who executed the test (member id, name or email)
 	ExecutedBy           *string `json:"executed_by,omitempty"`
 	AdditionalProperties map[string]interface{}
@@ -408,6 +410,38 @@ func (o *ResultCreateFields) SetIsFlaky(v string) {
 	o.IsFlaky = &v
 }
 
+// GetTags returns the Tags field value if set, zero value otherwise.
+func (o *ResultCreateFields) GetTags() string {
+	if o == nil || IsNil(o.Tags) {
+		var ret string
+		return ret
+	}
+	return *o.Tags
+}
+
+// GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ResultCreateFields) GetTagsOk() (*string, bool) {
+	if o == nil || IsNil(o.Tags) {
+		return nil, false
+	}
+	return o.Tags, true
+}
+
+// HasTags returns a boolean if a field has been set.
+func (o *ResultCreateFields) HasTags() bool {
+	if o != nil && !IsNil(o.Tags) {
+		return true
+	}
+
+	return false
+}
+
+// SetTags gets a reference to the given string and assigns it to the Tags field.
+func (o *ResultCreateFields) SetTags(v string) {
+	o.Tags = &v
+}
+
 // GetExecutedBy returns the ExecutedBy field value if set, zero value otherwise.
 func (o *ResultCreateFields) GetExecutedBy() string {
 	if o == nil || IsNil(o.ExecutedBy) {
@@ -483,6 +517,9 @@ func (o ResultCreateFields) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IsFlaky) {
 		toSerialize["is_flaky"] = o.IsFlaky
 	}
+	if !IsNil(o.Tags) {
+		toSerialize["tags"] = o.Tags
+	}
 	if !IsNil(o.ExecutedBy) {
 		toSerialize["executed_by"] = o.ExecutedBy
 	}
@@ -519,6 +556,7 @@ func (o *ResultCreateFields) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "type")
 		delete(additionalProperties, "muted")
 		delete(additionalProperties, "is_flaky")
+		delete(additionalProperties, "tags")
 		delete(additionalProperties, "executed_by")
 		o.AdditionalProperties = additionalProperties
 	}

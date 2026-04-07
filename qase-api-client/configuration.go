@@ -90,7 +90,7 @@ type Configuration struct {
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{
 		DefaultHeader: make(map[string]string),
-		UserAgent:     "qase-api-client-go/" + getModuleVersion(),
+		UserAgent:     "OpenAPI-Generator/1.0.0/go",
 		Debug:         false,
 		Servers: ServerConfigurations{
 			{
