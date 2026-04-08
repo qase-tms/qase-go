@@ -78,6 +78,7 @@ type Result struct {
 	Params      map[string]string `json:"params"`
 	ParamGroups [][]string        `json:"param_groups"`
 	Relations   *Relation         `json:"relations"`
+	Tags        []string          `json:"tags"`
 	Muted       bool              `json:"muted"`
 	Message     *string           `json:"message"`
 }
@@ -400,6 +401,7 @@ func (r *FileReporter) convertResult(domainResult *domain.TestResult) *Result {
 		Params:      params,
 		ParamGroups: nil,
 		Relations:   r.convertRelations(domainResult.Relations),
+		Tags:        domainResult.Tags,
 		Muted:       domainResult.Muted,
 		Message:     domainResult.Message,
 	}
