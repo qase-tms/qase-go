@@ -1,0 +1,45 @@
+pkg/qase-go/domain/test_result_test.go
+  d115ffa36c8bd697 98-103,411-454
+pkg/qase-go/clients/converter_test.go
+  d115ffa36c8bd697 771-860
+pkg/qase-go/docs/usage.md
+  d115ffa36c8bd697 243,246,249-252,293-331,348
+expected/go-examples.yaml
+  d115ffa36c8bd697 3-4,227-239
+examples/go/suite01/simple_test.go
+  d115ffa36c8bd697 111-122
+pkg/qase-go/clients/converter.go
+  d115ffa36c8bd697 146-150,354-355,723-743
+pkg/qase-go/qase/qase.go
+  d115ffa36c8bd697 683-687
+pkg/qase-go/domain/domain.go
+  d115ffa36c8bd697 8
+pkg/qase-go/domain/test_result.go
+  d115ffa36c8bd697 22,178,243-247,397-405
+pkg/qase-go/qase/models.go
+  d115ffa36c8bd697 32-34
+changelog.md
+  d115ffa36c8bd697 1-13
+pkg/qase-go/go.mod
+  d115ffa36c8bd697 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "0d15d9ac6ecfb6ed9f0153af05dd6507df5d8206",
+  "prompts": {
+    "d115ffa36c8bd697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a054ca16-ce12-482f-9b3b-d198b51d5913",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Dmitrii Gridnev",
+      "messages": [],
+      "total_additions": 283,
+      "total_deletions": 10,
+      "accepted_lines": 280,
+      "overriden_lines": 0
+    }
+  }
+}
