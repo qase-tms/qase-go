@@ -768,6 +768,96 @@ func TestV2Converter_ConvertTestResult_HandlesStepConversionErrorsGracefully(t *
 	}
 }
 
+func TestV2Converter_ConvertTestResult_WithTags(t *testing.T) {
+	converter := NewV2Converter()
+
+	t.Run("tags from TestResult.Tags", func(t *testing.T) {
+		domainResult := domain.NewTestResult("Test with Tags")
+		domainResult.Execution.Status = domain.StatusPassed
+		domainResult.Tags = []string{"smoke", "regression"}
+
+		apiResult, err := converter.ConvertTestResult(domainResult)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		fields := apiResult.GetFields()
+		tags := fields.GetTags()
+		if tags != "smoke,regression" {
+			t.Errorf("Expected tags 'smoke,regression', got: %s", tags)
+		}
+	})
+
+	t.Run("tags with deduplication", func(t *testing.T) {
+		domainResult := domain.NewTestResult("Test with Duplicate Tags")
+		domainResult.Execution.Status = domain.StatusPassed
+		domainResult.Tags = []string{"smoke", "regression", "smoke"}
+
+		apiResult, err := converter.ConvertTestResult(domainResult)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		fields := apiResult.GetFields()
+		tags := fields.GetTags()
+		if tags != "smoke,regression" {
+			t.Errorf("Expected deduplicated tags 'smoke,regression', got: %s", tags)
+		}
+	})
+
+	t.Run("tags from fields map", func(t *testing.T) {
+		domainResult := domain.NewTestResult("Test with Tags via Fields")
+		domainResult.Execution.Status = domain.StatusPassed
+		domainResult.SetField("tags", "smoke,regression")
+
+		apiResult, err := converter.ConvertTestResult(domainResult)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		fields := apiResult.GetFields()
+		tags := fields.GetTags()
+		if tags != "smoke,regression" {
+			t.Errorf("Expected tags 'smoke,regression', got: %s", tags)
+		}
+	})
+
+	t.Run("empty tags", func(t *testing.T) {
+		domainResult := domain.NewTestResult("Test without Tags")
+		domainResult.Execution.Status = domain.StatusPassed
+
+		apiResult, err := converter.ConvertTestResult(domainResult)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		fields := apiResult.GetFields()
+		if fields.HasTags() {
+			t.Error("Expected no tags to be set")
+		}
+	})
+
+	t.Run("tags with fields together", func(t *testing.T) {
+		domainResult := domain.NewTestResult("Test with Tags and Fields")
+		domainResult.Execution.Status = domain.StatusPassed
+		domainResult.SetField("severity", "critical")
+		domainResult.Tags = []string{"smoke", "regression"}
+
+		apiResult, err := converter.ConvertTestResult(domainResult)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		fields := apiResult.GetFields()
+		if fields.GetSeverity() != "critical" {
+			t.Errorf("Expected severity 'critical', got: %s", fields.GetSeverity())
+		}
+		if fields.GetTags() != "smoke,regression" {
+			t.Errorf("Expected tags 'smoke,regression', got: %s", fields.GetTags())
+		}
+	})
+}
+
 // Helper function for creating string pointers
 func stringPtr(s string) *string {
 	return &s

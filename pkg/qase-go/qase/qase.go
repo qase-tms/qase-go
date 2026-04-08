@@ -680,6 +680,11 @@ func applyTestMetadata(result *domain.TestResult, meta TestMetadata) {
 		}
 	}
 
+	// Set tags
+	if len(meta.Tags) > 0 {
+		result.AddTags(meta.Tags...)
+	}
+
 	// Set suite
 	var suiteData []domain.SuiteData
 

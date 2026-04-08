@@ -19,6 +19,7 @@ type TestResult struct {
 	Params      map[string]string `json:"params"`
 	GroupParams map[string]string `json:"group_params"`
 	Relations   *Relation         `json:"relations"`
+	Tags        []string          `json:"tags"`
 	Muted       bool              `json:"muted"`
 	Message     *string           `json:"message"`
 }
@@ -174,6 +175,7 @@ func NewTestResult(title string) *TestResult {
 		Params:      make(map[string]string),
 		GroupParams: make(map[string]string),
 		Relations:   nil,
+		Tags:        make([]string, 0),
 		Muted:       false,
 		Message:     nil,
 	}
@@ -236,6 +238,11 @@ func (tr *TestResult) SetParam(key, value string) {
 // SetGroupParam sets a group parameter value
 func (tr *TestResult) SetGroupParam(key, value string) {
 	tr.GroupParams[key] = value
+}
+
+// AddTags appends tags to the existing tags list
+func (tr *TestResult) AddTags(tags ...string) {
+	tr.Tags = append(tr.Tags, tags...)
 }
 
 // AddAttachment adds an attachment
@@ -385,6 +392,15 @@ func (tr *TestResult) String() string {
 	// Relations
 	if tr.Relations != nil {
 		parts = append(parts, fmt.Sprintf("Relations: %s", tr.Relations.String()))
+	}
+
+	// Tags
+	if len(tr.Tags) > 0 {
+		tagsStr := make([]string, 0, len(tr.Tags))
+		for _, tag := range tr.Tags {
+			tagsStr = append(tagsStr, fmt.Sprintf("%q", tag))
+		}
+		parts = append(parts, fmt.Sprintf("Tags: [%s]", strings.Join(tagsStr, ", ")))
 	}
 
 	// Muted

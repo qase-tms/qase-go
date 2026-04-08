@@ -1,7 +1,7 @@
 run:
   stats:
-    total: 14
-    passed: 11
+    total: 15
+    passed: 12
     failed: 2
     skipped: 0
     blocked: 0
@@ -224,6 +224,19 @@ results:
       data:
       - title: suite02
       - title: parallel
+- title: Test with tags
+  signature: 114::suite01::simple::test_with_tags
+  testops_ids:
+  - 114
+  status: passed
+  tags:
+  - smoke
+  - regression
+  relations:
+    suite:
+      data:
+      - title: suite01
+      - title: simple
 - title: Test with explicit suite
   signature: 106::custom_suite::child_suite::test_with_explicit_suite
   testops_ids:
