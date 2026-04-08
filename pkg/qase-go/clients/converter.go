@@ -143,6 +143,11 @@ func (c *V2Converter) ConvertTestResult(result *domain.TestResult) (*api_v2_clie
 		}
 	}
 
+	// Convert tags
+	if len(result.Tags) > 0 {
+		c.setTags(apiResult, result.Tags)
+	}
+
 	// Convert attachments
 	if len(result.Attachments) > 0 {
 		if err := c.setAttachments(context.Background(), apiResult, result.Attachments); err != nil {
@@ -346,6 +351,8 @@ func (c *V2Converter) setFields(apiResult *api_v2_client.ResultCreate, fields ma
 			resultFields.SetIsFlaky(value)
 		case "executed_by":
 			resultFields.SetExecutedBy(value)
+		case "tags":
+			resultFields.SetTags(value)
 		case "author":
 			resultFields.SetAuthor(value)
 		default:
@@ -711,6 +718,27 @@ func (c *V2Converter) setParamGroups(apiResult *api_v2_client.ResultCreate, grou
 		paramGroups = append(paramGroups, []string{key})
 	}
 	apiResult.SetParamGroups(paramGroups)
+}
+
+// setTags converts domain tags to API format (comma-separated string in fields)
+func (c *V2Converter) setTags(apiResult *api_v2_client.ResultCreate, tags []string) {
+	// Deduplicate tags
+	seen := make(map[string]struct{})
+	unique := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		if _, ok := seen[tag]; !ok {
+			seen[tag] = struct{}{}
+			unique = append(unique, tag)
+		}
+	}
+
+	tagsStr := strings.Join(unique, ",")
+
+	// Get existing fields or create new ones
+	fields := apiResult.GetFields()
+	fieldsPtr := &fields
+	fieldsPtr.SetTags(tagsStr)
+	apiResult.SetFields(*fieldsPtr)
 }
 
 // setRelations converts domain relations to API format

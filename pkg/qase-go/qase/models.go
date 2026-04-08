@@ -29,6 +29,9 @@ type TestMetadata struct {
 	// Group parameters (matching JavaScript groupParams)
 	GroupParameters map[string]string
 
+	// Tags for the test case
+	Tags []string
+
 	// Test control
 	Ignore bool
 }

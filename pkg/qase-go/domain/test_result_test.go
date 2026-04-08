@@ -95,6 +95,12 @@ func TestNewTestResult(t *testing.T) {
 			if len(result.Steps) != 0 {
 				t.Errorf("Steps should be empty initially, got %d items", len(result.Steps))
 			}
+			if result.Tags == nil {
+				t.Error("Tags should be initialized")
+			}
+			if len(result.Tags) != 0 {
+				t.Errorf("Tags should be empty initially, got %d items", len(result.Tags))
+			}
 		})
 	}
 }
@@ -400,6 +406,50 @@ func TestTestResult_SetGroupParam(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestTestResult_AddTags(t *testing.T) {
+	t.Run("single call with multiple tags", func(t *testing.T) {
+		tr := NewTestResult("Test")
+		tr.AddTags("smoke", "regression")
+
+		if len(tr.Tags) != 2 {
+			t.Fatalf("Expected 2 tags, got %d", len(tr.Tags))
+		}
+		if tr.Tags[0] != "smoke" || tr.Tags[1] != "regression" {
+			t.Errorf("Tags: got %v, want [smoke regression]", tr.Tags)
+		}
+	})
+
+	t.Run("accumulation across calls", func(t *testing.T) {
+		tr := NewTestResult("Test")
+		tr.AddTags("smoke")
+		tr.AddTags("regression")
+
+		if len(tr.Tags) != 2 {
+			t.Fatalf("Expected 2 tags, got %d", len(tr.Tags))
+		}
+		if tr.Tags[0] != "smoke" || tr.Tags[1] != "regression" {
+			t.Errorf("Tags: got %v, want [smoke regression]", tr.Tags)
+		}
+	})
+
+	t.Run("empty tags", func(t *testing.T) {
+		tr := NewTestResult("Test")
+		tr.AddTags()
+
+		if len(tr.Tags) != 0 {
+			t.Errorf("Expected 0 tags after empty AddTags, got %d", len(tr.Tags))
+		}
+	})
+
+	t.Run("no tags added", func(t *testing.T) {
+		tr := NewTestResult("Test")
+
+		if len(tr.Tags) != 0 {
+			t.Errorf("Expected 0 tags initially, got %d", len(tr.Tags))
+		}
+	})
 }
 
 func TestTestResult_AddAttachment(t *testing.T) {

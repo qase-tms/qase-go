@@ -108,3 +108,15 @@ func TestWithMultipleQaseIDs(t *testing.T) {
 			qase.True(t, true)
 		})
 }
+
+func TestWithTags(t *testing.T) {
+	qase.Test(t,
+		qase.TestMetadata{
+			Title:   "Test with tags",
+			QaseIDs: []int64{114},
+			Tags:    []string{"smoke", "regression"},
+		},
+		func() {
+			qase.True(t, true)
+		})
+}

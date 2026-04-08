@@ -1,3 +1,16 @@
+# qase-go@1.2.0
+
+## What's new
+
+Added Tags support for test cases:
+
+- Added `Tags` field to `TestMetadata` struct for specifying tags on tests
+- Added `Tags` field to `TestResult` domain model with `AddTags()` method
+- Tags are sent to Qase API as comma-separated string in `ResultCreateFields.Tags`
+- Support for tags via `Fields` map (`Fields: map[string]string{"tags": "smoke,regression"}`)
+- Duplicate tags are automatically removed
+- Updated API v2 client dependency to v1.1.7
+
 # qase-go@1.1.0
 
 ## What's new

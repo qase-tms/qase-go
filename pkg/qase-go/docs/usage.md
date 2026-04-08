@@ -240,13 +240,16 @@ type TestMetadata struct {
     
     // Metadata fields
     Fields map[string]string // Custom fields
-    
+
     // Parameters
     Parameters map[string]string // Test parameters
-    
+
     // Group parameters
     GroupParameters map[string]string // Group parameters
-    
+
+    // Tags
+    Tags []string // Tags to assign to the test case
+
     // Test control
     Ignore bool // Skip this test
 }
@@ -287,6 +290,45 @@ qase.Step(t, qase.StepMetadata{
 })
 ```
 
+### Tags
+
+Use the `Tags` field to assign tags to test cases. Tags are sent as a comma-separated string to the Qase API.
+
+```go
+// Basic tags usage
+qase.Test(t, qase.TestMetadata{
+    Title: "Login Test",
+    Tags:  []string{"smoke", "regression"},
+}, func() {
+    // Test logic
+})
+
+// Tags with other metadata
+qase.Test(t, qase.TestMetadata{
+    Title:   "Payment Flow",
+    QaseIDs: []int64{101},
+    Suite:   []string{"E-commerce", "Payment"},
+    Tags:    []string{"smoke", "critical"},
+    Fields: map[string]string{
+        "severity": "critical",
+    },
+}, func() {
+    // Test logic
+})
+
+// Alternative: tags via Fields map
+qase.Test(t, qase.TestMetadata{
+    Title: "Checkout Test",
+    Fields: map[string]string{
+        "tags": "smoke,regression",
+    },
+}, func() {
+    // Test logic
+})
+```
+
+Duplicate tags are automatically removed when sending results to the API.
+
 ### Examples
 
 ```go
@@ -303,6 +345,7 @@ qase.Test(t, qase.TestMetadata{
     Description: "Test user registration with email verification",
     Comment:     "Registration Flow Test",
     Suite:       []string{"Authentication", "Registration"},
+    Tags:        []string{"smoke"},
     Fields: map[string]string{
         "environment": "staging",
         "browser":     "chrome",
