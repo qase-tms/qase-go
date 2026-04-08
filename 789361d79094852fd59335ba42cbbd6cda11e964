@@ -1,0 +1,23 @@
+pkg/qase-go/reporters/file_reporter.go
+  d115ffa36c8bd697 81,404
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "789361d79094852fd59335ba42cbbd6cda11e964",
+  "prompts": {
+    "d115ffa36c8bd697": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a054ca16-ce12-482f-9b3b-d198b51d5913",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Dmitrii Gridnev",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
