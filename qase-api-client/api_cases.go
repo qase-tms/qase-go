@@ -17,6 +17,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 )
 
@@ -1010,7 +1011,15 @@ func (a *CasesAPIService) GetCasesExecute(r ApiGetCasesRequest) (*TestCaseListRe
 		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[type]", r.externalIssuesType, "", "")
 	}
 	if r.externalIssuesIds != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[ids][]", r.externalIssuesIds, "", "csv")
+		t := *r.externalIssuesIds
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[ids][]", s.Index(i).Interface(), "form", "multi")
+			}
+		} else {
+			parameterAddToHeaderOrQuery(localVarQueryParams, "external_issues[ids][]", t, "form", "multi")
+		}
 	}
 	if r.include != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "include", r.include, "", "")
