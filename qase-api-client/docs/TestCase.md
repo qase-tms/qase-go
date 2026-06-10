@@ -16,7 +16,9 @@ Name | Type | Description | Notes
 **Layer** | Pointer to **int32** |  | [optional] 
 **IsFlaky** | Pointer to **int32** |  | [optional] 
 **Behavior** | Pointer to **int32** |  | [optional] 
-**Automation** | Pointer to **int32** |  | [optional] 
+**Automation** | Pointer to **int32** | Deprecated, use &#x60;isManual&#x60; and &#x60;isToBeAutomated&#x60; instead. Encodes the test case automation state as a single integer: &#x60;0&#x60; &#x3D; manual, &#x60;1&#x60; &#x3D; manual planned to be automated, &#x60;2&#x60; &#x3D; automated. | [optional] 
+**IsManual** | Pointer to **int32** | &#x60;1&#x60; if the case is manual, &#x60;0&#x60; if it is automated. Combined with &#x60;isToBeAutomated&#x60;, replaces the deprecated &#x60;automation&#x60; field. | [optional] 
+**IsToBeAutomated** | Pointer to **int32** | &#x60;1&#x60; if a manual case is planned to be automated, &#x60;0&#x60; otherwise. Only meaningful when &#x60;isManual &#x3D; 1&#x60;; ignored when &#x60;isManual &#x3D; 0&#x60;. | [optional] 
 **Status** | Pointer to **int32** |  | [optional] 
 **MilestoneId** | Pointer to **NullableInt64** |  | [optional] 
 **SuiteId** | Pointer to **NullableInt64** |  | [optional] 
@@ -409,6 +411,56 @@ SetAutomation sets Automation field to given value.
 `func (o *TestCase) HasAutomation() bool`
 
 HasAutomation returns a boolean if a field has been set.
+
+### GetIsManual
+
+`func (o *TestCase) GetIsManual() int32`
+
+GetIsManual returns the IsManual field if non-nil, zero value otherwise.
+
+### GetIsManualOk
+
+`func (o *TestCase) GetIsManualOk() (*int32, bool)`
+
+GetIsManualOk returns a tuple with the IsManual field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsManual
+
+`func (o *TestCase) SetIsManual(v int32)`
+
+SetIsManual sets IsManual field to given value.
+
+### HasIsManual
+
+`func (o *TestCase) HasIsManual() bool`
+
+HasIsManual returns a boolean if a field has been set.
+
+### GetIsToBeAutomated
+
+`func (o *TestCase) GetIsToBeAutomated() int32`
+
+GetIsToBeAutomated returns the IsToBeAutomated field if non-nil, zero value otherwise.
+
+### GetIsToBeAutomatedOk
+
+`func (o *TestCase) GetIsToBeAutomatedOk() (*int32, bool)`
+
+GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsToBeAutomated
+
+`func (o *TestCase) SetIsToBeAutomated(v int32)`
+
+SetIsToBeAutomated sets IsToBeAutomated field to given value.
+
+### HasIsToBeAutomated
+
+`func (o *TestCase) HasIsToBeAutomated() bool`
+
+HasIsToBeAutomated returns a boolean if a field has been set.
 
 ### GetStatus
 

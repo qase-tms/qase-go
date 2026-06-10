@@ -34,8 +34,14 @@ type TestCasebulkCasesInner struct {
 	IsFlaky        *int32  `json:"is_flaky,omitempty"`
 	SuiteId        *int64  `json:"suite_id,omitempty"`
 	MilestoneId    *int64  `json:"milestone_id,omitempty"`
-	Automation     *int32  `json:"automation,omitempty"`
-	Status         *int32  `json:"status,omitempty"`
+	// Deprecated, use `isManual` and `isToBeAutomated` instead. Encodes the test case automation state as a single integer: `0` = manual, `1` = manual planned to be automated, `2` = automated. If both `automation` and `isManual`/`isToBeAutomated` are provided, `isManual` and `isToBeAutomated` take precedence.
+	// Deprecated
+	Automation *int32 `json:"automation,omitempty"`
+	// `1` if the case is manual, `0` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
+	IsManual *int32 `json:"isManual,omitempty"`
+	// `1` if a manual case is planned to be automated, `0` otherwise. Only meaningful when `isManual = 1`; ignored when `isManual = 0`.
+	IsToBeAutomated *int32 `json:"isToBeAutomated,omitempty"`
+	Status          *int32 `json:"status,omitempty"`
 	// Determines the format of the steps field. When \"classic\", steps use the standard action/expected_result/data format. When \"gherkin\", steps use the {value: \"Given...\\nWhen...\\nThen...\"} format.
 	StepsType *string `json:"steps_type,omitempty"`
 	// A list of Attachment hashes.
@@ -46,7 +52,7 @@ type TestCasebulkCasesInner struct {
 	// Deprecated
 	Params     map[string][]string       `json:"params,omitempty"`
 	Parameters []TestCaseParameterCreate `json:"parameters,omitempty"`
-	// A map of custom fields values (id => value)
+	// Custom field values keyed by the field's project-scoped `internal_id` (see `GET /custom_field`). Values are always **scalar strings**; arrays, objects or non-scalars are rejected.  | Field type           | Value format                              | Example                 | |----------------------|-------------------------------------------|-------------------------| | `string`, `text`     | Plain string                              | `\"hello\"`               | | `number`             | Numeric string                            | `\"42\"`                  | | `url`                | Valid URL                                 | `\"https://qase.io\"`     | | `datetime`           | Absolute date (ISO 8601 recommended)      | `\"2026-04-29T15:00:00Z\"`| | `selectbox`, `radio` | Option `id` as string                     | `\"1\"`                   | | `multiselect`        | Comma-separated option `id`s (no spaces)  | `\"1,2,3\"`               | | `checkbox`           | `\"1\"` to check, `\"\"` to uncheck           | `\"1\"`                   | | `user`               | Team member `internal_id` as string       | `\"42\"`                  |  Validation: all required fields without a default value must be present and non-empty; unknown `internal_id`s are rejected; option-based values must reference an existing option.  Note: a `required` checkbox without a default cannot be unchecked via the API — set a default or clear `required` in workspace settings.
 	CustomField *map[string]string `json:"custom_field,omitempty"`
 	CreatedAt   *string            `json:"created_at,omitempty"`
 	UpdatedAt   *string            `json:"updated_at,omitempty"`
@@ -454,6 +460,7 @@ func (o *TestCasebulkCasesInner) SetMilestoneId(v int64) {
 }
 
 // GetAutomation returns the Automation field value if set, zero value otherwise.
+// Deprecated
 func (o *TestCasebulkCasesInner) GetAutomation() int32 {
 	if o == nil || IsNil(o.Automation) {
 		var ret int32
@@ -464,6 +471,7 @@ func (o *TestCasebulkCasesInner) GetAutomation() int32 {
 
 // GetAutomationOk returns a tuple with the Automation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *TestCasebulkCasesInner) GetAutomationOk() (*int32, bool) {
 	if o == nil || IsNil(o.Automation) {
 		return nil, false
@@ -481,8 +489,73 @@ func (o *TestCasebulkCasesInner) HasAutomation() bool {
 }
 
 // SetAutomation gets a reference to the given int32 and assigns it to the Automation field.
+// Deprecated
 func (o *TestCasebulkCasesInner) SetAutomation(v int32) {
 	o.Automation = &v
+}
+
+// GetIsManual returns the IsManual field value if set, zero value otherwise.
+func (o *TestCasebulkCasesInner) GetIsManual() int32 {
+	if o == nil || IsNil(o.IsManual) {
+		var ret int32
+		return ret
+	}
+	return *o.IsManual
+}
+
+// GetIsManualOk returns a tuple with the IsManual field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCasebulkCasesInner) GetIsManualOk() (*int32, bool) {
+	if o == nil || IsNil(o.IsManual) {
+		return nil, false
+	}
+	return o.IsManual, true
+}
+
+// HasIsManual returns a boolean if a field has been set.
+func (o *TestCasebulkCasesInner) HasIsManual() bool {
+	if o != nil && !IsNil(o.IsManual) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsManual gets a reference to the given int32 and assigns it to the IsManual field.
+func (o *TestCasebulkCasesInner) SetIsManual(v int32) {
+	o.IsManual = &v
+}
+
+// GetIsToBeAutomated returns the IsToBeAutomated field value if set, zero value otherwise.
+func (o *TestCasebulkCasesInner) GetIsToBeAutomated() int32 {
+	if o == nil || IsNil(o.IsToBeAutomated) {
+		var ret int32
+		return ret
+	}
+	return *o.IsToBeAutomated
+}
+
+// GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCasebulkCasesInner) GetIsToBeAutomatedOk() (*int32, bool) {
+	if o == nil || IsNil(o.IsToBeAutomated) {
+		return nil, false
+	}
+	return o.IsToBeAutomated, true
+}
+
+// HasIsToBeAutomated returns a boolean if a field has been set.
+func (o *TestCasebulkCasesInner) HasIsToBeAutomated() bool {
+	if o != nil && !IsNil(o.IsToBeAutomated) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsToBeAutomated gets a reference to the given int32 and assigns it to the IsToBeAutomated field.
+func (o *TestCasebulkCasesInner) SetIsToBeAutomated(v int32) {
+	o.IsToBeAutomated = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
@@ -899,6 +972,12 @@ func (o TestCasebulkCasesInner) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Automation) {
 		toSerialize["automation"] = o.Automation
+	}
+	if !IsNil(o.IsManual) {
+		toSerialize["isManual"] = o.IsManual
+	}
+	if !IsNil(o.IsToBeAutomated) {
+		toSerialize["isToBeAutomated"] = o.IsToBeAutomated
 	}
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
