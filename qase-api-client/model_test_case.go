@@ -21,26 +21,32 @@ var _ MappedNullable = &TestCase{}
 
 // TestCase struct for TestCase
 type TestCase struct {
-	Id             *int64             `json:"id,omitempty"`
-	Position       *int32             `json:"position,omitempty"`
-	Title          *string            `json:"title,omitempty"`
-	Description    NullableString     `json:"description,omitempty"`
-	Preconditions  NullableString     `json:"preconditions,omitempty"`
-	Postconditions NullableString     `json:"postconditions,omitempty"`
-	Severity       *int32             `json:"severity,omitempty"`
-	Priority       *int32             `json:"priority,omitempty"`
-	Type           *int32             `json:"type,omitempty"`
-	Layer          *int32             `json:"layer,omitempty"`
-	IsFlaky        *int32             `json:"is_flaky,omitempty"`
-	Behavior       *int32             `json:"behavior,omitempty"`
-	Automation     *int32             `json:"automation,omitempty"`
-	Status         *int32             `json:"status,omitempty"`
-	MilestoneId    NullableInt64      `json:"milestone_id,omitempty"`
-	SuiteId        NullableInt64      `json:"suite_id,omitempty"`
-	CustomFields   []CustomFieldValue `json:"custom_fields,omitempty"`
-	Attachments    []Attachment       `json:"attachments,omitempty"`
-	StepsType      NullableString     `json:"steps_type,omitempty"`
-	Steps          []TestStep         `json:"steps,omitempty"`
+	Id             *int64         `json:"id,omitempty"`
+	Position       *int32         `json:"position,omitempty"`
+	Title          *string        `json:"title,omitempty"`
+	Description    NullableString `json:"description,omitempty"`
+	Preconditions  NullableString `json:"preconditions,omitempty"`
+	Postconditions NullableString `json:"postconditions,omitempty"`
+	Severity       *int32         `json:"severity,omitempty"`
+	Priority       *int32         `json:"priority,omitempty"`
+	Type           *int32         `json:"type,omitempty"`
+	Layer          *int32         `json:"layer,omitempty"`
+	IsFlaky        *int32         `json:"is_flaky,omitempty"`
+	Behavior       *int32         `json:"behavior,omitempty"`
+	// Deprecated, use `isManual` and `isToBeAutomated` instead. Encodes the test case automation state as a single integer: `0` = manual, `1` = manual planned to be automated, `2` = automated.
+	// Deprecated
+	Automation *int32 `json:"automation,omitempty"`
+	// `1` if the case is manual, `0` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
+	IsManual *int32 `json:"isManual,omitempty"`
+	// `1` if a manual case is planned to be automated, `0` otherwise. Only meaningful when `isManual = 1`; ignored when `isManual = 0`.
+	IsToBeAutomated *int32             `json:"isToBeAutomated,omitempty"`
+	Status          *int32             `json:"status,omitempty"`
+	MilestoneId     NullableInt64      `json:"milestone_id,omitempty"`
+	SuiteId         NullableInt64      `json:"suite_id,omitempty"`
+	CustomFields    []CustomFieldValue `json:"custom_fields,omitempty"`
+	Attachments     []Attachment       `json:"attachments,omitempty"`
+	StepsType       NullableString     `json:"steps_type,omitempty"`
+	Steps           []TestStep         `json:"steps,omitempty"`
 	// Deprecated
 	Params     *TestCaseParams     `json:"params,omitempty"`
 	Parameters []TestCaseParameter `json:"parameters,omitempty"`
@@ -497,6 +503,7 @@ func (o *TestCase) SetBehavior(v int32) {
 }
 
 // GetAutomation returns the Automation field value if set, zero value otherwise.
+// Deprecated
 func (o *TestCase) GetAutomation() int32 {
 	if o == nil || IsNil(o.Automation) {
 		var ret int32
@@ -507,6 +514,7 @@ func (o *TestCase) GetAutomation() int32 {
 
 // GetAutomationOk returns a tuple with the Automation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *TestCase) GetAutomationOk() (*int32, bool) {
 	if o == nil || IsNil(o.Automation) {
 		return nil, false
@@ -524,8 +532,73 @@ func (o *TestCase) HasAutomation() bool {
 }
 
 // SetAutomation gets a reference to the given int32 and assigns it to the Automation field.
+// Deprecated
 func (o *TestCase) SetAutomation(v int32) {
 	o.Automation = &v
+}
+
+// GetIsManual returns the IsManual field value if set, zero value otherwise.
+func (o *TestCase) GetIsManual() int32 {
+	if o == nil || IsNil(o.IsManual) {
+		var ret int32
+		return ret
+	}
+	return *o.IsManual
+}
+
+// GetIsManualOk returns a tuple with the IsManual field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCase) GetIsManualOk() (*int32, bool) {
+	if o == nil || IsNil(o.IsManual) {
+		return nil, false
+	}
+	return o.IsManual, true
+}
+
+// HasIsManual returns a boolean if a field has been set.
+func (o *TestCase) HasIsManual() bool {
+	if o != nil && !IsNil(o.IsManual) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsManual gets a reference to the given int32 and assigns it to the IsManual field.
+func (o *TestCase) SetIsManual(v int32) {
+	o.IsManual = &v
+}
+
+// GetIsToBeAutomated returns the IsToBeAutomated field value if set, zero value otherwise.
+func (o *TestCase) GetIsToBeAutomated() int32 {
+	if o == nil || IsNil(o.IsToBeAutomated) {
+		var ret int32
+		return ret
+	}
+	return *o.IsToBeAutomated
+}
+
+// GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestCase) GetIsToBeAutomatedOk() (*int32, bool) {
+	if o == nil || IsNil(o.IsToBeAutomated) {
+		return nil, false
+	}
+	return o.IsToBeAutomated, true
+}
+
+// HasIsToBeAutomated returns a boolean if a field has been set.
+func (o *TestCase) HasIsToBeAutomated() bool {
+	if o != nil && !IsNil(o.IsToBeAutomated) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsToBeAutomated gets a reference to the given int32 and assigns it to the IsToBeAutomated field.
+func (o *TestCase) SetIsToBeAutomated(v int32) {
+	o.IsToBeAutomated = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
@@ -1211,6 +1284,12 @@ func (o TestCase) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Automation) {
 		toSerialize["automation"] = o.Automation
+	}
+	if !IsNil(o.IsManual) {
+		toSerialize["isManual"] = o.IsManual
+	}
+	if !IsNil(o.IsToBeAutomated) {
+		toSerialize["isToBeAutomated"] = o.IsToBeAutomated
 	}
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status

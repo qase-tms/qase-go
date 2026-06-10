@@ -16,7 +16,9 @@ Name | Type | Description | Notes
 **IsFlaky** | Pointer to **int32** |  | [optional] 
 **SuiteId** | Pointer to **int64** |  | [optional] 
 **MilestoneId** | Pointer to **int64** |  | [optional] 
-**Automation** | Pointer to **int32** |  | [optional] 
+**Automation** | Pointer to **int32** | Deprecated, use &#x60;isManual&#x60; and &#x60;isToBeAutomated&#x60; instead. Encodes the test case automation state as a single integer: &#x60;0&#x60; &#x3D; manual, &#x60;1&#x60; &#x3D; manual planned to be automated, &#x60;2&#x60; &#x3D; automated. If both &#x60;automation&#x60; and &#x60;isManual&#x60;/&#x60;isToBeAutomated&#x60; are provided, &#x60;isManual&#x60; and &#x60;isToBeAutomated&#x60; take precedence. | [optional] 
+**IsManual** | Pointer to **int32** | &#x60;1&#x60; if the case is manual, &#x60;0&#x60; if it is automated. Combined with &#x60;isToBeAutomated&#x60;, replaces the deprecated &#x60;automation&#x60; field. | [optional] 
+**IsToBeAutomated** | Pointer to **int32** | &#x60;1&#x60; if a manual case is planned to be automated, &#x60;0&#x60; otherwise. Only meaningful when &#x60;isManual &#x3D; 1&#x60;; ignored when &#x60;isManual &#x3D; 0&#x60;. | [optional] 
 **Status** | Pointer to **int32** |  | [optional] 
 **StepsType** | Pointer to **string** | Determines the format of the steps field. When \&quot;classic\&quot;, steps use the standard action/expected_result/data format. When \&quot;gherkin\&quot;, steps use the {value: \&quot;Given...\\nWhen...\\nThen...\&quot;} format. | [optional] [default to "classic"]
 **Attachments** | Pointer to **[]string** | A list of Attachment hashes. | [optional] 
@@ -24,7 +26,7 @@ Name | Type | Description | Notes
 **Tags** | Pointer to **[]string** |  | [optional] 
 **Params** | Pointer to **map[string][]string** | Deprecated, use &#x60;parameters&#x60; instead. | [optional] 
 **Parameters** | Pointer to [**[]TestCaseParameterCreate**](TestCaseParameterCreate.md) |  | [optional] 
-**CustomField** | Pointer to **map[string]string** | A map of custom fields values (id &#x3D;&gt; value) | [optional] 
+**CustomField** | Pointer to **map[string]string** | Custom field values keyed by the field&#39;s project-scoped &#x60;internal_id&#x60; (see &#x60;GET /custom_field&#x60;). Values are always **scalar strings**; arrays, objects or non-scalars are rejected.  | Field type           | Value format                              | Example                 | |----------------------|-------------------------------------------|-------------------------| | &#x60;string&#x60;, &#x60;text&#x60;     | Plain string                              | &#x60;\&quot;hello\&quot;&#x60;               | | &#x60;number&#x60;             | Numeric string                            | &#x60;\&quot;42\&quot;&#x60;                  | | &#x60;url&#x60;                | Valid URL                                 | &#x60;\&quot;https://qase.io\&quot;&#x60;     | | &#x60;datetime&#x60;           | Absolute date (ISO 8601 recommended)      | &#x60;\&quot;2026-04-29T15:00:00Z\&quot;&#x60;| | &#x60;selectbox&#x60;, &#x60;radio&#x60; | Option &#x60;id&#x60; as string                     | &#x60;\&quot;1\&quot;&#x60;                   | | &#x60;multiselect&#x60;        | Comma-separated option &#x60;id&#x60;s (no spaces)  | &#x60;\&quot;1,2,3\&quot;&#x60;               | | &#x60;checkbox&#x60;           | &#x60;\&quot;1\&quot;&#x60; to check, &#x60;\&quot;\&quot;&#x60; to uncheck           | &#x60;\&quot;1\&quot;&#x60;                   | | &#x60;user&#x60;               | Team member &#x60;internal_id&#x60; as string       | &#x60;\&quot;42\&quot;&#x60;                  |  Validation: all required fields without a default value must be present and non-empty; unknown &#x60;internal_id&#x60;s are rejected; option-based values must reference an existing option.  Note: a &#x60;required&#x60; checkbox without a default cannot be unchecked via the API — set a default or clear &#x60;required&#x60; in workspace settings.  | [optional] 
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
 **Id** | Pointer to **NullableInt32** |  | [optional] 
@@ -367,6 +369,56 @@ SetAutomation sets Automation field to given value.
 `func (o *TestCasebulkCasesInner) HasAutomation() bool`
 
 HasAutomation returns a boolean if a field has been set.
+
+### GetIsManual
+
+`func (o *TestCasebulkCasesInner) GetIsManual() int32`
+
+GetIsManual returns the IsManual field if non-nil, zero value otherwise.
+
+### GetIsManualOk
+
+`func (o *TestCasebulkCasesInner) GetIsManualOk() (*int32, bool)`
+
+GetIsManualOk returns a tuple with the IsManual field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsManual
+
+`func (o *TestCasebulkCasesInner) SetIsManual(v int32)`
+
+SetIsManual sets IsManual field to given value.
+
+### HasIsManual
+
+`func (o *TestCasebulkCasesInner) HasIsManual() bool`
+
+HasIsManual returns a boolean if a field has been set.
+
+### GetIsToBeAutomated
+
+`func (o *TestCasebulkCasesInner) GetIsToBeAutomated() int32`
+
+GetIsToBeAutomated returns the IsToBeAutomated field if non-nil, zero value otherwise.
+
+### GetIsToBeAutomatedOk
+
+`func (o *TestCasebulkCasesInner) GetIsToBeAutomatedOk() (*int32, bool)`
+
+GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIsToBeAutomated
+
+`func (o *TestCasebulkCasesInner) SetIsToBeAutomated(v int32)`
+
+SetIsToBeAutomated sets IsToBeAutomated field to given value.
+
+### HasIsToBeAutomated
+
+`func (o *TestCasebulkCasesInner) HasIsToBeAutomated() bool`
+
+HasIsToBeAutomated returns a boolean if a field has been set.
 
 ### GetStatus
 
