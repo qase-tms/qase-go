@@ -23,10 +23,18 @@ type TestStepResult struct {
 	// 1 - passed, 2 - failed, 3 - blocked, 5 - skipped, 7 - in_progress
 	Status *int32 `json:"status,omitempty"`
 	// Deprecated
-	Position    *int32       `json:"position,omitempty"`
-	Attachments []Attachment `json:"attachments,omitempty"`
-	// Nested steps results will be here. The same structure is used for them for them.
-	Steps []map[string]interface{} `json:"steps,omitempty"`
+	Position *int32 `json:"position,omitempty"`
+	// Comment left for the step.
+	Comment *string `json:"comment,omitempty"`
+	// Unix timestamp of the step start time.
+	StartTime NullableInt64 `json:"start_time,omitempty"`
+	// Unix timestamp of the step end time.
+	EndTime NullableInt64 `json:"end_time,omitempty"`
+	// Step duration in milliseconds.
+	DurationMs  NullableInt64 `json:"duration_ms,omitempty"`
+	Attachments []Attachment  `json:"attachments,omitempty"`
+	// Nested steps results will be here. The same structure is used for them.
+	Steps []TestStepResult `json:"steps,omitempty"`
 }
 
 // NewTestStepResult instantiates a new TestStepResult object
@@ -113,6 +121,167 @@ func (o *TestStepResult) SetPosition(v int32) {
 	o.Position = &v
 }
 
+// GetComment returns the Comment field value if set, zero value otherwise.
+func (o *TestStepResult) GetComment() string {
+	if o == nil || IsNil(o.Comment) {
+		var ret string
+		return ret
+	}
+	return *o.Comment
+}
+
+// GetCommentOk returns a tuple with the Comment field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestStepResult) GetCommentOk() (*string, bool) {
+	if o == nil || IsNil(o.Comment) {
+		return nil, false
+	}
+	return o.Comment, true
+}
+
+// HasComment returns a boolean if a field has been set.
+func (o *TestStepResult) HasComment() bool {
+	if o != nil && !IsNil(o.Comment) {
+		return true
+	}
+
+	return false
+}
+
+// SetComment gets a reference to the given string and assigns it to the Comment field.
+func (o *TestStepResult) SetComment(v string) {
+	o.Comment = &v
+}
+
+// GetStartTime returns the StartTime field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *TestStepResult) GetStartTime() int64 {
+	if o == nil || IsNil(o.StartTime.Get()) {
+		var ret int64
+		return ret
+	}
+	return *o.StartTime.Get()
+}
+
+// GetStartTimeOk returns a tuple with the StartTime field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TestStepResult) GetStartTimeOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.StartTime.Get(), o.StartTime.IsSet()
+}
+
+// HasStartTime returns a boolean if a field has been set.
+func (o *TestStepResult) HasStartTime() bool {
+	if o != nil && o.StartTime.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetStartTime gets a reference to the given NullableInt64 and assigns it to the StartTime field.
+func (o *TestStepResult) SetStartTime(v int64) {
+	o.StartTime.Set(&v)
+}
+
+// SetStartTimeNil sets the value for StartTime to be an explicit nil
+func (o *TestStepResult) SetStartTimeNil() {
+	o.StartTime.Set(nil)
+}
+
+// UnsetStartTime ensures that no value is present for StartTime, not even an explicit nil
+func (o *TestStepResult) UnsetStartTime() {
+	o.StartTime.Unset()
+}
+
+// GetEndTime returns the EndTime field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *TestStepResult) GetEndTime() int64 {
+	if o == nil || IsNil(o.EndTime.Get()) {
+		var ret int64
+		return ret
+	}
+	return *o.EndTime.Get()
+}
+
+// GetEndTimeOk returns a tuple with the EndTime field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TestStepResult) GetEndTimeOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.EndTime.Get(), o.EndTime.IsSet()
+}
+
+// HasEndTime returns a boolean if a field has been set.
+func (o *TestStepResult) HasEndTime() bool {
+	if o != nil && o.EndTime.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetEndTime gets a reference to the given NullableInt64 and assigns it to the EndTime field.
+func (o *TestStepResult) SetEndTime(v int64) {
+	o.EndTime.Set(&v)
+}
+
+// SetEndTimeNil sets the value for EndTime to be an explicit nil
+func (o *TestStepResult) SetEndTimeNil() {
+	o.EndTime.Set(nil)
+}
+
+// UnsetEndTime ensures that no value is present for EndTime, not even an explicit nil
+func (o *TestStepResult) UnsetEndTime() {
+	o.EndTime.Unset()
+}
+
+// GetDurationMs returns the DurationMs field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *TestStepResult) GetDurationMs() int64 {
+	if o == nil || IsNil(o.DurationMs.Get()) {
+		var ret int64
+		return ret
+	}
+	return *o.DurationMs.Get()
+}
+
+// GetDurationMsOk returns a tuple with the DurationMs field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TestStepResult) GetDurationMsOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.DurationMs.Get(), o.DurationMs.IsSet()
+}
+
+// HasDurationMs returns a boolean if a field has been set.
+func (o *TestStepResult) HasDurationMs() bool {
+	if o != nil && o.DurationMs.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetDurationMs gets a reference to the given NullableInt64 and assigns it to the DurationMs field.
+func (o *TestStepResult) SetDurationMs(v int64) {
+	o.DurationMs.Set(&v)
+}
+
+// SetDurationMsNil sets the value for DurationMs to be an explicit nil
+func (o *TestStepResult) SetDurationMsNil() {
+	o.DurationMs.Set(nil)
+}
+
+// UnsetDurationMs ensures that no value is present for DurationMs, not even an explicit nil
+func (o *TestStepResult) UnsetDurationMs() {
+	o.DurationMs.Unset()
+}
+
 // GetAttachments returns the Attachments field value if set, zero value otherwise.
 func (o *TestStepResult) GetAttachments() []Attachment {
 	if o == nil || IsNil(o.Attachments) {
@@ -146,9 +315,9 @@ func (o *TestStepResult) SetAttachments(v []Attachment) {
 }
 
 // GetSteps returns the Steps field value if set, zero value otherwise.
-func (o *TestStepResult) GetSteps() []map[string]interface{} {
+func (o *TestStepResult) GetSteps() []TestStepResult {
 	if o == nil || IsNil(o.Steps) {
-		var ret []map[string]interface{}
+		var ret []TestStepResult
 		return ret
 	}
 	return o.Steps
@@ -156,7 +325,7 @@ func (o *TestStepResult) GetSteps() []map[string]interface{} {
 
 // GetStepsOk returns a tuple with the Steps field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepResult) GetStepsOk() ([]map[string]interface{}, bool) {
+func (o *TestStepResult) GetStepsOk() ([]TestStepResult, bool) {
 	if o == nil || IsNil(o.Steps) {
 		return nil, false
 	}
@@ -172,8 +341,8 @@ func (o *TestStepResult) HasSteps() bool {
 	return false
 }
 
-// SetSteps gets a reference to the given []map[string]interface{} and assigns it to the Steps field.
-func (o *TestStepResult) SetSteps(v []map[string]interface{}) {
+// SetSteps gets a reference to the given []TestStepResult and assigns it to the Steps field.
+func (o *TestStepResult) SetSteps(v []TestStepResult) {
 	o.Steps = v
 }
 
@@ -192,6 +361,18 @@ func (o TestStepResult) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Position) {
 		toSerialize["position"] = o.Position
+	}
+	if !IsNil(o.Comment) {
+		toSerialize["comment"] = o.Comment
+	}
+	if o.StartTime.IsSet() {
+		toSerialize["start_time"] = o.StartTime.Get()
+	}
+	if o.EndTime.IsSet() {
+		toSerialize["end_time"] = o.EndTime.Get()
+	}
+	if o.DurationMs.IsSet() {
+		toSerialize["duration_ms"] = o.DurationMs.Get()
 	}
 	if !IsNil(o.Attachments) {
 		toSerialize["attachments"] = o.Attachments
