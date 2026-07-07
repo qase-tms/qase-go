@@ -36,10 +36,10 @@ type TestCase struct {
 	// Deprecated, use `isManual` and `isToBeAutomated` instead. Encodes the test case automation state as a single integer: `0` = manual, `1` = manual planned to be automated, `2` = automated.
 	// Deprecated
 	Automation *int32 `json:"automation,omitempty"`
-	// `1` if the case is manual, `0` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
-	IsManual *int32 `json:"isManual,omitempty"`
-	// `1` if a manual case is planned to be automated, `0` otherwise. Only meaningful when `isManual = 1`; ignored when `isManual = 0`.
-	IsToBeAutomated *int32             `json:"isToBeAutomated,omitempty"`
+	// `true` if the case is manual, `false` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
+	IsManual *bool `json:"isManual,omitempty"`
+	// `true` if a manual case is planned to be automated, `false` otherwise. Only meaningful when `isManual` is `true`; ignored when `isManual` is `false`.
+	IsToBeAutomated *bool              `json:"isToBeAutomated,omitempty"`
 	Status          *int32             `json:"status,omitempty"`
 	MilestoneId     NullableInt64      `json:"milestone_id,omitempty"`
 	SuiteId         NullableInt64      `json:"suite_id,omitempty"`
@@ -538,9 +538,9 @@ func (o *TestCase) SetAutomation(v int32) {
 }
 
 // GetIsManual returns the IsManual field value if set, zero value otherwise.
-func (o *TestCase) GetIsManual() int32 {
+func (o *TestCase) GetIsManual() bool {
 	if o == nil || IsNil(o.IsManual) {
-		var ret int32
+		var ret bool
 		return ret
 	}
 	return *o.IsManual
@@ -548,7 +548,7 @@ func (o *TestCase) GetIsManual() int32 {
 
 // GetIsManualOk returns a tuple with the IsManual field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestCase) GetIsManualOk() (*int32, bool) {
+func (o *TestCase) GetIsManualOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsManual) {
 		return nil, false
 	}
@@ -564,15 +564,15 @@ func (o *TestCase) HasIsManual() bool {
 	return false
 }
 
-// SetIsManual gets a reference to the given int32 and assigns it to the IsManual field.
-func (o *TestCase) SetIsManual(v int32) {
+// SetIsManual gets a reference to the given bool and assigns it to the IsManual field.
+func (o *TestCase) SetIsManual(v bool) {
 	o.IsManual = &v
 }
 
 // GetIsToBeAutomated returns the IsToBeAutomated field value if set, zero value otherwise.
-func (o *TestCase) GetIsToBeAutomated() int32 {
+func (o *TestCase) GetIsToBeAutomated() bool {
 	if o == nil || IsNil(o.IsToBeAutomated) {
-		var ret int32
+		var ret bool
 		return ret
 	}
 	return *o.IsToBeAutomated
@@ -580,7 +580,7 @@ func (o *TestCase) GetIsToBeAutomated() int32 {
 
 // GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestCase) GetIsToBeAutomatedOk() (*int32, bool) {
+func (o *TestCase) GetIsToBeAutomatedOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsToBeAutomated) {
 		return nil, false
 	}
@@ -596,8 +596,8 @@ func (o *TestCase) HasIsToBeAutomated() bool {
 	return false
 }
 
-// SetIsToBeAutomated gets a reference to the given int32 and assigns it to the IsToBeAutomated field.
-func (o *TestCase) SetIsToBeAutomated(v int32) {
+// SetIsToBeAutomated gets a reference to the given bool and assigns it to the IsToBeAutomated field.
+func (o *TestCase) SetIsToBeAutomated(v bool) {
 	o.IsToBeAutomated = &v
 }
 

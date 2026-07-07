@@ -37,10 +37,10 @@ type TestCasebulkCasesInner struct {
 	// Deprecated, use `isManual` and `isToBeAutomated` instead. Encodes the test case automation state as a single integer: `0` = manual, `1` = manual planned to be automated, `2` = automated. If both `automation` and `isManual`/`isToBeAutomated` are provided, `isManual` and `isToBeAutomated` take precedence.
 	// Deprecated
 	Automation *int32 `json:"automation,omitempty"`
-	// `1` if the case is manual, `0` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
-	IsManual *int32 `json:"isManual,omitempty"`
-	// `1` if a manual case is planned to be automated, `0` otherwise. Only meaningful when `isManual = 1`; ignored when `isManual = 0`.
-	IsToBeAutomated *int32 `json:"isToBeAutomated,omitempty"`
+	// `true` if the case is manual, `false` if it is automated. Combined with `isToBeAutomated`, replaces the deprecated `automation` field.
+	IsManual *bool `json:"isManual,omitempty"`
+	// `true` if a manual case is planned to be automated, `false` otherwise. Only meaningful when `isManual` is `true`; ignored when `isManual` is `false`.
+	IsToBeAutomated *bool  `json:"isToBeAutomated,omitempty"`
 	Status          *int32 `json:"status,omitempty"`
 	// Determines the format of the steps field. When \"classic\", steps use the standard action/expected_result/data format. When \"gherkin\", steps use the {value: \"Given...\\nWhen...\\nThen...\"} format.
 	StepsType *string `json:"steps_type,omitempty"`
@@ -495,9 +495,9 @@ func (o *TestCasebulkCasesInner) SetAutomation(v int32) {
 }
 
 // GetIsManual returns the IsManual field value if set, zero value otherwise.
-func (o *TestCasebulkCasesInner) GetIsManual() int32 {
+func (o *TestCasebulkCasesInner) GetIsManual() bool {
 	if o == nil || IsNil(o.IsManual) {
-		var ret int32
+		var ret bool
 		return ret
 	}
 	return *o.IsManual
@@ -505,7 +505,7 @@ func (o *TestCasebulkCasesInner) GetIsManual() int32 {
 
 // GetIsManualOk returns a tuple with the IsManual field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestCasebulkCasesInner) GetIsManualOk() (*int32, bool) {
+func (o *TestCasebulkCasesInner) GetIsManualOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsManual) {
 		return nil, false
 	}
@@ -521,15 +521,15 @@ func (o *TestCasebulkCasesInner) HasIsManual() bool {
 	return false
 }
 
-// SetIsManual gets a reference to the given int32 and assigns it to the IsManual field.
-func (o *TestCasebulkCasesInner) SetIsManual(v int32) {
+// SetIsManual gets a reference to the given bool and assigns it to the IsManual field.
+func (o *TestCasebulkCasesInner) SetIsManual(v bool) {
 	o.IsManual = &v
 }
 
 // GetIsToBeAutomated returns the IsToBeAutomated field value if set, zero value otherwise.
-func (o *TestCasebulkCasesInner) GetIsToBeAutomated() int32 {
+func (o *TestCasebulkCasesInner) GetIsToBeAutomated() bool {
 	if o == nil || IsNil(o.IsToBeAutomated) {
-		var ret int32
+		var ret bool
 		return ret
 	}
 	return *o.IsToBeAutomated
@@ -537,7 +537,7 @@ func (o *TestCasebulkCasesInner) GetIsToBeAutomated() int32 {
 
 // GetIsToBeAutomatedOk returns a tuple with the IsToBeAutomated field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestCasebulkCasesInner) GetIsToBeAutomatedOk() (*int32, bool) {
+func (o *TestCasebulkCasesInner) GetIsToBeAutomatedOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsToBeAutomated) {
 		return nil, false
 	}
@@ -553,8 +553,8 @@ func (o *TestCasebulkCasesInner) HasIsToBeAutomated() bool {
 	return false
 }
 
-// SetIsToBeAutomated gets a reference to the given int32 and assigns it to the IsToBeAutomated field.
-func (o *TestCasebulkCasesInner) SetIsToBeAutomated(v int32) {
+// SetIsToBeAutomated gets a reference to the given bool and assigns it to the IsToBeAutomated field.
+func (o *TestCasebulkCasesInner) SetIsToBeAutomated(v bool) {
 	o.IsToBeAutomated = &v
 }
 
