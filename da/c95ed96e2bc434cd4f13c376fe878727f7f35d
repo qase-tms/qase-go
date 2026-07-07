@@ -1,0 +1,33 @@
+qase-api-client/docs/TestCase.md
+  s_9949356bb8136a::t_6dc763bd9a189a 20-21,417,423,430,442,448,455
+qase-api-client/docs/TestCaseCreate.md
+  s_9949356bb8136a::t_ef05d63633e85d 20-21,374,380,387,399,405,412
+qase-api-client/docs/TestCaseUpdate.md
+  s_9949356bb8136a::t_bd802dd8cd1dfa 20-21,377,383,390,402,408,415
+qase-api-client/docs/TestCasebulkCasesInner.md
+  s_9949356bb8136a::t_5ea24bb67aea94 20-21,375,381,388,400,406,413
+qase-api-client/model_test_case.go
+  s_9949356bb8136a::t_534b03f492516d 39-42,541,543,551,567-568,573,575,583,599-600
+qase-api-client/model_test_case_create.go
+  s_9949356bb8136a::t_ee49dd02c91466 40-43,497,499,507,523-524,529,531,539,555-556
+qase-api-client/model_test_case_update.go
+  s_9949356bb8136a::t_6202af13c5ae13 38-41,498,500,508,524-525,530,532,540,556-557
+qase-api-client/model_test_casebulk_cases_inner.go
+  s_9949356bb8136a::t_b764dcdbfc1c59 40-43,498,500,508,524-525,530,532,540,556-557
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "dac95ed96e2bc434cd4f13c376fe878727f7f35d",
+  "prompts": {},
+  "sessions": {
+    "s_9949356bb8136a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9373579e-1e0e-4b20-a586-4931f56494e8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Dmitrii Gridnev <dgridnev@qase.io>"
+    }
+  }
+}
