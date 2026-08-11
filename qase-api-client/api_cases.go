@@ -876,25 +876,25 @@ func (r ApiGetCasesRequest) Priority(priority string) ApiGetCasesRequest {
 	return r
 }
 
-// A list of type values separated by comma. Possible values: other, functional smoke, regression, security, usability, performance, acceptance
+// A list of type values separated by comma. Possible values: other, functional, smoke, regression, security, usability, performance, acceptance
 func (r ApiGetCasesRequest) Type_(type_ string) ApiGetCasesRequest {
 	r.type_ = &type_
 	return r
 }
 
-// A list of behavior values separated by comma. Possible values: undefined, positive negative, destructive
+// A list of behavior values separated by comma. Possible values: undefined, positive, negative, destructive
 func (r ApiGetCasesRequest) Behavior(behavior string) ApiGetCasesRequest {
 	r.behavior = &behavior
 	return r
 }
 
-// A list of values separated by comma. Possible values: is-not-automated, automated to-be-automated
+// A list of values separated by comma. Possible values: is-not-automated, automated, to-be-automated
 func (r ApiGetCasesRequest) Automation(automation string) ApiGetCasesRequest {
 	r.automation = &automation
 	return r
 }
 
-// A list of values separated by comma. Possible values: actual, draft deprecated
+// A list of values separated by comma. Possible values: actual, draft, deprecated
 func (r ApiGetCasesRequest) Status(status string) ApiGetCasesRequest {
 	r.status = &status
 	return r
