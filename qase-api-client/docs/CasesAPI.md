@@ -474,10 +474,10 @@ func main() {
 	suiteId := int32(56) // int32 | ID of test suite. (optional)
 	severity := "severity_example" // string | A list of severity values separated by comma. Possible values: undefined, blocker, critical, major, normal, minor, trivial  (optional)
 	priority := "priority_example" // string | A list of priority values separated by comma. Possible values: undefined, high, medium, low  (optional)
-	type_ := "type__example" // string | A list of type values separated by comma. Possible values: other, functional smoke, regression, security, usability, performance, acceptance  (optional)
-	behavior := "behavior_example" // string | A list of behavior values separated by comma. Possible values: undefined, positive negative, destructive  (optional)
-	automation := "automation_example" // string | A list of values separated by comma. Possible values: is-not-automated, automated to-be-automated  (optional)
-	status := "status_example" // string | A list of values separated by comma. Possible values: actual, draft deprecated  (optional)
+	type_ := "type__example" // string | A list of type values separated by comma. Possible values: other, functional, smoke, regression, security, usability, performance, acceptance  (optional)
+	behavior := "behavior_example" // string | A list of behavior values separated by comma. Possible values: undefined, positive, negative, destructive  (optional)
+	automation := "automation_example" // string | A list of values separated by comma. Possible values: is-not-automated, automated, to-be-automated  (optional)
+	status := "status_example" // string | A list of values separated by comma. Possible values: actual, draft, deprecated  (optional)
 	externalIssuesType := "externalIssuesType_example" // string | An integration type.  (optional)
 	externalIssuesIds := []string{"Inner_example"} // []string | A list of issue IDs. (optional)
 	include := "include_example" // string | A list of entities to include in response separated by comma. Possible values: external_issues.  (optional)
@@ -517,10 +517,10 @@ Name | Type | Description  | Notes
  **suiteId** | **int32** | ID of test suite. | 
  **severity** | **string** | A list of severity values separated by comma. Possible values: undefined, blocker, critical, major, normal, minor, trivial  | 
  **priority** | **string** | A list of priority values separated by comma. Possible values: undefined, high, medium, low  | 
- **type_** | **string** | A list of type values separated by comma. Possible values: other, functional smoke, regression, security, usability, performance, acceptance  | 
- **behavior** | **string** | A list of behavior values separated by comma. Possible values: undefined, positive negative, destructive  | 
- **automation** | **string** | A list of values separated by comma. Possible values: is-not-automated, automated to-be-automated  | 
- **status** | **string** | A list of values separated by comma. Possible values: actual, draft deprecated  | 
+ **type_** | **string** | A list of type values separated by comma. Possible values: other, functional, smoke, regression, security, usability, performance, acceptance  | 
+ **behavior** | **string** | A list of behavior values separated by comma. Possible values: undefined, positive, negative, destructive  | 
+ **automation** | **string** | A list of values separated by comma. Possible values: is-not-automated, automated, to-be-automated  | 
+ **status** | **string** | A list of values separated by comma. Possible values: actual, draft, deprecated  | 
  **externalIssuesType** | **string** | An integration type.  | 
  **externalIssuesIds** | **[]string** | A list of issue IDs. | 
  **include** | **string** | A list of entities to include in response separated by comma. Possible values: external_issues.  | 

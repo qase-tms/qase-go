@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Action** | Pointer to **string** | Step action text. Used for classic steps. For gherkin steps, use the \&quot;value\&quot; property instead. | [optional] 
+**Shared** | Pointer to **string** | Hash of an existing shared step to insert at this position. | [optional] 
 **ExpectedResult** | Pointer to **string** |  | [optional] 
 **Data** | Pointer to **string** |  | [optional] 
 **Value** | Pointer to **string** | Gherkin scenario text. Used when steps_type is \&quot;gherkin\&quot;. Example: \&quot;Given a user exists\\nWhen they log in\\nThen they see the dashboard\&quot; | [optional] 
@@ -55,6 +56,31 @@ SetAction sets Action field to given value.
 `func (o *TestStepCreate) HasAction() bool`
 
 HasAction returns a boolean if a field has been set.
+
+### GetShared
+
+`func (o *TestStepCreate) GetShared() string`
+
+GetShared returns the Shared field if non-nil, zero value otherwise.
+
+### GetSharedOk
+
+`func (o *TestStepCreate) GetSharedOk() (*string, bool)`
+
+GetSharedOk returns a tuple with the Shared field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetShared
+
+`func (o *TestStepCreate) SetShared(v string)`
+
+SetShared sets Shared field to given value.
+
+### HasShared
+
+`func (o *TestStepCreate) HasShared() bool`
+
+HasShared returns a boolean if a field has been set.
 
 ### GetExpectedResult
 

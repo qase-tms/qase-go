@@ -21,7 +21,9 @@ var _ MappedNullable = &TestStepCreate{}
 // TestStepCreate struct for TestStepCreate
 type TestStepCreate struct {
 	// Step action text. Used for classic steps. For gherkin steps, use the \"value\" property instead.
-	Action         *string `json:"action,omitempty"`
+	Action *string `json:"action,omitempty"`
+	// Hash of an existing shared step to insert at this position.
+	Shared         *string `json:"shared,omitempty"`
 	ExpectedResult *string `json:"expected_result,omitempty"`
 	Data           *string `json:"data,omitempty"`
 	// Gherkin scenario text. Used when steps_type is \"gherkin\". Example: \"Given a user exists\\nWhen they log in\\nThen they see the dashboard\"
@@ -81,6 +83,38 @@ func (o *TestStepCreate) HasAction() bool {
 // SetAction gets a reference to the given string and assigns it to the Action field.
 func (o *TestStepCreate) SetAction(v string) {
 	o.Action = &v
+}
+
+// GetShared returns the Shared field value if set, zero value otherwise.
+func (o *TestStepCreate) GetShared() string {
+	if o == nil || IsNil(o.Shared) {
+		var ret string
+		return ret
+	}
+	return *o.Shared
+}
+
+// GetSharedOk returns a tuple with the Shared field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TestStepCreate) GetSharedOk() (*string, bool) {
+	if o == nil || IsNil(o.Shared) {
+		return nil, false
+	}
+	return o.Shared, true
+}
+
+// HasShared returns a boolean if a field has been set.
+func (o *TestStepCreate) HasShared() bool {
+	if o != nil && !IsNil(o.Shared) {
+		return true
+	}
+
+	return false
+}
+
+// SetShared gets a reference to the given string and assigns it to the Shared field.
+func (o *TestStepCreate) SetShared(v string) {
+	o.Shared = &v
 }
 
 // GetExpectedResult returns the ExpectedResult field value if set, zero value otherwise.
@@ -290,6 +324,9 @@ func (o TestStepCreate) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Action) {
 		toSerialize["action"] = o.Action
+	}
+	if !IsNil(o.Shared) {
+		toSerialize["shared"] = o.Shared
 	}
 	if !IsNil(o.ExpectedResult) {
 		toSerialize["expected_result"] = o.ExpectedResult
