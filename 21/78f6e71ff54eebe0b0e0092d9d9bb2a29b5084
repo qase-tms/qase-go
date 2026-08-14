@@ -1,0 +1,19 @@
+qase-api-client/test/api_authors_test.go
+  s_4e6213ef90d85e::t_dd6f9c1f715d8a 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2178f6e71ff54eebe0b0e0092d9d9bb2a29b5084",
+  "prompts": {},
+  "sessions": {
+    "s_4e6213ef90d85e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "94dad6f4-0859-498c-813b-bb752472d9ce",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dmitrii Gridnev <dgridnev@qase.io>"
+    }
+  }
+}
