@@ -1,0 +1,105 @@
+qase-api-client/api_authors.go
+  s_4e6213ef90d85e::t_3c84d15f339a2a 29,42,45
+qase-api-client/api_reviews.go
+  s_12aaa6e0f40c67::t_9a338c8c788c8f 1-910
+qase-api-client/client.go
+  s_4e6213ef90d85e::t_aee2c13ab24cae 76-77,120
+qase-api-client/docs/Author.md
+  s_4e6213ef90d85e::t_f7f88ead79acf6 8-9,60-84
+qase-api-client/docs/AuthorsAPI.md
+  s_4e6213ef90d85e::t_80bd6ff107831d 33,53
+qase-api-client/docs/Review.md
+  s_12aaa6e0f40c67::t_83f9a2b1fbbc42 1-294
+qase-api-client/docs/ReviewBulk.md
+  s_12aaa6e0f40c67::t_7e51e3f3b47e52 1-51
+qase-api-client/docs/ReviewBulkResponse.md
+  s_12aaa6e0f40c67::t_d8f5a3da8825d1 1-82
+qase-api-client/docs/ReviewBulkResponseAllOfResult.md
+  s_12aaa6e0f40c67::t_37312f41d403e3 1-56
+qase-api-client/docs/ReviewBulkResponseAllOfResultItems.md
+  s_12aaa6e0f40c67::t_491833582d73e9 1-138
+qase-api-client/docs/ReviewCaseData.md
+  s_12aaa6e0f40c67::t_8161ab671bb336 1-742
+qase-api-client/docs/ReviewCreate.md
+  s_12aaa6e0f40c67::t_e9d7d504543c9e 1-113
+qase-api-client/docs/ReviewDetailed.md
+  s_12aaa6e0f40c67::t_9f587d1fe0a8e5 1-330
+qase-api-client/docs/ReviewListResponse.md
+  s_12aaa6e0f40c67::t_c9ca41b70662c0 1-82
+qase-api-client/docs/ReviewListResponseAllOfResult.md
+  s_12aaa6e0f40c67::t_ccc0ea22109a76 1-134
+qase-api-client/docs/ReviewProposedCase.md
+  s_12aaa6e0f40c67::t_6af8646b98a2bb 1-732
+qase-api-client/docs/ReviewProposedStep.md
+  s_12aaa6e0f40c67::t_e62f14b0ceb58b 1-212
+qase-api-client/docs/ReviewResponse.md
+  s_12aaa6e0f40c67::t_c90aa18f63f8f4 1-82
+qase-api-client/docs/ReviewReviewersInner.md
+  s_12aaa6e0f40c67::t_43868ad3c82c88 1-92
+qase-api-client/docs/ReviewStepData.md
+  s_12aaa6e0f40c67::t_1a5ba909b2b8a7 1-212
+qase-api-client/docs/ReviewUpdate.md
+  s_12aaa6e0f40c67::t_4113eb4de34a29 1-82
+qase-api-client/docs/ReviewsAPI.md
+  s_12aaa6e0f40c67::t_a53f77eab6a8ff 1-465
+qase-api-client/model_author.go
+  s_4e6213ef90d85e::t_70104232fc4e96 23-27,85-116,118,129,147,325-327
+qase-api-client/model_review.go
+  s_12aaa6e0f40c67::t_1d5bb5013ec9e8 1-451
+qase-api-client/model_review_bulk.go
+  s_12aaa6e0f40c67::t_4101734d91c033 1-158
+qase-api-client/model_review_bulk_response.go
+  s_12aaa6e0f40c67::t_20b87b3e3c9959 1-161
+qase-api-client/model_review_bulk_response_all_of_result.go
+  s_12aaa6e0f40c67::t_1474defb12b253 1-126
+qase-api-client/model_review_bulk_response_all_of_result_items.go
+  s_12aaa6e0f40c67::t_299831b1ce7302 1-233
+qase-api-client/model_review_case_data.go
+  s_12aaa6e0f40c67::t_fe024d491496c4 1-1022
+qase-api-client/model_review_create.go
+  s_12aaa6e0f40c67::t_af5ecbdc06d49f 1-243
+qase-api-client/model_review_detailed.go
+  s_12aaa6e0f40c67::t_3c6a2b24f6d8fd 1-489
+qase-api-client/model_review_list_response.go
+  s_12aaa6e0f40c67::t_ac33172c8b723d 1-161
+qase-api-client/model_review_list_response_all_of_result.go
+  s_12aaa6e0f40c67::t_62237a7445ace2 1-233
+qase-api-client/model_review_proposed_case.go
+  s_12aaa6e0f40c67::t_9d514d75300472 1-1017
+qase-api-client/model_review_proposed_step.go
+  s_12aaa6e0f40c67::t_0c635334f63464 1-346
+qase-api-client/model_review_response.go
+  s_12aaa6e0f40c67::t_89620e24a20682 1-161
+qase-api-client/model_review_reviewers_inner.go
+  s_12aaa6e0f40c67::t_1cecdeccc4eb05 1-173
+qase-api-client/model_review_step_data.go
+  s_12aaa6e0f40c67::t_f0c7e8418f22f6 1-346
+qase-api-client/model_review_update.go
+  s_12aaa6e0f40c67::t_5c1706675fd43c 1-163
+qase-api-client/model_test_step_create.go
+  s_4e6213ef90d85e::t_5667011284e91f 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "65cf681e96b288fb6dd63e1a675cab0af98233fe",
+  "prompts": {},
+  "sessions": {
+    "s_12aaa6e0f40c67": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "494f1553-645e-411a-9dee-c376f4be7009",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dmitrii Gridnev <dgridnev@qase.io>"
+    },
+    "s_4e6213ef90d85e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "94dad6f4-0859-498c-813b-bb752472d9ce",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dmitrii Gridnev <dgridnev@qase.io>"
+    }
+  }
+}
