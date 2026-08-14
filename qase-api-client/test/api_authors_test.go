@@ -27,7 +27,7 @@ func Test_openapi_AuthorsAPIService(t *testing.T) {
 
 		t.Skip("skip test") // remove to run test
 
-		var id int32
+		var id string
 
 		resp, httpRes, err := apiClient.AuthorsAPI.GetAuthor(context.Background(), id).Execute()
 
