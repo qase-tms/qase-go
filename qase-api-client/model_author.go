@@ -20,7 +20,11 @@ var _ MappedNullable = &Author{}
 
 // Author struct for Author
 type Author struct {
-	Id         *int64  `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
+	// Author UUID. Use it to reference the author in other API methods.
+	Uuid *string `json:"uuid,omitempty"`
+	// Deprecated, use `uuid` instead.
+	// Deprecated
 	AuthorId   *int64  `json:"author_id,omitempty"`
 	EntityType *string `json:"entity_type,omitempty"`
 	EntityId   *int64  `json:"entity_id,omitempty"`
@@ -78,7 +82,40 @@ func (o *Author) SetId(v int64) {
 	o.Id = &v
 }
 
+// GetUuid returns the Uuid field value if set, zero value otherwise.
+func (o *Author) GetUuid() string {
+	if o == nil || IsNil(o.Uuid) {
+		var ret string
+		return ret
+	}
+	return *o.Uuid
+}
+
+// GetUuidOk returns a tuple with the Uuid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Author) GetUuidOk() (*string, bool) {
+	if o == nil || IsNil(o.Uuid) {
+		return nil, false
+	}
+	return o.Uuid, true
+}
+
+// HasUuid returns a boolean if a field has been set.
+func (o *Author) HasUuid() bool {
+	if o != nil && !IsNil(o.Uuid) {
+		return true
+	}
+
+	return false
+}
+
+// SetUuid gets a reference to the given string and assigns it to the Uuid field.
+func (o *Author) SetUuid(v string) {
+	o.Uuid = &v
+}
+
 // GetAuthorId returns the AuthorId field value if set, zero value otherwise.
+// Deprecated
 func (o *Author) GetAuthorId() int64 {
 	if o == nil || IsNil(o.AuthorId) {
 		var ret int64
@@ -89,6 +126,7 @@ func (o *Author) GetAuthorId() int64 {
 
 // GetAuthorIdOk returns a tuple with the AuthorId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// Deprecated
 func (o *Author) GetAuthorIdOk() (*int64, bool) {
 	if o == nil || IsNil(o.AuthorId) {
 		return nil, false
@@ -106,6 +144,7 @@ func (o *Author) HasAuthorId() bool {
 }
 
 // SetAuthorId gets a reference to the given int64 and assigns it to the AuthorId field.
+// Deprecated
 func (o *Author) SetAuthorId(v int64) {
 	o.AuthorId = &v
 }
@@ -282,6 +321,9 @@ func (o Author) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
+	}
+	if !IsNil(o.Uuid) {
+		toSerialize["uuid"] = o.Uuid
 	}
 	if !IsNil(o.AuthorId) {
 		toSerialize["author_id"] = o.AuthorId

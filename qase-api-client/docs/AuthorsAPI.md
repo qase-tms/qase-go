@@ -30,7 +30,7 @@ import (
 )
 
 func main() {
-	id := int32(56) // int32 | Identifier.
+	id := "id_example" // string | Author UUID, or the deprecated integer author ID.
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -50,7 +50,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **int32** | Identifier. | 
+**id** | **string** | Author UUID, or the deprecated integer author ID. | 
 
 ### Other Parameters
 

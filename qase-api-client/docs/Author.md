@@ -5,7 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **int64** |  | [optional] 
-**AuthorId** | Pointer to **int64** |  | [optional] 
+**Uuid** | Pointer to **string** | Author UUID. Use it to reference the author in other API methods. | [optional] 
+**AuthorId** | Pointer to **int64** | Deprecated, use &#x60;uuid&#x60; instead. | [optional] 
 **EntityType** | Pointer to **string** |  | [optional] 
 **EntityId** | Pointer to **int64** |  | [optional] 
 **Email** | Pointer to **string** |  | [optional] 
@@ -55,6 +56,31 @@ SetId sets Id field to given value.
 `func (o *Author) HasId() bool`
 
 HasId returns a boolean if a field has been set.
+
+### GetUuid
+
+`func (o *Author) GetUuid() string`
+
+GetUuid returns the Uuid field if non-nil, zero value otherwise.
+
+### GetUuidOk
+
+`func (o *Author) GetUuidOk() (*string, bool)`
+
+GetUuidOk returns a tuple with the Uuid field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUuid
+
+`func (o *Author) SetUuid(v string)`
+
+SetUuid sets Uuid field to given value.
+
+### HasUuid
+
+`func (o *Author) HasUuid() bool`
+
+HasUuid returns a boolean if a field has been set.
 
 ### GetAuthorId
 

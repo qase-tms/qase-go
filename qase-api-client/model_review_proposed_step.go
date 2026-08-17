@@ -15,46 +15,44 @@ import (
 	"encoding/json"
 )
 
-// checks if the TestStepCreate type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TestStepCreate{}
+// checks if the ReviewProposedStep type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ReviewProposedStep{}
 
-// TestStepCreate When `steps_type` is `gherkin` only the scenario text is read from a step. A non-empty `expected_result`, `data`, `attachments`, `shared` or nested `steps` is rejected, and so is sending the scenario in `value` and `action` at once.
-type TestStepCreate struct {
+// ReviewProposedStep struct for ReviewProposedStep
+type ReviewProposedStep struct {
 	// Step action text. Used for classic steps. For gherkin steps, use the \"value\" property instead.
-	Action *string `json:"action,omitempty"`
-	// Hash of an existing shared step to insert at this position.
-	Shared         *string `json:"shared,omitempty"`
+	Action         *string `json:"action,omitempty"`
 	ExpectedResult *string `json:"expected_result,omitempty"`
 	Data           *string `json:"data,omitempty"`
-	// Gherkin scenario text. Used when steps_type is \"gherkin\". Example: \"Given a user exists\\nWhen they log in\\nThen they see the dashboard\"
+	// Gherkin scenario text. Used when steps_type is \"gherkin\".
 	Value *string `json:"value,omitempty"`
-	// Deprecated
-	Position *int32 `json:"position,omitempty"`
+	// Hash of the referenced shared step.
+	Shared *string `json:"shared,omitempty"`
 	// A list of Attachment hashes.
 	Attachments []string `json:"attachments,omitempty"`
-	// Nested steps may be passed here. Use same structure for them.
+	// Nested steps use the same structure.
 	Steps []map[string]interface{} `json:"steps,omitempty"`
 }
 
-// NewTestStepCreate instantiates a new TestStepCreate object
+// NewReviewProposedStep instantiates a new ReviewProposedStep object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTestStepCreate() *TestStepCreate {
-	this := TestStepCreate{}
+func NewReviewProposedStep() *ReviewProposedStep {
+	this := ReviewProposedStep{}
 	return &this
 }
 
-// NewTestStepCreateWithDefaults instantiates a new TestStepCreate object
+// NewReviewProposedStepWithDefaults instantiates a new ReviewProposedStep object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTestStepCreateWithDefaults() *TestStepCreate {
-	this := TestStepCreate{}
+func NewReviewProposedStepWithDefaults() *ReviewProposedStep {
+	this := ReviewProposedStep{}
 	return &this
 }
 
 // GetAction returns the Action field value if set, zero value otherwise.
-func (o *TestStepCreate) GetAction() string {
+func (o *ReviewProposedStep) GetAction() string {
 	if o == nil || IsNil(o.Action) {
 		var ret string
 		return ret
@@ -64,7 +62,7 @@ func (o *TestStepCreate) GetAction() string {
 
 // GetActionOk returns a tuple with the Action field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetActionOk() (*string, bool) {
+func (o *ReviewProposedStep) GetActionOk() (*string, bool) {
 	if o == nil || IsNil(o.Action) {
 		return nil, false
 	}
@@ -72,7 +70,7 @@ func (o *TestStepCreate) GetActionOk() (*string, bool) {
 }
 
 // HasAction returns a boolean if a field has been set.
-func (o *TestStepCreate) HasAction() bool {
+func (o *ReviewProposedStep) HasAction() bool {
 	if o != nil && !IsNil(o.Action) {
 		return true
 	}
@@ -81,44 +79,12 @@ func (o *TestStepCreate) HasAction() bool {
 }
 
 // SetAction gets a reference to the given string and assigns it to the Action field.
-func (o *TestStepCreate) SetAction(v string) {
+func (o *ReviewProposedStep) SetAction(v string) {
 	o.Action = &v
 }
 
-// GetShared returns the Shared field value if set, zero value otherwise.
-func (o *TestStepCreate) GetShared() string {
-	if o == nil || IsNil(o.Shared) {
-		var ret string
-		return ret
-	}
-	return *o.Shared
-}
-
-// GetSharedOk returns a tuple with the Shared field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetSharedOk() (*string, bool) {
-	if o == nil || IsNil(o.Shared) {
-		return nil, false
-	}
-	return o.Shared, true
-}
-
-// HasShared returns a boolean if a field has been set.
-func (o *TestStepCreate) HasShared() bool {
-	if o != nil && !IsNil(o.Shared) {
-		return true
-	}
-
-	return false
-}
-
-// SetShared gets a reference to the given string and assigns it to the Shared field.
-func (o *TestStepCreate) SetShared(v string) {
-	o.Shared = &v
-}
-
 // GetExpectedResult returns the ExpectedResult field value if set, zero value otherwise.
-func (o *TestStepCreate) GetExpectedResult() string {
+func (o *ReviewProposedStep) GetExpectedResult() string {
 	if o == nil || IsNil(o.ExpectedResult) {
 		var ret string
 		return ret
@@ -128,7 +94,7 @@ func (o *TestStepCreate) GetExpectedResult() string {
 
 // GetExpectedResultOk returns a tuple with the ExpectedResult field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetExpectedResultOk() (*string, bool) {
+func (o *ReviewProposedStep) GetExpectedResultOk() (*string, bool) {
 	if o == nil || IsNil(o.ExpectedResult) {
 		return nil, false
 	}
@@ -136,7 +102,7 @@ func (o *TestStepCreate) GetExpectedResultOk() (*string, bool) {
 }
 
 // HasExpectedResult returns a boolean if a field has been set.
-func (o *TestStepCreate) HasExpectedResult() bool {
+func (o *ReviewProposedStep) HasExpectedResult() bool {
 	if o != nil && !IsNil(o.ExpectedResult) {
 		return true
 	}
@@ -145,12 +111,12 @@ func (o *TestStepCreate) HasExpectedResult() bool {
 }
 
 // SetExpectedResult gets a reference to the given string and assigns it to the ExpectedResult field.
-func (o *TestStepCreate) SetExpectedResult(v string) {
+func (o *ReviewProposedStep) SetExpectedResult(v string) {
 	o.ExpectedResult = &v
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *TestStepCreate) GetData() string {
+func (o *ReviewProposedStep) GetData() string {
 	if o == nil || IsNil(o.Data) {
 		var ret string
 		return ret
@@ -160,7 +126,7 @@ func (o *TestStepCreate) GetData() string {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetDataOk() (*string, bool) {
+func (o *ReviewProposedStep) GetDataOk() (*string, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -168,7 +134,7 @@ func (o *TestStepCreate) GetDataOk() (*string, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *TestStepCreate) HasData() bool {
+func (o *ReviewProposedStep) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -177,12 +143,12 @@ func (o *TestStepCreate) HasData() bool {
 }
 
 // SetData gets a reference to the given string and assigns it to the Data field.
-func (o *TestStepCreate) SetData(v string) {
+func (o *ReviewProposedStep) SetData(v string) {
 	o.Data = &v
 }
 
 // GetValue returns the Value field value if set, zero value otherwise.
-func (o *TestStepCreate) GetValue() string {
+func (o *ReviewProposedStep) GetValue() string {
 	if o == nil || IsNil(o.Value) {
 		var ret string
 		return ret
@@ -192,7 +158,7 @@ func (o *TestStepCreate) GetValue() string {
 
 // GetValueOk returns a tuple with the Value field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetValueOk() (*string, bool) {
+func (o *ReviewProposedStep) GetValueOk() (*string, bool) {
 	if o == nil || IsNil(o.Value) {
 		return nil, false
 	}
@@ -200,7 +166,7 @@ func (o *TestStepCreate) GetValueOk() (*string, bool) {
 }
 
 // HasValue returns a boolean if a field has been set.
-func (o *TestStepCreate) HasValue() bool {
+func (o *ReviewProposedStep) HasValue() bool {
 	if o != nil && !IsNil(o.Value) {
 		return true
 	}
@@ -209,47 +175,44 @@ func (o *TestStepCreate) HasValue() bool {
 }
 
 // SetValue gets a reference to the given string and assigns it to the Value field.
-func (o *TestStepCreate) SetValue(v string) {
+func (o *ReviewProposedStep) SetValue(v string) {
 	o.Value = &v
 }
 
-// GetPosition returns the Position field value if set, zero value otherwise.
-// Deprecated
-func (o *TestStepCreate) GetPosition() int32 {
-	if o == nil || IsNil(o.Position) {
-		var ret int32
+// GetShared returns the Shared field value if set, zero value otherwise.
+func (o *ReviewProposedStep) GetShared() string {
+	if o == nil || IsNil(o.Shared) {
+		var ret string
 		return ret
 	}
-	return *o.Position
+	return *o.Shared
 }
 
-// GetPositionOk returns a tuple with the Position field value if set, nil otherwise
+// GetSharedOk returns a tuple with the Shared field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// Deprecated
-func (o *TestStepCreate) GetPositionOk() (*int32, bool) {
-	if o == nil || IsNil(o.Position) {
+func (o *ReviewProposedStep) GetSharedOk() (*string, bool) {
+	if o == nil || IsNil(o.Shared) {
 		return nil, false
 	}
-	return o.Position, true
+	return o.Shared, true
 }
 
-// HasPosition returns a boolean if a field has been set.
-func (o *TestStepCreate) HasPosition() bool {
-	if o != nil && !IsNil(o.Position) {
+// HasShared returns a boolean if a field has been set.
+func (o *ReviewProposedStep) HasShared() bool {
+	if o != nil && !IsNil(o.Shared) {
 		return true
 	}
 
 	return false
 }
 
-// SetPosition gets a reference to the given int32 and assigns it to the Position field.
-// Deprecated
-func (o *TestStepCreate) SetPosition(v int32) {
-	o.Position = &v
+// SetShared gets a reference to the given string and assigns it to the Shared field.
+func (o *ReviewProposedStep) SetShared(v string) {
+	o.Shared = &v
 }
 
 // GetAttachments returns the Attachments field value if set, zero value otherwise.
-func (o *TestStepCreate) GetAttachments() []string {
+func (o *ReviewProposedStep) GetAttachments() []string {
 	if o == nil || IsNil(o.Attachments) {
 		var ret []string
 		return ret
@@ -259,7 +222,7 @@ func (o *TestStepCreate) GetAttachments() []string {
 
 // GetAttachmentsOk returns a tuple with the Attachments field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetAttachmentsOk() ([]string, bool) {
+func (o *ReviewProposedStep) GetAttachmentsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Attachments) {
 		return nil, false
 	}
@@ -267,7 +230,7 @@ func (o *TestStepCreate) GetAttachmentsOk() ([]string, bool) {
 }
 
 // HasAttachments returns a boolean if a field has been set.
-func (o *TestStepCreate) HasAttachments() bool {
+func (o *ReviewProposedStep) HasAttachments() bool {
 	if o != nil && !IsNil(o.Attachments) {
 		return true
 	}
@@ -276,12 +239,12 @@ func (o *TestStepCreate) HasAttachments() bool {
 }
 
 // SetAttachments gets a reference to the given []string and assigns it to the Attachments field.
-func (o *TestStepCreate) SetAttachments(v []string) {
+func (o *ReviewProposedStep) SetAttachments(v []string) {
 	o.Attachments = v
 }
 
 // GetSteps returns the Steps field value if set, zero value otherwise.
-func (o *TestStepCreate) GetSteps() []map[string]interface{} {
+func (o *ReviewProposedStep) GetSteps() []map[string]interface{} {
 	if o == nil || IsNil(o.Steps) {
 		var ret []map[string]interface{}
 		return ret
@@ -291,7 +254,7 @@ func (o *TestStepCreate) GetSteps() []map[string]interface{} {
 
 // GetStepsOk returns a tuple with the Steps field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TestStepCreate) GetStepsOk() ([]map[string]interface{}, bool) {
+func (o *ReviewProposedStep) GetStepsOk() ([]map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Steps) {
 		return nil, false
 	}
@@ -299,7 +262,7 @@ func (o *TestStepCreate) GetStepsOk() ([]map[string]interface{}, bool) {
 }
 
 // HasSteps returns a boolean if a field has been set.
-func (o *TestStepCreate) HasSteps() bool {
+func (o *ReviewProposedStep) HasSteps() bool {
 	if o != nil && !IsNil(o.Steps) {
 		return true
 	}
@@ -308,11 +271,11 @@ func (o *TestStepCreate) HasSteps() bool {
 }
 
 // SetSteps gets a reference to the given []map[string]interface{} and assigns it to the Steps field.
-func (o *TestStepCreate) SetSteps(v []map[string]interface{}) {
+func (o *ReviewProposedStep) SetSteps(v []map[string]interface{}) {
 	o.Steps = v
 }
 
-func (o TestStepCreate) MarshalJSON() ([]byte, error) {
+func (o ReviewProposedStep) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -320,13 +283,10 @@ func (o TestStepCreate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TestStepCreate) ToMap() (map[string]interface{}, error) {
+func (o ReviewProposedStep) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Action) {
 		toSerialize["action"] = o.Action
-	}
-	if !IsNil(o.Shared) {
-		toSerialize["shared"] = o.Shared
 	}
 	if !IsNil(o.ExpectedResult) {
 		toSerialize["expected_result"] = o.ExpectedResult
@@ -337,8 +297,8 @@ func (o TestStepCreate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Value) {
 		toSerialize["value"] = o.Value
 	}
-	if !IsNil(o.Position) {
-		toSerialize["position"] = o.Position
+	if !IsNil(o.Shared) {
+		toSerialize["shared"] = o.Shared
 	}
 	if !IsNil(o.Attachments) {
 		toSerialize["attachments"] = o.Attachments
@@ -349,38 +309,38 @@ func (o TestStepCreate) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableTestStepCreate struct {
-	value *TestStepCreate
+type NullableReviewProposedStep struct {
+	value *ReviewProposedStep
 	isSet bool
 }
 
-func (v NullableTestStepCreate) Get() *TestStepCreate {
+func (v NullableReviewProposedStep) Get() *ReviewProposedStep {
 	return v.value
 }
 
-func (v *NullableTestStepCreate) Set(val *TestStepCreate) {
+func (v *NullableReviewProposedStep) Set(val *ReviewProposedStep) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTestStepCreate) IsSet() bool {
+func (v NullableReviewProposedStep) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTestStepCreate) Unset() {
+func (v *NullableReviewProposedStep) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTestStepCreate(val *TestStepCreate) *NullableTestStepCreate {
-	return &NullableTestStepCreate{value: val, isSet: true}
+func NewNullableReviewProposedStep(val *ReviewProposedStep) *NullableReviewProposedStep {
+	return &NullableReviewProposedStep{value: val, isSet: true}
 }
 
-func (v NullableTestStepCreate) MarshalJSON() ([]byte, error) {
+func (v NullableReviewProposedStep) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTestStepCreate) UnmarshalJSON(src []byte) error {
+func (v *NullableReviewProposedStep) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

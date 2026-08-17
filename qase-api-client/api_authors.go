@@ -26,7 +26,7 @@ type AuthorsAPIService service
 type ApiGetAuthorRequest struct {
 	ctx        context.Context
 	ApiService *AuthorsAPIService
-	id         int32
+	id         string
 }
 
 func (r ApiGetAuthorRequest) Execute() (*AuthorResponse, *http.Response, error) {
@@ -39,10 +39,10 @@ GetAuthor Get a specific author
 This method allows to retrieve a specific author.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Identifier.
+	@param id Author UUID, or the deprecated integer author ID.
 	@return ApiGetAuthorRequest
 */
-func (a *AuthorsAPIService) GetAuthor(ctx context.Context, id int32) ApiGetAuthorRequest {
+func (a *AuthorsAPIService) GetAuthor(ctx context.Context, id string) ApiGetAuthorRequest {
 	return ApiGetAuthorRequest{
 		ApiService: a,
 		ctx:        ctx,
