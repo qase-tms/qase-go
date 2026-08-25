@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **Status** | **string** | Can have the following values passed, failed, blocked, skipped, invalid + custom statuses | 
 **Duration** | Pointer to **NullableInt64** | Duration of the test execution in milliseconds. | [optional] 
 **Stacktrace** | Pointer to **NullableString** |  | [optional] 
+**ErrorContext** | Pointer to **NullableString** | Free-form failure context captured by the reporter. For Playwright this is the content of error-context.md (test info, error details, page snapshot), so it may include rendered page content. Stored verbatim so it can be copied as raw text. Values longer than 262144 characters are silently truncated by Qase and the request still succeeds. Write-only — not returned by the result read endpoints. | [optional] 
 **Thread** | Pointer to **NullableString** |  | [optional] 
 
 ## Methods
@@ -190,6 +191,41 @@ HasStacktrace returns a boolean if a field has been set.
 `func (o *ResultExecution) UnsetStacktrace()`
 
 UnsetStacktrace ensures that no value is present for Stacktrace, not even an explicit nil
+### GetErrorContext
+
+`func (o *ResultExecution) GetErrorContext() string`
+
+GetErrorContext returns the ErrorContext field if non-nil, zero value otherwise.
+
+### GetErrorContextOk
+
+`func (o *ResultExecution) GetErrorContextOk() (*string, bool)`
+
+GetErrorContextOk returns a tuple with the ErrorContext field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetErrorContext
+
+`func (o *ResultExecution) SetErrorContext(v string)`
+
+SetErrorContext sets ErrorContext field to given value.
+
+### HasErrorContext
+
+`func (o *ResultExecution) HasErrorContext() bool`
+
+HasErrorContext returns a boolean if a field has been set.
+
+### SetErrorContextNil
+
+`func (o *ResultExecution) SetErrorContextNil(b bool)`
+
+ SetErrorContextNil sets the value for ErrorContext to be an explicit nil
+
+### UnsetErrorContext
+`func (o *ResultExecution) UnsetErrorContext()`
+
+UnsetErrorContext ensures that no value is present for ErrorContext, not even an explicit nil
 ### GetThread
 
 `func (o *ResultExecution) GetThread() string`

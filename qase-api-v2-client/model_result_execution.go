@@ -31,7 +31,9 @@ type ResultExecution struct {
 	// Duration of the test execution in milliseconds.
 	Duration   NullableInt64  `json:"duration,omitempty"`
 	Stacktrace NullableString `json:"stacktrace,omitempty"`
-	Thread     NullableString `json:"thread,omitempty"`
+	// Free-form failure context captured by the reporter. For Playwright this is the content of error-context.md (test info, error details, page snapshot), so it may include rendered page content. Stored verbatim so it can be copied as raw text. Values longer than 262144 characters are silently truncated by Qase and the request still succeeds. Write-only — not returned by the result read endpoints.
+	ErrorContext NullableString `json:"error_context,omitempty"`
+	Thread       NullableString `json:"thread,omitempty"`
 }
 
 type _ResultExecution ResultExecution
@@ -250,6 +252,49 @@ func (o *ResultExecution) UnsetStacktrace() {
 	o.Stacktrace.Unset()
 }
 
+// GetErrorContext returns the ErrorContext field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResultExecution) GetErrorContext() string {
+	if o == nil || IsNil(o.ErrorContext.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.ErrorContext.Get()
+}
+
+// GetErrorContextOk returns a tuple with the ErrorContext field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResultExecution) GetErrorContextOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.ErrorContext.Get(), o.ErrorContext.IsSet()
+}
+
+// HasErrorContext returns a boolean if a field has been set.
+func (o *ResultExecution) HasErrorContext() bool {
+	if o != nil && o.ErrorContext.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetErrorContext gets a reference to the given NullableString and assigns it to the ErrorContext field.
+func (o *ResultExecution) SetErrorContext(v string) {
+	o.ErrorContext.Set(&v)
+}
+
+// SetErrorContextNil sets the value for ErrorContext to be an explicit nil
+func (o *ResultExecution) SetErrorContextNil() {
+	o.ErrorContext.Set(nil)
+}
+
+// UnsetErrorContext ensures that no value is present for ErrorContext, not even an explicit nil
+func (o *ResultExecution) UnsetErrorContext() {
+	o.ErrorContext.Unset()
+}
+
 // GetThread returns the Thread field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ResultExecution) GetThread() string {
 	if o == nil || IsNil(o.Thread.Get()) {
@@ -315,6 +360,9 @@ func (o ResultExecution) ToMap() (map[string]interface{}, error) {
 	}
 	if o.Stacktrace.IsSet() {
 		toSerialize["stacktrace"] = o.Stacktrace.Get()
+	}
+	if o.ErrorContext.IsSet() {
+		toSerialize["error_context"] = o.ErrorContext.Get()
 	}
 	if o.Thread.IsSet() {
 		toSerialize["thread"] = o.Thread.Get()
