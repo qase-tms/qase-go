@@ -9,10 +9,18 @@ import (
 	"github.com/qase-tms/qase-go/pkg/qase-go/logging"
 )
 
+// resultSender sends test results to Qase. It is the part of the v2 client
+// UnifiedClient depends on, extracted so that batching can be tested without
+// a live API.
+type resultSender interface {
+	SendResult(ctx context.Context, projectCode string, runID int64, result *domain.TestResult) error
+	SendResults(ctx context.Context, projectCode string, runID int64, results []*domain.TestResult) error
+}
+
 // UnifiedClient combines v1 and v2 clients for optimal API usage
 type UnifiedClient struct {
-	v1Client    *V1Client // For run management
-	v2Client    *V2Client // For result uploading
+	v1Client    *V1Client    // For run management
+	v2Client    resultSender // For result uploading
 	config      *config.Config
 	projectCode string
 }
@@ -65,16 +73,20 @@ func NewUnifiedClientWithHostData(cfg *config.Config, hostData *HostData) (*Unif
 	}, nil
 }
 
-// UploadResults uploads test results using v2 API with batching
+// UploadResults uploads test results using v2 API with batching.
+//
+// Results are sent in chunks of at most config.MaxBatchSize: the bulk endpoint
+// rejects larger requests with a non-retryable HTTP 413. The caller's slice is
+// never modified, so results of a failed chunk stay available to it.
 func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results []*domain.TestResult) error {
 	if len(results) == 0 {
 		return nil
 	}
 
-	// Get batch size from config
-	batchSize := c.config.TestOps.Batch.Size
-	if batchSize <= 0 {
-		batchSize = 50 // Default batch size
+	// Get batch size from config, clamped to the limit accepted by the API
+	batchSize := c.config.GetBatchSize()
+	if configured := c.config.TestOps.Batch.Size; configured > batchSize {
+		logging.Warn("Configured batch size %d exceeds the API limit, using %d instead", configured, batchSize)
 	}
 
 	// Track successful and failed uploads
@@ -114,16 +126,14 @@ func (c *UnifiedClient) UploadResults(ctx context.Context, runID int64, results 
 		}
 	}
 
-	// Log summary
+	// Report every lost result: a silent partial upload makes a run look
+	// complete while results are missing
 	if failedUploads > 0 {
-		logging.Debug("Upload summary: %d successful, %d failed", successfulUploads, failedUploads)
-		if successfulUploads == 0 {
-			// If no results were uploaded at all, return error
-			return fmt.Errorf("failed to upload any results: %w", lastError)
-		}
-		// If some results were uploaded successfully, log warning but don't fail
-		logging.Warn("Warning: Some results failed to upload, but test run will continue")
+		logging.Warn("Upload summary: %d of %d results uploaded, %d lost", successfulUploads, len(results), failedUploads)
+		return fmt.Errorf("failed to upload %d of %d test results: %w", failedUploads, len(results), lastError)
 	}
+
+	logging.Debug("Upload summary: %d results uploaded", successfulUploads)
 
 	return nil
 }

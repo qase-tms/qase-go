@@ -100,7 +100,7 @@ func NewConfig() *Config {
 			Defect:  false,
 			Project: "",
 			Batch: BatchConfig{
-				Size: 100,
+				Size: DefaultBatchSize,
 			},
 		},
 	}
@@ -304,6 +304,24 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+// GetBatchSize returns the number of results that may be sent in a single
+// request. The configured value is clamped down to MaxBatchSize, because a
+// larger request is rejected by the API with a non-retryable HTTP 413, and
+// falls back to DefaultBatchSize when it is not a positive number.
+func (c *Config) GetBatchSize() int {
+	size := c.TestOps.Batch.Size
+
+	if size <= 0 {
+		return DefaultBatchSize
+	}
+
+	if size > MaxBatchSize {
+		return MaxBatchSize
+	}
+
+	return size
 }
 
 // GetStatusMapping returns the status mapping configuration
