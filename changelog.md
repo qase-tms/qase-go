@@ -1,3 +1,16 @@
+# qase-go@1.2.1
+
+## What's fixed
+
+Result uploads are no longer rejected or lost silently:
+
+- Batch size is clamped to 200, the maximum the bulk results endpoint accepts — a larger configured value used to make every upload fail with a non-retryable HTTP 413
+- Added `DefaultBatchSize` and `MaxBatchSize` constants and a `Config.GetBatchSize()` accessor that applies the limit
+- Clamping of an oversized `testops.batch.size` / `QASE_TESTOPS_BATCH_SIZE` is reported in the log
+- A partial upload failure now logs how many results were lost and returns an error carrying the same counts, instead of returning `nil` and reporting the number only at debug level
+- Removed the dead fallback to a batch size of 50 that contradicted the documented default of 100
+- Updated API v1 client dependency to v1.2.13 and API v2 client dependency to v1.1.8
+
 # qase-go@1.2.0
 
 ## What's new

@@ -48,3 +48,14 @@ const (
 
 var VALID_STATUSES [6]string = [6]string{STATUS_PASSED, STATUS_FAILED,
 	STATUS_BLOCKED, STATUS_SKIPPED, STATUS_IN_PROGRESS, STATUS_INVALID}
+
+const (
+	// DefaultBatchSize is the number of results sent in a single request when
+	// nothing is configured explicitly.
+	DefaultBatchSize = 100
+
+	// MaxBatchSize is the maximum number of results the bulk results endpoint
+	// accepts in a single request. Anything above it is rejected with HTTP 413,
+	// so configured values are clamped down to this limit.
+	MaxBatchSize = 200
+)

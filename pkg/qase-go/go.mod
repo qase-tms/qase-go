@@ -3,8 +3,8 @@ module github.com/qase-tms/qase-go/pkg/qase-go
 go 1.18
 
 require (
-	github.com/qase-tms/qase-go/qase-api-client v1.2.1
-	github.com/qase-tms/qase-go/qase-api-v2-client v1.1.7
+	github.com/qase-tms/qase-go/qase-api-client v1.2.13
+	github.com/qase-tms/qase-go/qase-api-v2-client v1.1.8
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/mod v0.8.0
 )

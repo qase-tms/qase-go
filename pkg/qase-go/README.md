@@ -196,7 +196,7 @@ go test -v ./...
 | `QASE_TESTOPS_RUN_ID` | Test run ID | - |
 | `QASE_TESTOPS_API_HOST` | API host | `qase.io` |
 | `QASE_TESTOPS_DEFECT` | Auto-create defects for failed tests | `false` |
-| `QASE_TESTOPS_BATCH_SIZE` | Batch size for result uploads | `100` |
+| `QASE_TESTOPS_BATCH_SIZE` | Batch size for result uploads (max `200`, larger values are clamped) | `100` |
 | `QASE_TESTOPS_STATUS_FILTER` | Comma-separated list of statuses to exclude from TestOps | - |
 | `QASE_STATUS_MAPPING` | Status mapping in format "from=to,from2=to2" | - |
 | `QASE_REPORT_DRIVER` | Report driver | `local` |
