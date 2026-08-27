@@ -1,0 +1,21 @@
+changelog.md
+  s_1a3432b7181c4b::t_2b46cf19d6aada 1-13
+pkg/qase-go/domain/domain.go
+  s_1a3432b7181c4b::t_2b46cf19d6aada 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "443156c7db26c7d7062bef5be904cca2538a2de2",
+  "prompts": {},
+  "sessions": {
+    "s_1a3432b7181c4b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "43406796-9ed6-4bf3-8d21-7416898e4c4b",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dmitrii Gridnev <dgridnev@qase.io>"
+    }
+  }
+}
