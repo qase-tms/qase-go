@@ -92,6 +92,8 @@ Create a `qase.config.json` file in your project root:
 }
 ```
 
+If your workspace is on the EU cluster (you open Qase at `app-eu.qase.io`), set `host` to `eu.qase.io` (Go reporter 1.2.2 or later). The default, `qase.io`, is the US cluster.
+
 ### TestMain Setup
 
 Add this to each package to initialize the reporter:
@@ -108,6 +110,7 @@ Or use environment variables:
 ```bash
 export QASE_MODE=testops
 export QASE_TESTOPS_API_TOKEN=your-api-token
+export QASE_TESTOPS_API_HOST=qase.io  # eu.qase.io for the EU cluster
 export QASE_TESTOPS_PROJECT=your-project-code
 export QASE_TESTOPS_RUN_ID=123
 ```
@@ -117,6 +120,8 @@ export QASE_TESTOPS_RUN_ID=123
 **Note**: Make sure you have added `TestMain` to each package before running tests.
 
 **Important**: The reporter does not create or complete test runs automatically. You must specify an existing test run ID in your configuration.
+
+On the EU cluster, use `https://api-eu.qase.io` in place of `https://api.qase.io` in the cURL examples below, and add `--api-host api-eu.qase.io` to the qasectl commands.
 
 #### Creating Test Runs
 
