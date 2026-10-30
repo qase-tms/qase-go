@@ -1,0 +1,21 @@
+pkg/qase-go/README.md
+  s_dc35ea7278288a::t_3ebeeec7989911 95-96,113,124-125
+pkg/qase-go/docs/usage.md
+  s_dc35ea7278288a::t_0ecd581fa6f752 77-78,115,142,594-595
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4c41bb3a8deb6a60d8814c5144f74b11ce8cf54f",
+  "prompts": {},
+  "sessions": {
+    "s_dc35ea7278288a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_dc35ea7278288a",
+        "model": "unknown"
+      },
+      "human_author": "Manju R <cskmnrpt@gmail.com>"
+    }
+  }
+}
