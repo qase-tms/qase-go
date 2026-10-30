@@ -1,3 +1,12 @@
+# qase-go@1.2.2
+
+## What's fixed
+
+A non-default `testops.api.host` / `QASE_TESTOPS_API_HOST` now reaches the right Qase cluster:
+
+- `eu.qase.io` resolves to `https://api-eu.qase.io/v1` and `/v2`, and an enterprise host such as `example.qase.io` to `https://api-example.qase.io/v1` and `/v2`, as in the other Qase reporters. Previously the reporter called `https://api.<host>` — a hostname that does not exist, without the API version in the path
+- `ClientConfig.BaseURL` is now the API origin without a version (e.g. `https://api-eu.qase.io`); `NewV1Client` and `NewV2Client` append `/v1` and `/v2` themselves
+
 # qase-go@1.2.1
 
 ## What's fixed

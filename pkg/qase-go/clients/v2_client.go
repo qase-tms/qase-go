@@ -24,10 +24,9 @@ func NewV2Client(config ClientConfig) (*V2Client, error) {
 	cfg := api_v2_client.NewConfiguration()
 
 	if config.BaseURL != "" {
-		// Override default base URL if provided
 		cfg.Servers = api_v2_client.ServerConfigurations{
 			{
-				URL:         config.BaseURL,
+				URL:         versionedServerURL(config.BaseURL, "v2"),
 				Description: "Custom API server",
 			},
 		}

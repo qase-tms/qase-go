@@ -22,10 +22,9 @@ func NewV1Client(config ClientConfig) (*V1Client, error) {
 	cfg := api_v1_client.NewConfiguration()
 
 	if config.BaseURL != "" {
-		// Set the base URL for the API client
 		cfg.Servers = api_v1_client.ServerConfigurations{
 			{
-				URL:         config.BaseURL,
+				URL:         versionedServerURL(config.BaseURL, "v1"),
 				Description: "Custom API server",
 			},
 		}

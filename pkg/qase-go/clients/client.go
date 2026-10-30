@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/qase-tms/qase-go/pkg/qase-go/config"
 	"github.com/qase-tms/qase-go/pkg/qase-go/domain"
@@ -31,7 +32,8 @@ type RunInfo struct {
 
 // ClientConfig contains configuration for API clients
 type ClientConfig struct {
-	// BaseURL is the Qase API base URL (optional, defaults will be used)
+	// BaseURL is the Qase API origin without a version, e.g. https://api-eu.qase.io;
+	// the v1 and v2 clients append /v1 and /v2. Empty means https://api.qase.io.
 	BaseURL string
 	
 	// APIToken is the Qase API token
@@ -73,10 +75,15 @@ func NewClientFromConfig(cfg *config.Config, useAPIv2 bool) (Client, error) {
 	return NewClient(clientConfig)
 }
 
-// buildAPIBaseURL constructs the API base URL from host
+// buildAPIBaseURL maps testops.api.host to the API origin. Non-default clusters
+// are served from api-<host> (eu.qase.io -> api-eu.qase.io), as in the other reporters.
 func buildAPIBaseURL(host string) string {
 	if host == "" || host == "qase.io" {
-		return "" // Use default
+		return ""
 	}
-	return "https://api." + host
+	return "https://api-" + host
+}
+
+func versionedServerURL(baseURL, version string) string {
+	return strings.TrimRight(baseURL, "/") + "/" + version
 }

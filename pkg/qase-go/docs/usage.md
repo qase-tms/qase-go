@@ -83,7 +83,7 @@ Create a `qase.config.json` file in your project root:
 - `captureLogs`: Capture test logs
 - `logging.console`: Enable console logging (default: true)
 - `logging.file`: Enable file logging (default: true)
-- `testops.api.host`: "qase.io" or "api.qase.io" for self-hosted
+- `testops.api.host`: API host (default: "qase.io"). Use "eu.qase.io" for the EU cluster or your enterprise host, e.g. "example.qase.io" — requests then go to `https://api-<host>/v1` and `/v2`
 - `testops.run.id`: **Required** - specific test run ID (must be created beforehand)
 - `testops.defect`: Auto-create defects for failed tests
 - `testops.batch.size`: Batch size for result uploads (default: 100, maximum: 200 — larger values are clamped to 200, because the API rejects bigger requests)
